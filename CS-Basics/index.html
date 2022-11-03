@@ -277,8 +277,10 @@
             <div class="markdown-body">
               
               <p>记录下一些计算机相关的基础知识，主要是一些硬件相关的、数学相关的，谁叫我数学不好且是软件学院毕业的呢:rofl:</p>
-<h3 id="哈佛架构-todo"><a href="#哈佛架构-todo" class="headerlink" title="哈佛架构(todo)"></a>哈佛架构(todo)</h3><h3 id="64-位的处理器-与-64-位的操作系统"><a href="#64-位的处理器-与-64-位的操作系统" class="headerlink" title="64 位的处理器 与 64 位的操作系统"></a>64 位的处理器 与 64 位的操作系统</h3><p>64 位的 <strong>CPU</strong> 指的是：<strong>机器字长</strong>是 64 位。那么机器字长又是什么呢？<strong>机器字长</strong>，即计算机进行一次<strong>整数</strong>运算所<strong>最多</strong>能处理的二进制数据的位数</p>
-<ol>
+<h3 id="哈佛架构todo">哈佛架构(todo)</h3>
+<h3 id="位的处理器-与-64-位的操作系统">64 位的处理器 与 64 位的操作系统</h3>
+<p>64 位的 <strong>CPU</strong> 指的是：<strong>机器字长</strong>是 64 位。那么机器字长又是什么呢？<strong>机器字长</strong>，即计算机进行一次<strong>整数</strong>运算所<strong>最多</strong>能处理的二进制数据的位数</p>
+<ol type="1">
 <li>CPU 中通用寄存器的宽度为 64 位</li>
 <li>CPU 中<strong>数据总线</strong>的宽度为 64 位</li>
 <li>CPU 的指令集中的指令字长（即操作码 + 操作数的长度）最高为 64 位的（因为指令也是数据。但是指令字长本身可以比 CPU 的位数短，高位补 0 即可）</li>
@@ -287,7 +289,8 @@
 <li>早期的计算机，存储字长一般与指令字长、数据字长相等。但是现代计算机中可以不一样，例如指令字长是存储字长的两倍，那么则需要两次访存才能取出一条完整的指令（即取值周期是机器周期的两倍）</li>
 <li>64 位的操作系统是为 64 位的架构的计算机设计的操作系统，32 位的操作系统也可以用于 64 位架构的机器，但是 64 位的操作系统不可以运行在 32 位架构的计算机上（以上解释基于王道计算机组成原理考研复习指导）</li>
 </ol>
-<h3 id="大端序、小端序"><a href="#大端序、小端序" class="headerlink" title="大端序、小端序"></a>大端序、小端序</h3><p>Big-Endian and Little-Endian，指的是多字节的哪一端存储在该值的起始地址处。</p>
+<h3 id="大端序小端序">大端序、小端序</h3>
+<p>Big-Endian and Little-Endian，指的是多字节的哪一端存储在该值的起始地址处。</p>
 <p>大端序中，高位字节存储在地址的最低位，最低字节在地址的最高位；小端序则与大端序相反。具体看下面<strong>实例</strong>：</p>
 <p>我们观察十进制数 9877，其原码为 10011010010101，补码为 0010 0110 1001 0101（补 0 扩展为 2 个字节，计算机内部存储的是数的补码、补码原码的转换等不再赘述）。</p>
 <p>我们还需要指出什么是<strong>高字节</strong>：在 9877 的 16 位补码形式中，0010 0110 就是高字节。</p>
@@ -297,30 +300,40 @@
 <p>小端序（低地址低字节）是这样的：</p>
 <p>10010101</p>
 <p>00100110；</p>
-<hr>
+<hr />
 <p>大端序用于 PowerPC、SPARC 等处理器，JVM 读取 .class 文件也是按照大端序的；</p>
 <p>小端序用于 <strong>x86</strong> 处理器；</p>
 <p><strong>拓展：判断机器是大端序还是小端序</strong></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-type">short</span> big = <span class="hljs-number">0xff00</span>; <span class="hljs-comment">// 高字节是ff，低字节是00. C++中short为16位</span><br><span class="hljs-type">char</span> little = big; <span class="hljs-comment">// C++中little为8位，并且将short赋值给char时，截取的是低地址起的部分</span><br><span class="hljs-keyword">if</span> (little == <span class="hljs-number">0xff</span>) &#123;<br>    cout &lt;&lt; <span class="hljs-string">&quot;Big-Endian&quot;</span> &lt;&lt; endl; <span class="hljs-comment">//低地址高字节，大端序</span><br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    cout &lt;&lt; <span class="hljs-string">&quot;Little-Endian&quot;</span> &lt;&lt; endl; <span class="hljs-comment">// little=0x00，低地址低字节，小端序</span><br>&#125;<br><span class="hljs-comment">// 在gcc version 8.1.0 win64 环境下，上述代码运行结果为小端序</span><br></code></pre></td></tr></table></figure>
-
-<h3 id="热插拔"><a href="#热插拔" class="headerlink" title="热插拔"></a>热插拔</h3><p>热插拔 <strong>Hot Swap</strong> 即带电插拔，指的是在<strong>不</strong>关闭系统电源的情况下，将模块、板卡插入或拔出系统而不影响系统的正常工作，从而提高了系统的<strong>可靠性、快速维修性、冗余性和对灾难的及时恢复能力</strong>等。对于大功率模块化电源系统而言，热插拔技术可在维持整个电源系统电压的情况下，更换发生故障的电源模块，并保证模块化电源系统中其他电源模块正常运作。（摘自百度百科）</p>
-<h3 id="热加载"><a href="#热加载" class="headerlink" title="热加载"></a>热加载</h3><p>指的是在不重启服务的情况下，使得修改的程序代码生效。典型的热加载的案例是 Vue，比如新加了一个页面，可以不必重新运行 <code>npm build</code> 和 <code>npm serve</code> 即可查看网页变更</p>
-<h3 id="热部署"><a href="#热部署" class="headerlink" title="热部署"></a>热部署</h3><p>与以上两个概念相似，指为软件增加新模块后，可以不必重启整个系统。对于某些重要系统而言，重启关机是不可接受的，所以热部署很重要</p>
-<h3 id="停机问题"><a href="#停机问题" class="headerlink" title="停机问题"></a>停机问题</h3><p>停机问题，halting problem，离散数学中的一个经典问题。通俗地说，停机问题就是判断任意一个程序是否能在<strong>有限的时间之内</strong>结束运行的问题。（摘自维基百科）<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="停机问题 - 维基百科，自由的百科全书 (wikipedia.org)
+<h3 id="热插拔">热插拔</h3>
+<p>热插拔 <strong>Hot Swap</strong> 即带电插拔，指的是在<strong>不</strong>关闭系统电源的情况下，将模块、板卡插入或拔出系统而不影响系统的正常工作，从而提高了系统的<strong>可靠性、快速维修性、冗余性和对灾难的及时恢复能力</strong>等。对于大功率模块化电源系统而言，热插拔技术可在维持整个电源系统电压的情况下，更换发生故障的电源模块，并保证模块化电源系统中其他电源模块正常运作。（摘自百度百科）</p>
+<h3 id="热加载">热加载</h3>
+<p>指的是在不重启服务的情况下，使得修改的程序代码生效。典型的热加载的案例是 Vue，比如新加了一个页面，可以不必重新运行 <code>npm build</code> 和 <code>npm serve</code> 即可查看网页变更</p>
+<h3 id="热部署">热部署</h3>
+<p>与以上两个概念相似，指为软件增加新模块后，可以不必重启整个系统。对于某些重要系统而言，重启关机是不可接受的，所以热部署很重要</p>
+<h3 id="停机问题">停机问题</h3>
+<p>停机问题，halting problem，离散数学中的一个经典问题。通俗地说，停机问题就是判断任意一个程序是否能在<strong>有限的时间之内</strong>结束运行的问题。（摘自维基百科）<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="停机问题 - 维基百科，自由的百科全书 (wikipedia.org)
 ">[1]</span></a></sup></p>
 <p>该问题<strong>等价</strong>于如下的判定问题：是否<strong>存在</strong>一个程序 P，对于<strong>任意</strong>输入的程序 W ，能够判断 W 会在有限时间内结束或者死循环。事实上并不存在这样的程序 P，停机问题是一个<strong>不可判定问题</strong>。下面引用维基百科中的反证法证明：</p>
 <p>形式化的表述停机问题，我们假设存在一个这样的程序（也可以理解为函数）<code>int H(P, i)</code>，它可以判断给定的<strong>程序</strong> P 在 i 的输入下是否可以停机，可以停机则返回1，不可停机（陷入死循环则输出0）。显然，H 本身也可以作为参数中的 P 和 i（H本身是一个程序，所以作为 P 是显然的；程序本身也可以是一种输入，所以 H 可以作为 i）。下面我们再定义一个函数 <code>U(P)</code>，这个函数在其内部调用 H(P, P) 并根据其输出输出相反结果，伪码如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">U</span><span class="hljs-params">(P)</span> </span>&#123;<br>    <span class="hljs-type">int</span> res = <span class="hljs-built_in">H</span>(P, P); <span class="hljs-comment">// res仅为0或1</span><br>    <span class="hljs-comment">// H(P,P)就是通过H程序判断P(P)程序能否停机</span><br>    <span class="hljs-keyword">if</span> (res == <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-comment">// H程序判定P(P)可以停机，那么规定U(P)陷入死循环</span><br>        <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;&#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">// H程序判定P(P)陷入死循环，那么规定U(P)输出1，即停机</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>这样的定义到此为止都是合乎假设的，但是由此却导出了矛盾：U(U) 的结果是什么呢？</p>
 <ul>
 <li>如果 U(U) 的输出为1，即 H 程序判定 U(U) 陷入死循环。一个陷入死循环的程序 U(U) 却输出了 1，矛盾！</li>
 <li>如果 U(U) 陷入死循环，没有输出，即 H 程序判定 U(U) 可以停机，那它怎么又陷入了死循环呢？？矛盾!</li>
 <li>综上，停机问题不可解</li>
 </ul>
-<p>P.S. <a href="">这是一个借助理发师悖论解释停机问题的知乎回答</a> </p>
-<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%81%9C%E6%9C%BA%E9%97%AE%E9%A2%98">停机问题 - 维基百科，自由的百科全书 (wikipedia.org)</a>
-<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+<p>P.S. <a href="">这是一个借助理发师悖论解释停机问题的知乎回答</a></p>
+<section class="footnotes">
+<div class="footnote-list">
+<ol>
+<li>
+<span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/停机问题">停机问题 - 维基百科，自由的百科全书 (wikipedia.org)</a> <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span>
+</li>
+</ol>
+</div>
+</section>
+
               
             </div>
             <hr/>
