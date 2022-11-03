@@ -1,0 +1,740 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/bald.png">
+  <link rel="icon" href="/img/bald.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Peiyang He">
+  <meta name="keywords" content="">
+  <meta name="referrer" content="no-referrer" />
+  <meta name="baidu-site-verification" content="code-Kbu5eBOiRE" />
+  
+    <meta name="description" content="记录下一些计算机相关的基础知识">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机基础知识备忘">
+<meta property="og:url" content="https://balddemian.icu/CS-Basics/index.html">
+<meta property="og:site_name" content="Bald Demian">
+<meta property="og:description" content="记录下一些计算机相关的基础知识">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://balddemian.icu/img/wallhaven-m9qgdk.jpg">
+<meta property="article:published_time" content="2022-09-03T05:47:38.000Z">
+<meta property="article:modified_time" content="2022-09-08T08:40:02.549Z">
+<meta property="article:author" content="Peiyang He">
+<meta property="article:tag" content="施工中">
+<meta property="article:tag" content="计算机基础">
+<meta property="article:tag" content="计算机组成">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://balddemian.icu/img/wallhaven-m9qgdk.jpg">
+  
+  
+  
+  <title>计算机基础知识备忘 - Bald Demian</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"balddemian.icu","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Bald Demian</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="计算机基础知识备忘"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-09-03 13:47" pubdate>
+          2022年9月3日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          20 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">计算机基础知识备忘</h1>
+            
+            <div class="markdown-body">
+              
+              <p>记录下一些计算机相关的基础知识，主要是一些硬件相关的、数学相关的，谁叫我数学不好且是软件学院毕业的呢:rofl:</p>
+<h3 id="哈佛架构-todo"><a href="#哈佛架构-todo" class="headerlink" title="哈佛架构(todo)"></a>哈佛架构(todo)</h3><h3 id="64-位的处理器-与-64-位的操作系统"><a href="#64-位的处理器-与-64-位的操作系统" class="headerlink" title="64 位的处理器 与 64 位的操作系统"></a>64 位的处理器 与 64 位的操作系统</h3><p>64 位的 <strong>CPU</strong> 指的是：<strong>机器字长</strong>是 64 位。那么机器字长又是什么呢？<strong>机器字长</strong>，即计算机进行一次<strong>整数</strong>运算所<strong>最多</strong>能处理的二进制数据的位数</p>
+<ol>
+<li>CPU 中通用寄存器的宽度为 64 位</li>
+<li>CPU 中<strong>数据总线</strong>的宽度为 64 位</li>
+<li>CPU 的指令集中的指令字长（即操作码 + 操作数的长度）最高为 64 位的（因为指令也是数据。但是指令字长本身可以比 CPU 的位数短，高位补 0 即可）</li>
+<li>主存（即内存）中的每个存储<strong>单元</strong>所能存储的二进制数据的位数称为<strong>存储字长</strong>。</li>
+<li>指令的长度（操作码 + 操作地址）称为<strong>指令字长</strong></li>
+<li>早期的计算机，存储字长一般与指令字长、数据字长相等。但是现代计算机中可以不一样，例如指令字长是存储字长的两倍，那么则需要两次访存才能取出一条完整的指令（即取值周期是机器周期的两倍）</li>
+<li>64 位的操作系统是为 64 位的架构的计算机设计的操作系统，32 位的操作系统也可以用于 64 位架构的机器，但是 64 位的操作系统不可以运行在 32 位架构的计算机上（以上解释基于王道计算机组成原理考研复习指导）</li>
+</ol>
+<h3 id="大端序、小端序"><a href="#大端序、小端序" class="headerlink" title="大端序、小端序"></a>大端序、小端序</h3><p>Big-Endian and Little-Endian，指的是多字节的哪一端存储在该值的起始地址处。</p>
+<p>大端序中，高位字节存储在地址的最低位，最低字节在地址的最高位；小端序则与大端序相反。具体看下面<strong>实例</strong>：</p>
+<p>我们观察十进制数 9877，其原码为 10011010010101，补码为 0010 0110 1001 0101（补 0 扩展为 2 个字节，计算机内部存储的是数的补码、补码原码的转换等不再赘述）。</p>
+<p>我们还需要指出什么是<strong>高字节</strong>：在 9877 的 16 位补码形式中，0010 0110 就是高字节。</p>
+<p>为了方便演示，我们规定内存的地址从上到下增加，那么 9877 在大端序（低地址高字节）的机器中是这样存储的：</p>
+<p>00100110</p>
+<p>10010101</p>
+<p>小端序（低地址低字节）是这样的：</p>
+<p>10010101</p>
+<p>00100110；</p>
+<hr>
+<p>大端序用于 PowerPC、SPARC 等处理器，JVM 读取 .class 文件也是按照大端序的；</p>
+<p>小端序用于 <strong>x86</strong> 处理器；</p>
+<p><strong>拓展：判断机器是大端序还是小端序</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-type">short</span> big = <span class="hljs-number">0xff00</span>; <span class="hljs-comment">// 高字节是ff，低字节是00. C++中short为16位</span><br><span class="hljs-type">char</span> little = big; <span class="hljs-comment">// C++中little为8位，并且将short赋值给char时，截取的是低地址起的部分</span><br><span class="hljs-keyword">if</span> (little == <span class="hljs-number">0xff</span>) &#123;<br>    cout &lt;&lt; <span class="hljs-string">&quot;Big-Endian&quot;</span> &lt;&lt; endl; <span class="hljs-comment">//低地址高字节，大端序</span><br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    cout &lt;&lt; <span class="hljs-string">&quot;Little-Endian&quot;</span> &lt;&lt; endl; <span class="hljs-comment">// little=0x00，低地址低字节，小端序</span><br>&#125;<br><span class="hljs-comment">// 在gcc version 8.1.0 win64 环境下，上述代码运行结果为小端序</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="热插拔"><a href="#热插拔" class="headerlink" title="热插拔"></a>热插拔</h3><p>热插拔 <strong>Hot Swap</strong> 即带电插拔，指的是在<strong>不</strong>关闭系统电源的情况下，将模块、板卡插入或拔出系统而不影响系统的正常工作，从而提高了系统的<strong>可靠性、快速维修性、冗余性和对灾难的及时恢复能力</strong>等。对于大功率模块化电源系统而言，热插拔技术可在维持整个电源系统电压的情况下，更换发生故障的电源模块，并保证模块化电源系统中其他电源模块正常运作。（摘自百度百科）</p>
+<h3 id="热加载"><a href="#热加载" class="headerlink" title="热加载"></a>热加载</h3><p>指的是在不重启服务的情况下，使得修改的程序代码生效。典型的热加载的案例是 Vue，比如新加了一个页面，可以不必重新运行 <code>npm build</code> 和 <code>npm serve</code> 即可查看网页变更</p>
+<h3 id="热部署"><a href="#热部署" class="headerlink" title="热部署"></a>热部署</h3><p>与以上两个概念相似，指为软件增加新模块后，可以不必重启整个系统。对于某些重要系统而言，重启关机是不可接受的，所以热部署很重要</p>
+<h3 id="停机问题"><a href="#停机问题" class="headerlink" title="停机问题"></a>停机问题</h3><p>停机问题，halting problem，离散数学中的一个经典问题。通俗地说，停机问题就是判断任意一个程序是否能在<strong>有限的时间之内</strong>结束运行的问题。（摘自维基百科）<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="停机问题 - 维基百科，自由的百科全书 (wikipedia.org)
+">[1]</span></a></sup></p>
+<p>该问题<strong>等价</strong>于如下的判定问题：是否<strong>存在</strong>一个程序 P，对于<strong>任意</strong>输入的程序 W ，能够判断 W 会在有限时间内结束或者死循环。事实上并不存在这样的程序 P，停机问题是一个<strong>不可判定问题</strong>。下面引用维基百科中的反证法证明：</p>
+<p>形式化的表述停机问题，我们假设存在一个这样的程序（也可以理解为函数）<code>int H(P, i)</code>，它可以判断给定的<strong>程序</strong> P 在 i 的输入下是否可以停机，可以停机则返回1，不可停机（陷入死循环则输出0）。显然，H 本身也可以作为参数中的 P 和 i（H本身是一个程序，所以作为 P 是显然的；程序本身也可以是一种输入，所以 H 可以作为 i）。下面我们再定义一个函数 <code>U(P)</code>，这个函数在其内部调用 H(P, P) 并根据其输出输出相反结果，伪码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">U</span><span class="hljs-params">(P)</span> </span>&#123;<br>    <span class="hljs-type">int</span> res = <span class="hljs-built_in">H</span>(P, P); <span class="hljs-comment">// res仅为0或1</span><br>    <span class="hljs-comment">// H(P,P)就是通过H程序判断P(P)程序能否停机</span><br>    <span class="hljs-keyword">if</span> (res == <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-comment">// H程序判定P(P)可以停机，那么规定U(P)陷入死循环</span><br>        <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;&#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">// H程序判定P(P)陷入死循环，那么规定U(P)输出1，即停机</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这样的定义到此为止都是合乎假设的，但是由此却导出了矛盾：U(U) 的结果是什么呢？</p>
+<ul>
+<li>如果 U(U) 的输出为1，即 H 程序判定 U(U) 陷入死循环。一个陷入死循环的程序 U(U) 却输出了 1，矛盾！</li>
+<li>如果 U(U) 陷入死循环，没有输出，即 H 程序判定 U(U) 可以停机，那它怎么又陷入了死循环呢？？矛盾!</li>
+<li>综上，停机问题不可解</li>
+</ul>
+<p>P.S. <a href="">这是一个借助理发师悖论解释停机问题的知乎回答</a> </p>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%81%9C%E6%9C%BA%E9%97%AE%E9%A2%98">停机问题 - 维基百科，自由的百科全书 (wikipedia.org)</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/study/" class="category-chain-item">study</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%96%BD%E5%B7%A5%E4%B8%AD/">#施工中</a>
+      
+        <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">#计算机基础</a>
+      
+        <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90/">#计算机组成</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>计算机基础知识备忘</div>
+      <div>https://balddemian.icu/CS-Basics/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Peiyang He</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年9月3日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/InnoDB-Index-Page/" title="InnoDB 索引页初探">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">InnoDB 索引页初探</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/Lost-In-Rust-1/" title="Rust 漫谈 1">
+                        <span class="hidden-mobile">Rust 漫谈 1</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <span>Powered By</span> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> </br> <span>Blog Logo Created By</span> <a target="_blank" rel="noopener" href="https://www.flaticon.com/free-icons/bald" title="bald icons">Darius Dan - Flaticon</a> 
+    </div>
+  
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      黔ICP备2022007945号-1
+    </a>
+  </span>
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
