@@ -18,26 +18,23 @@
   <meta name="referrer" content="no-referrer" />
   <meta name="baidu-site-verification" content="code-Kbu5eBOiRE" />
   
-    <meta name="description" content="个人第一次技术面试">
+    <meta name="description" content="本文简要介绍 SQL 标准和 MySQL 中的隔离">
 <meta property="og:type" content="article">
-<meta property="og:title" content="企鹅游戏开发课面试">
-<meta property="og:url" content="https://balddemian.icu/Interview-Tencent-1/index.html">
+<meta property="og:title" content="SQL 标准和 MySQL 的隔离级别">
+<meta property="og:url" content="https://balddemian.icu/SQL-Isolation/index.html">
 <meta property="og:site_name" content="Bald Demian">
-<meta property="og:description" content="个人第一次技术面试">
+<meta property="og:description" content="本文简要介绍 SQL 标准和 MySQL 中的隔离">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://balddemian.icu/img/IMG_0838.PNG">
-<meta property="article:published_time" content="2022-06-18T10:46:51.000Z">
-<meta property="article:modified_time" content="2022-08-25T05:15:23.437Z">
+<meta property="article:published_time" content="2022-11-07T08:56:05.000Z">
+<meta property="article:modified_time" content="2022-11-07T08:58:08.593Z">
 <meta property="article:author" content="Peiyang He">
-<meta property="article:tag" content="施工中">
-<meta property="article:tag" content="面试">
-<meta property="article:tag" content="C++">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="数据库">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://balddemian.icu/img/IMG_0838.PNG">
   
   
   
-  <title>企鹅游戏开发课面试 - Bald Demian</title>
+  <title>SQL 标准和 MySQL 的隔离级别 - Bald Demian</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -200,7 +197,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="企鹅游戏开发课面试"></span>
+            <span id="subtitle" data-typed-text="SQL 标准和 MySQL 的隔离级别"></span>
           
         </div>
 
@@ -211,8 +208,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-06-18 18:46" pubdate>
-          2022年6月18日 晚上
+        <time datetime="2022-11-07 16:56" pubdate>
+          2022年11月7日 下午
         </time>
       </span>
     
@@ -223,7 +220,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.1k 字
+          2.4k 字
         
       </span>
     
@@ -234,7 +231,7 @@
         
         
         
-          10 分钟
+          20 分钟
         
       </span>
     
@@ -272,58 +269,121 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">企鹅游戏开发课面试</h1>
+            <h1 style="display: none">SQL 标准和 MySQL 的隔离级别</h1>
             
             <div class="markdown-body">
               
-              <p>先占个坑，期末周结束再来更新</p>
-<h2 id="背景">背景</h2>
-<p>2022 腾讯 IEG 游戏公开课客户端开发学员面试，30min。本来我是对游戏一窍不通的，本来我也是对 C++ 一窍不通的。为了给暑假找点事干 &amp;&amp; 白嫖一次 C++ 复习，就报名了。也有貌似是非必须参加的笔试，但是编程题很简单，暴力直接带走了。</p>
-<h2 id="题目">题目</h2>
-<ol type="1">
-<li>首先问了下有没有游戏开发的经验，UE4 引擎有了解吗</li>
-</ol>
+              <h2 id="复习">复习</h2>
+<p>（重要的事情说三遍~）</p>
+<h3 id="事务的-acid-特性1">事务的 ACID 特性<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="王珊，萨师煜：数据库系统概论（第五版）。高等教育出版社
+">[1]</span></a></sup></h3>
 <ul>
-<li>没有。。。</li>
+<li><p>Atomicity</p>
+<p>原子性：事务是数据库的逻辑工作单位，事务中包含的诸操作要么都做，要么都不做</p></li>
+<li><p>Consistency</p>
+<p>一致性：事务执行的结果是使数据库从一个一致性状态变为另一个一致性状态。因此当数据库只包含成功事务提交的结果时，就说数据库处于一致状态。可见事务的一致性与原子性密不可分。</p></li>
+<li><p>Isolation</p>
+<p>隔离性：一个事务的执行不能被其他事务干扰。</p></li>
+<li><p>Durability</p>
+<p>持久性：一个事务一旦提交，那么它对数据库中数据的改变就应该是永久性的。</p></li>
 </ul>
-<ol start="2" type="1">
-<li>问了几个 C++ 的。没答上来的（暂且记得这么多）：
+<h2 id="为什么需要隔离">为什么需要隔离？</h2>
+<p>我们知道，「事务」的存在，其实是为事务中的诸操作提供了「一致性」的保证：事务中的所有操作，要么都做，要么都不做。于是，当事务之间是串行执行时，在一个事务开始执行时，它面对的是上一个事务执行结束时的某个一致性状态，自身执行结束后，又转移到了另一个一致的状态。</p>
+<p>但是，出于效率原因，数据库管理系统不可能对所有待执行的事务采取串行调度策略，必然是让多个事务并发执行的，即一个事务没有完全执行完，就调度了另一个事务。当并发执行的事务存在对同一数据的<strong>访问</strong>时（读-写，写-读，写-写。注意到读-读并不会带来一致性问题），事情就变得麻烦起来了。</p>
+<p>我们观察下面几种调度情况与它们带来的一致性问题<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="Hal Berenson, Phil Bernstein, Jim Gray, Jim Melton, Elizabeth O&#39;Neil, and Patrick O&#39;Neil. 1995. A critique of ANSI SQL isolation levels. SIGMOD Rec. 24, 2 (May 1995), 1–10. https://doi.org/10.1145/568271.223785
+">[2]</span></a></sup>：</p>
+<h3 id="脏写">脏写</h3>
+<p>一个事务 T2 <strong>修改</strong>了另一个事务 T1 尚未提交或回滚的<strong>修改</strong>过的数据。如果 T1 或者 T2 随后做了回滚，那么将不知道哪一版的数据是正确的。</p>
+<p>脏写比以下提到的三种情况都要严重，它会破坏数据库的一致性、原子性和持久性：</p>
 <ul>
-<li>C++ 的内存空间有哪几种？（少答了）</li>
-<li>几个 cast 函数（一无所知）</li>
-<li>extend 关键字干啥的 （一无所知，调用 C 函数的）</li>
-<li>编译器为一个空类提供哪几个函数？（还会提供两个版本的重载的取地址运算符，但是当时不知道怎么想的答成了取地址符:cry:）</li>
-<li>如何避免内存碎片（答了一个重载new和delete，面试官说这就是常量池技术，问还知道其他的吗，不知道）</li>
-<li>C++ 多态有哪几种（少答了，提示了函数重载，然后顺着问了下面的问题）</li>
-<li>函数重载发生在编译时还是运行时？（给答成运行时了，虚函数调用才是运行时，函数重载是编译时根据同名函数的参数列表重新生成函数的名称放在符号表中）</li>
-<li>C++ 多线程的经验有吗？（没有）</li>
-<li>锁有几种？（我照着数据库系统概论那本书的数据库的锁说的，只讲了互斥锁和共享锁，还知道什么锁？不知道）</li>
-</ul></li>
-<li>给看了一段 C++ 代码，问哪里可以调优哪里有问题，面试官好心地给提示了
+<li><p>场景一</p>
+<p>设我们有一个一致性约束，即 x 和 y 的值始终相等，考虑 T1 和 T2 事务如下的执行序列：</p>
+<p><code>W1(x=1) W2(x=2) W2(y=2) COMMIT2 W1(y=1) COMMIT1</code></p>
+<p>如上面的事务调度序列，T2 事务写了 T1 尚未提交的已经写了的数据，虽然这两个事务各自的操作都保证了 x 等于 y 的一致性约束，但由于脏写的存在，这种一致性约束被破坏了。</p></li>
+<li><p>场景二</p>
+<p>设 x 和 y 初始值为 0，考虑 T1 和 T2 事务如下的执行序列：</p>
+<p><code>W1(x=2) W2(x=3) W1(y=3) COMMIT2 ROLLBACK1</code></p>
+<p>如上面的事务调度序列，T2 事务写了 T1 尚未提交的已经写了的数据，出现了脏写现象。现在考虑最后对于 T1 的回滚。如果将 T1 回滚，那么此时 x 将被修改为最开始的 0，y 被修改为最开始的 0。可是 T2 事务已经修改了 x 并成功提交，如果此时修改 x，就破坏了 T2 的持久性。可是如果不将 x 改为 0，仅将 y 改为 0，就破坏了 T1 的原子性。于是脏写使得我们面临了两难境地。</p></li>
+</ul>
+<p>正是由于脏写很严重，下文提到的不同隔离级别，虽然对脏读、幻读、不可重复读的容忍情况各不相同，但是均不允许脏写的发生。</p>
+<h3 id="脏读">脏读</h3>
+<p>Dirty Read.</p>
+<p>广义解释：一个事务<strong>读</strong>到了另一个未提交事务<strong>修改</strong>过的数据。脏读也会引起不一致问题，设我们有一致性约束：x 和 y 始终相等。考虑 T1 和 T2 如下的执行序列，设最初的 x 和 y 都是 0。</p>
+<p><code>W1(x=1) R2(x=1) R2(y=0) COMMIT2 W1(y=1)</code></p>
+<p>可以看到 T2 读到了 T1 已经修改过的未提交的数据，使得读出的 x 和 y 处于不相等的状态。但是最终的数据库是处于一直状态的（x 和 y 相等）</p>
+<p>严格解释：一个事务 T2 读到了另一个事务 T1 尚未提交或回滚的修改过的数据。如果 T1 回滚了，那么 T2 就读到一个<strong>从未存在</strong>过的数据。</p>
+<p>可见广义解释是包含了严格解释的。</p>
+<h3 id="幻读">幻读</h3>
+<p>Phantom.</p>
+<p>一个事务 T1 按某种条件 C 读到了一些记录。一个事务 T2 又向数据库中 INSERT 了满足条件 C 的记录<strong>并提交</strong>。T1 继续按条件 C 读取记录，发现这次读到一些上次读不存在的记录。这些之前不存在的记录也被称为「幻影记录」。</p>
+<h3 id="不可重复读模糊读">不可重复读（模糊读）</h3>
+<p>Non-repeatable Read or Fuzzy Read.</p>
+<p>如果一个事务 T2 修改了另一个未提交事务 T1 <strong>读取</strong>的数据，那么就发生了不可重复读。</p>
+<p>严格解释：T1 先读取了 x 的值，然后 T2 修改了 x 的值并提交，导致 T1 再次读取 x 时读出的值不一样</p>
+<hr />
+<p>通过观察上面几种一致性问题，我们发现，它们均是由于不正确的调度顺序导致的。或者换言之，就是在一个事务尚未结束对一个数据的访问时（这里的「结束」可以是提交，也可以是回滚），另一个事务也「插队」进来，对这些数据进行访问。</p>
+<p>所谓「隔离」，就是通过某种规则将事务的诸操作进行「排队」执行，以消除脏读、幻读、不可重复读。</p>
+<h2 id="ansi-sql-标准的隔离级别">ANSI SQL 标准的隔离级别</h2>
+<p>之前说到，如果所有事务都是串行执行的，那么将不会出现上面提到的任何一致性问题。但问题就是，串行执行会严重降低系统的性能。如若我们只考虑并发性能，即「见缝插针」地执行不同事务，又会带来严重的一致性问题。于是，为了在保证并发性能与保证一致性之间做出平衡，ANSI SQL 标准提出了 4 种隔离级别。总而言之，就是「舍弃一部分隔离性，承担一致性问题的风险，来换取并发性能」。</p>
+<table>
+<thead>
+<tr class="header">
+<th>隔离级别</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>READ UNCOMMITTED</td>
+<td>可能</td>
+<td>可能</td>
+<td>可能</td>
+</tr>
+<tr class="even">
+<td>READ COMMITED</td>
+<td>不可能</td>
+<td>可能</td>
+<td>可能</td>
+</tr>
+<tr class="odd">
+<td>REPEATABLE READ</td>
+<td>不可能</td>
+<td>不可能</td>
+<td>可能</td>
+</tr>
+<tr class="even">
+<td>SERIALIZABLE</td>
+<td>不可能</td>
+<td>不可能</td>
+<td>不可能</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mysql-实现的隔离级别">MySQL 实现的隔离级别</h2>
 <ul>
-<li>指针的参数传递问题（改为传递指针的引用而不是指针本身）</li>
-<li>浮点数的运算问题（乘法快还是除法快）</li>
-<li>迭代器的效率，itr++ 汇编需要几条指令（我回答没了解过汇编）</li>
-<li>大数组包小数组效率高还是小数组包大数组效率高</li>
-</ul></li>
-<li>顺着上面的最后的一个问题问了个操作系统的问题，我直接回答没学过操作系统</li>
-<li>寄网。UDP 和 TCP 区别。就在我以为问寄网会有把握时：</li>
-<li>如何用 UDP 实现 TCP？
-<ul>
-<li>不会</li>
-</ul></li>
-<li>没问算法和数据结构:cry:，难得我又把排序算法拉出来背了一遍</li>
-<li>没有反问环节。最后说要去先了解一点游戏开发的东西。那感觉就是能进这个课的？但是真的游戏开发一窍不通，半路跳车会进:penguin:黑名单吗:cry:</li>
+<li>REPEATABLE READ（默认）</li>
+<li>READ COMMITED</li>
+<li>READ UNCOMMITTED</li>
+<li>SERIALIZABLE</li>
+</ul>
+<p>注意 MySQL 的 REPEATABLE READ 级别已经可以在很大程度上防止幻读的发生</p>
+<h2 id="隔离的实现">隔离的实现</h2>
+<p>todo</p>
+<h2 id="ref">Ref</h2>
+<section class="footnotes">
+<div class="footnote-list">
+<ol>
+<li>
+<span id="fn:1" class="footnote-text"><span>王珊，萨师煜：数据库系统概论（第五版）。高等教育出版社 <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span>
+</li>
+<li>
+<span id="fn:2" class="footnote-text"><span><em>Hal Berenson, Phil Bernstein, Jim Gray, Jim Melton, Elizabeth O'Neil, and Patrick O'Neil. 1995. A critique of ANSI SQL isolation levels. SIGMOD Rec. 24, 2 (May 1995), 1–10. https://doi.org/10.1145/568271.223785</em> <a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span>
+</li>
 </ol>
-<h2 id="感受与反思cry">感受与反思:cry:</h2>
-<ol type="1">
-<li>首先是第一次技术面试，又激动又紧张，introvert 体质就发作了，全程“额”，“吧”，“应该”，“不太了解”，几乎没直视摄像头，都在盯着屏幕。甚至还在思考的时候翻了白眼:innocent:</li>
-<li>其实就是标准的八股，但是现在的水平难以应对，而且还是 C++ 的（疯狂找借口）</li>
-<li>感觉回答的风格还是太学校课程了一点？就是没有直接切中答案的要害，说了一些有的没的</li>
-<li>实践还是太少了。尤其是寄网的部分，原理大概知道，但是没有实操过</li>
-<li>简历还是太寒酸，</li>
-<li>待补充。活过期末再说吧</li>
-</ol>
+</div>
+</section>
 
               
             </div>
@@ -341,7 +401,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/work/" class="category-chain-item">work</a>
+  <a href="/categories/study/" class="category-chain-item">study</a>
   
   
 
@@ -356,11 +416,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E6%96%BD%E5%B7%A5%E4%B8%AD/">#施工中</a>
+        <a href="/tags/MySQL/">#MySQL</a>
       
-        <a href="/tags/%E9%9D%A2%E8%AF%95/">#面试</a>
-      
-        <a href="/tags/C/">#C++</a>
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">#数据库</a>
       
     </div>
   
@@ -372,8 +430,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>企鹅游戏开发课面试</div>
-      <div>https://balddemian.icu/Interview-Tencent-1/</div>
+      <div>SQL 标准和 MySQL 的隔离级别</div>
+      <div>https://balddemian.icu/SQL-Isolation/</div>
     </div>
     <div class="license-meta">
       
@@ -385,7 +443,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年6月18日</div>
+          <div>2022年11月7日</div>
         </div>
       
       
@@ -415,18 +473,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/Lost-In-Rust-1/" title="Rust 漫谈 1">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Rust 漫谈 1</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/Flyweight-Pattern/" title="享元模式">
-                        <span class="hidden-mobile">享元模式</span>
+                      <a href="/Priority-Inversion/" title="优先级反转">
+                        <span class="hidden-mobile">优先级反转</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
