@@ -85,7 +85,9 @@
   <script  src="/js/color-schema.js" ></script>
 
   
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 5.4.2">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
 
 
 <body>
@@ -275,7 +277,7 @@
             
             <div class="markdown-body">
               
-              <h2 id="索引的代价">索引的代价</h2>
+              <h2 id="索引的代价"><a class="header-anchor" href="#索引的代价">¶</a>索引的代价</h2>
 <ul>
 <li>空间上的代价：一个数据页 16KB</li>
 <li>时间上的代价
@@ -283,64 +285,75 @@
 <li>增删改时会修改 B+ 树索引</li>
 <li>生成查询计划时一般只使用一个二级索引，如果建立的二级索引很多，查询优化器将花费很多时间分析使用各个二级索引的成本</li>
 <li>回表的代价：在使用二级索引时，虽然得到的二级索引项是连续的，但是对应的主键不一定是连续的，它们所处的聚簇索引的页也不是连续的，导致回表时进行的是随机 IO，速度很慢</li>
-</ul></li>
 </ul>
-<h2 id="何时使用索引">何时使用索引？</h2>
-<h2 id="单表访问方式">单表访问方式</h2>
-<h3 id="const">const</h3>
+</li>
+</ul>
+<h2 id="何时使用索引？"><a class="header-anchor" href="#何时使用索引？">¶</a>何时使用索引？</h2>
+<h2 id="单表访问方式"><a class="header-anchor" href="#单表访问方式">¶</a>单表访问方式</h2>
+<h3 id="const"><a class="header-anchor" href="#const">¶</a>const</h3>
 <p>使用<strong>主键</strong>或者<strong>唯一</strong>二级索引与一个<strong>常数</strong>进行<strong>等值比较</strong>时（当主键或者唯一二级索引由多个列组成时，要求每一个都与一个常数进行比较）。const 查询仅返回一条记录，速度极快</p>
 <p>特别地，由于唯一二级索引中不限制 NULL 的数量，因此在与 NULL 进行比较时可能会返回多条记录，因此不适用于 const 查询</p>
-<h3 id="ref">ref</h3>
+<h3 id="ref"><a class="header-anchor" href="#ref">¶</a>ref</h3>
 <p>使用普通的二级索引（即没有 UNIQUE 约束）进行等值查询时</p>
 <p>当这个普通二级索引由多个列组成时，要求最左边的列必须是与<strong>常数</strong>（不可是 NULL ！！！）等值查询，比如有一个索引为 (key_part1, key_part2, key_part3)，下面的三个单表等值查询都可以使用 ref:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM single_table WHERE key_part1 = &#x27;a&#x27;;<br>SELECT * FROM single_table WHERE key_part1 = &#x27;a&#x27; AND key_part2 = &#x27;b&#x27;;<br>SELECT * FROM single_table WHERE key_part1 = &#x27;a&#x27; AND key_part2 = &#x27;b&#x27; AND key_part = &#x27;c&#x27;;<br># 下面这种情况就不能使用ref查询，因为key_part=&#x27;a&#x27;的记录，在key_part2字段上是无序的<br>SELECT * FROM single_table WHERE key_part1 = &#x27;a&#x27; AND key_part2 &gt; &#x27;b&#x27;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM single_table WHERE key_part1 = 'a';<br>SELECT * FROM single_table WHERE key_part1 = 'a' AND key_part2 = 'b';<br>SELECT * FROM single_table WHERE key_part1 = 'a' AND key_part2 = 'b' AND key_part = 'c';<br># 下面这种情况就不能使用ref查询，因为key_part='a'的记录，在key_part2字段上是无序的<br>SELECT * FROM single_table WHERE key_part1 = 'a' AND key_part2 &gt; 'b'<br></code></pre></td></tr></tbody></table></figure>
 <p>需要指出的是，ref 查询可能需要对很多二级索引的记录进行回表，在需要回表的记录过多时，优化器也许不会再使用 ref 查询</p>
-<h3 id="ref_or_null">ref_or_null</h3>
+<h3 id="ref-or-null"><a class="header-anchor" href="#ref-or-null">¶</a>ref_or_null</h3>
 <p>在 ref 的基础之上找出列中的值为 NULL 的记录，比如这个查询：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM single_table WHERE key1 = &#x27;abc&#x27; OR key1 IS NULL;<br></code></pre></td></tr></table></figure>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/ref_or_null.png" srcset="/img/loading.gif" lazyload alt="image-20221006160524647" style="zoom:50%;" /></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM single_table WHERE key1 = 'abc' OR key1 IS NULL;<br></code></pre></td></tr></tbody></table></figure>
+<img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/ref_or_null.png" srcset="/img/loading.gif" lazyload alt="image-20221006160524647" style="zoom:50%;">
 <p>可见只是在 ref 的基础之上扫描了索引的最左边，所以还是比较快的（值为 NULL 的记录在索引的<strong>最左边</strong>）</p>
-<h3 id="range">range</h3>
+<h3 id="range"><a class="header-anchor" href="#range">¶</a>range</h3>
 <p>使用索引查询时，对应的扫描区间为多个单点区间或范围区间时，称为 range，比如下面这个语句</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM single_table WHERE key2 IN (123, 456) OR key2 &gt;= 38 AND key2 &lt;= 79;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM single_table WHERE key2 IN (123, 456) OR key2 &gt;= 38 AND key2 &lt;= 79;<br></code></pre></td></tr></tbody></table></figure>
 <p>生成了两个单点区间和一个范围区间：[123, 123], [456, 456], [38, 79]</p>
 <p>只有一个单点区间时不是 range，应该是 const 或者 ref</p>
 <p>范围区间是负无穷到正无穷时也不是 range</p>
-<h3 id="index">index</h3>
+<h3 id="index"><a class="header-anchor" href="#index">¶</a>index</h3>
 <p>回忆一下，我们之前建立了一个联合索引 (key_part1, key_part2, key_part3)。观察下面这个查询</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT key_part1, key_part2, key_part3 FROM single_table WHERE key_part2 &gt; &#x27;a&#x27;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT key_part1, key_part2, key_part3 FROM single_table WHERE key_part2 &gt; 'a';<br></code></pre></td></tr></tbody></table></figure>
 <p>由于联合索引最左边的列不是等值查询，所以无法使用 ref。但是观察发现，这个查询是「索引覆盖」的，即要查询出的列正好是组成联合索引的列，此时不用回表，而且查询条件也是 key_part2 也是包含在联合索引中的。此时的策略是取出这个二级索引中的索引记录，判断在 key_part2 上是否满足查询条件。由于不用回表，所以还是比较快的</p>
-<h3 id="all">all</h3>
+<h3 id="all"><a class="header-anchor" href="#all">¶</a>all</h3>
 <p>平平无奇的全表扫描</p>
-<h3 id="索引合并查询-index-merge">索引合并查询 Index Merge</h3>
+<h3 id="索引合并查询-Index-Merge"><a class="header-anchor" href="#索引合并查询-Index-Merge">¶</a>索引合并查询 Index Merge</h3>
 <p>前面说到在查询条件中有多个索引时，一般会选择成本最小的那个索引执行查询；在 MySQL 的 5.0 版本之后，在下面三种情况中，会<strong>合并</strong>多个索引进行查询</p>
-<h4 id="intersection-索引合并">Intersection 索引合并</h4>
+<h4 id="Intersection-索引合并"><a class="header-anchor" href="#Intersection-索引合并">¶</a>Intersection 索引合并</h4>
 <p>假设我们在 key1 上建立了二级索引 idx_key1，在 key2 上建立了二级索引 idx_key2。我们看下面这条查询：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM single_table WHERE key1 = &#x27;a&#x27; AND key2 = &#x27;b&#x27;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM single_table WHERE key1 = 'a' AND key2 = 'b';<br></code></pre></td></tr></tbody></table></figure>
 <p>对于这个单表查询，由于存在索引，可以选择在 key1 上利用 idx_key1 进行 ref 单表查询，对于获取到的每个二级索引的叶节点进行回表操作，找出完整记录后再用 key2 的条件进行过滤；同理，也可以使用在 key2 上利用 idx_key2 进行 ref 单表查询，对于获取到的每个二级索引的叶节点进行回表操作，找出完整记录后再用 key1 的条件进行过滤。</p>
 <p>但是其实还有第三种选项：同时使用 idx_key1 和 idx_key2 进行两次 ref，对于找到的两组二级索引的叶节点，使用主键值取交集（回忆：二级索引的叶子节点中是含有索引列和主键的！！！）。然后根据得到的叶子节点再去回表。由于访问二级索引的 B+ 树显著快于回表操作，因此这样减少了回表操作的索引合并方式是优于仅使用一个索引的单表查询的。</p>
 <p>合并两个二级索引叶子节点的算法也十分「有趣」，本质上是一个双指针的算法题，类似于<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/merge-sorted-array/">力扣第 88 题「合并两个有序数组」</a></p>
 <p>使用 Intersection 合并索引，必须要求从每个索引中获取到的二级索引记录都是按照主键值排序的！</p>
-<p>如下面这个查询，即使我们已经建立了索引，但是由于 key1 &gt; 'a' 的二级索引记录并不是按主键进行排序的，因此无法使用 Intersection 索引合并：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM single_table WHERE key1 &gt; &#x27;a&#x27; AND key2 = &#x27;b&#x27;;<br></code></pre></td></tr></table></figure>
-<h4 id="union-索引合并">Union 索引合并</h4>
+<p>如下面这个查询，即使我们已经建立了索引，但是由于 key1 &gt; ‘a’ 的二级索引记录并不是按主键进行排序的，因此无法使用 Intersection 索引合并：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM single_table WHERE key1 &gt; 'a' AND key2 = 'b';<br></code></pre></td></tr></tbody></table></figure>
+<h4 id="Union-索引合并"><a class="header-anchor" href="#Union-索引合并">¶</a>Union 索引合并</h4>
 <p>对于类似于下面的查询：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM single_table WHERE key1 = &#x27;a&#x27; OR key2 = &#x27;b&#x27;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM single_table WHERE key1 = 'a' OR key2 = 'b';<br></code></pre></td></tr></tbody></table></figure>
 <p>采取类似于 Intersection 索引合并的思路，我们利用两个二级索引得到两组二级索引叶子节点记录，然后对这两组记录在主键上取并集，然后再回表。同样，使用 Union 索引合并，要求从每个索引中获取到的二级索引记录按照主键值排序</p>
-<h4 id="sort-union-索引合并">Sort-Union 索引合并</h4>
+<h4 id="Sort-Union-索引合并"><a class="header-anchor" href="#Sort-Union-索引合并">¶</a>Sort-Union 索引合并</h4>
 <p>适当放宽 Union 索引合并的要求，如下面这个查询：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM single_table WHERE key1 &gt; &#x27;a&#x27; OR key2 &lt; &#x27;b&#x27;;<br></code></pre></td></tr></table></figure>
-<p>根据两个二级索引获得的二级索引记录在主键上并不是有序的，但是我们可以对它们排序:rofl:，然后对两个排好序的区间进行合并，然后再回表</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM single_table WHERE key1 &gt; 'a' OR key2 &lt; 'b';<br></code></pre></td></tr></tbody></table></figure>
+<p>根据两个二级索引获得的二级索引记录在主键上并不是有序的，但是我们可以对它们排序🤣，然后对两个排好序的区间进行合并，然后再回表</p>
 <p>（MariaDB 中实现了 Sort-Intersection）</p>
-<h2 id="links">Links</h2>
+<h2 id="Links"><a class="header-anchor" href="#Links">¶</a>Links</h2>
 <ul>
-<li><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-index-types.html">MySQL :: MySQL 8.0 Reference Manual :: 15.6.2.1 Clustered and Secondary Indexes</a></p></li>
-<li><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-introduction.html">MySQL :: MySQL 8.0 Reference Manual :: 15.1 Introduction to InnoDB</a></p></li>
-<li><p>索引合并也许是有害的...<a target="_blank" rel="noopener" href="https://www.percona.com/blog/2012/12/14/the-optimization-that-often-isnt-index-merge-intersection/">The Optimization That (Often) Isn’t: Index Merge Intersection</a></p></li>
-<li><p><a target="_blank" rel="noopener" href="https://mariadb.com/kb/en/index_merge-sort_intersection/">MariaDB 中的 Sort-Intersection 索引合并</a></p></li>
-<li><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/explain.html">EXPLAIN 是我们的好朋友</a>:rofl:</p></li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-index-types.html">MySQL :: MySQL 8.0 Reference Manual :: 15.6.2.1 Clustered and Secondary Indexes</a></p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-introduction.html">MySQL :: MySQL 8.0 Reference Manual :: 15.1 Introduction to InnoDB</a></p>
+</li>
+<li>
+<p>索引合并也许是有害的…<a target="_blank" rel="noopener" href="https://www.percona.com/blog/2012/12/14/the-optimization-that-often-isnt-index-merge-intersection/">The Optimization That (Often) Isn’t: Index Merge Intersection</a></p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://mariadb.com/kb/en/index_merge-sort_intersection/">MariaDB 中的 Sort-Intersection 索引合并</a></p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/explain.html">EXPLAIN 是我们的好朋友</a>🤣</p>
+</li>
 </ul>
-<h2 id="后记">后记</h2>
+<h2 id="后记"><a class="header-anchor" href="#后记">¶</a>后记</h2>
 <ul>
 <li>由于几乎没有索引的使用经验，所以这部分还是觉得学得干巴巴的，等有实际经验了再来完善下</li>
 <li>看到索引合并的双指针算法时真的很激动，有种平时刷的算法题除了求职和锻炼思维外还是很实用的感觉！</li>
