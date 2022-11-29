@@ -18,16 +18,16 @@
   <meta name="referrer" content="no-referrer" />
   <meta name="baidu-site-verification" content="code-Kbu5eBOiRE" />
   
-    <meta name="description" content="背景 在学习 OSTEP[1] 第 28 章时了解到了 GNU libc 中关于上锁和解锁的源码，深感精妙绝伦，故写下一点点我的理解。 关于源码，可以在 GNU 的官方站点[2]找到。似乎每个版本有区别，我是在 glibc-2.18 中的 &#x2F;nptl&#x2F;lowlevellock.h 中找到了本段代码。 源码 1234567891011121314151617181920212223242526272">
+    <meta name="description" content="有关 glibc 中 mutex 源码的一点理解">
 <meta property="og:type" content="article">
-<meta property="og:title" content="GNU libc 锁源码学习">
+<meta property="og:title" content="glibc 锁源码学习">
 <meta property="og:url" content="https://balddemian.icu/Glibc-Lock/index.html">
 <meta property="og:site_name" content="Bald Demian">
-<meta property="og:description" content="背景 在学习 OSTEP[1] 第 28 章时了解到了 GNU libc 中关于上锁和解锁的源码，深感精妙绝伦，故写下一点点我的理解。 关于源码，可以在 GNU 的官方站点[2]找到。似乎每个版本有区别，我是在 glibc-2.18 中的 &#x2F;nptl&#x2F;lowlevellock.h 中找到了本段代码。 源码 1234567891011121314151617181920212223242526272">
+<meta property="og:description" content="有关 glibc 中 mutex 源码的一点理解">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://balddemian.icu/img/gnu.png">
 <meta property="article:published_time" content="2022-11-29T08:19:55.000Z">
-<meta property="article:modified_time" content="2022-11-29T08:24:32.088Z">
+<meta property="article:modified_time" content="2022-11-29T08:28:28.747Z">
 <meta property="article:author" content="Peiyang He">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="OS">
@@ -37,7 +37,7 @@
   
   
   
-  <title>GNU libc 锁源码学习 - Bald Demian</title>
+  <title>glibc 锁源码学习 - Bald Demian</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -202,7 +202,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="GNU libc 锁源码学习"></span>
+            <span id="subtitle" data-typed-text="glibc 锁源码学习"></span>
           
         </div>
 
@@ -274,7 +274,7 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">GNU libc 锁源码学习</h1>
+            <h1 style="display: none">glibc 锁源码学习</h1>
             
             <div class="markdown-body">
               
@@ -353,7 +353,7 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>GNU libc 锁源码学习</div>
+      <div>glibc 锁源码学习</div>
       <div>https://balddemian.icu/Glibc-Lock/</div>
     </div>
     <div class="license-meta">
