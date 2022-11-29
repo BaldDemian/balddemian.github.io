@@ -18,23 +18,26 @@
   <meta name="referrer" content="no-referrer" />
   <meta name="baidu-site-verification" content="code-Kbu5eBOiRE" />
   
-    <meta name="description" content="本文简要介绍 SQL 标准和 MySQL 中的隔离">
+    <meta name="description" content="背景 在学习 OSTEP[1] 第 28 章时了解到了 GNU libc 中关于上锁和解锁的源码，深感精妙绝伦，故写下一点点我的理解。 关于源码，可以在 GNU 的官方站点[2]找到。似乎每个版本有区别，我是在 glibc-2.18 中的 &#x2F;nptl&#x2F;lowlevellock.h 中找到了本段代码。 源码 1234567891011121314151617181920212223242526272">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SQL 标准和 MySQL 的隔离级别">
-<meta property="og:url" content="https://balddemian.icu/SQL-Isolation/index.html">
+<meta property="og:title" content="GNU libc 锁源码学习">
+<meta property="og:url" content="https://balddemian.icu/Glibc-Lock/index.html">
 <meta property="og:site_name" content="Bald Demian">
-<meta property="og:description" content="本文简要介绍 SQL 标准和 MySQL 中的隔离">
+<meta property="og:description" content="背景 在学习 OSTEP[1] 第 28 章时了解到了 GNU libc 中关于上锁和解锁的源码，深感精妙绝伦，故写下一点点我的理解。 关于源码，可以在 GNU 的官方站点[2]找到。似乎每个版本有区别，我是在 glibc-2.18 中的 &#x2F;nptl&#x2F;lowlevellock.h 中找到了本段代码。 源码 1234567891011121314151617181920212223242526272">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-11-07T08:56:05.000Z">
-<meta property="article:modified_time" content="2022-11-17T03:00:58.753Z">
+<meta property="og:image" content="https://balddemian.icu/img/gnu.png">
+<meta property="article:published_time" content="2022-11-29T08:19:55.000Z">
+<meta property="article:modified_time" content="2022-11-29T08:24:32.088Z">
 <meta property="article:author" content="Peiyang He">
-<meta property="article:tag" content="MySQL">
-<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="OS">
+<meta property="article:tag" content="源码">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://balddemian.icu/img/gnu.png">
   
   
   
-  <title>SQL 标准和 MySQL 的隔离级别 - Bald Demian</title>
+  <title>GNU libc 锁源码学习 - Bald Demian</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +202,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="SQL 标准和 MySQL 的隔离级别"></span>
+            <span id="subtitle" data-typed-text="GNU libc 锁源码学习"></span>
           
         </div>
 
@@ -210,8 +213,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-11-07 16:56" pubdate>
-          2022年11月7日 下午
+        <time datetime="2022-11-29 16:19" pubdate>
+          2022年11月29日 下午
         </time>
       </span>
     
@@ -222,7 +225,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.4k 字
+          2.9k 字
         
       </span>
     
@@ -233,7 +236,7 @@
         
         
         
-          20 分钟
+          25 分钟
         
       </span>
     
@@ -271,117 +274,33 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">SQL 标准和 MySQL 的隔离级别</h1>
+            <h1 style="display: none">GNU libc 锁源码学习</h1>
             
             <div class="markdown-body">
               
-              <h2 id="复习">复习</h2>
-<p>（重要的事情说三遍~）</p>
-<h3 id="事务的-acid-特性1">事务的 ACID 特性<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="王珊，萨师煜：数据库系统概论（第五版）。高等教育出版社
-">[1]</span></a></sup></h3>
-<ul>
-<li><p>Atomicity</p>
-<p>原子性：事务是数据库的逻辑工作单位，事务中包含的诸操作要么都做，要么都不做</p></li>
-<li><p>Consistency</p>
-<p>一致性：事务执行的结果是使数据库从一个一致性状态变为另一个一致性状态。因此当数据库只包含成功事务提交的结果时，就说数据库处于一致状态。可见事务的一致性与原子性密不可分。</p></li>
-<li><p>Isolation</p>
-<p>隔离性：一个事务的执行不能被其他事务干扰。</p></li>
-<li><p>Durability</p>
-<p>持久性：一个事务一旦提交，那么它对数据库中数据的改变就应该是永久性的。</p></li>
-</ul>
-<h2 id="为什么需要隔离">为什么需要隔离？</h2>
-<p>我们知道，「事务」的存在，其实是为事务中的诸操作提供了「一致性」的保证：事务中的所有操作，要么都做，要么都不做。于是，当事务之间是串行执行时，在一个事务开始执行时，它面对的是上一个事务执行结束时的某个一致性状态，自身执行结束后，又转移到了另一个一致的状态。</p>
-<p>但是，出于效率原因，数据库管理系统不可能对所有待执行的事务采取串行调度策略，必然是让多个事务并发执行的，即一个事务没有完全执行完，就调度了另一个事务。当并发执行的事务存在对同一数据的<strong>访问</strong>时（读-写，写-读，写-写。注意到读-读并不会带来一致性问题），事情就变得麻烦起来了。</p>
-<p>我们观察下面几种调度情况与它们带来的一致性问题<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="Hal Berenson, Phil Bernstein, Jim Gray, Jim Melton, Elizabeth O'Neil, and Patrick O'Neil. 1995. A critique of ANSI SQL isolation levels. SIGMOD Rec. 24, 2 (May 1995), 1–10. https://doi.org/10.1145/568271.223785
-">[2]</span></a></sup>：</p>
-<h3 id="脏写">脏写</h3>
-<p>一个事务 T2 <strong>修改</strong>了另一个事务 T1 尚未提交或回滚的<strong>修改</strong>过的数据。如果 T1 或者 T2 随后做了回滚，那么将不知道哪一版的数据是正确的。</p>
-<p>脏写比以下提到的三种情况都要严重，它会破坏数据库的一致性、原子性和持久性：</p>
-<ul>
-<li><p>场景一</p>
-<p>设我们有一个一致性约束，即 x 和 y 的值始终相等，考虑 T1 和 T2 事务如下的执行序列：</p>
-<p><code>W1(x=1) W2(x=2) W2(y=2) COMMIT2 W1(y=1) COMMIT1</code></p>
-<p>如上面的事务调度序列，T2 事务写了 T1 尚未提交的已经写了的数据，虽然这两个事务各自的操作都保证了 x 等于 y 的一致性约束，但由于脏写的存在，这种一致性约束被破坏了。</p></li>
-<li><p>场景二</p>
-<p>设 x 和 y 初始值为 0，考虑 T1 和 T2 事务如下的执行序列：</p>
-<p><code>W1(x=2) W2(x=3) W1(y=3) COMMIT2 ROLLBACK1</code></p>
-<p>如上面的事务调度序列，T2 事务写了 T1 尚未提交的已经写了的数据，出现了脏写现象。现在考虑最后对于 T1 的回滚。如果将 T1 回滚，那么此时 x 将被修改为最开始的 0，y 被修改为最开始的 0。可是 T2 事务已经修改了 x 并成功提交，如果此时修改 x，就破坏了 T2 的持久性。可是如果不将 x 改为 0，仅将 y 改为 0，就破坏了 T1 的原子性。于是脏写使得我们面临了两难境地。</p></li>
-</ul>
-<p>正是由于脏写很严重，下文提到的不同隔离级别，虽然对脏读、幻读、不可重复读的容忍情况各不相同，但是均不允许脏写的发生。</p>
-<h3 id="脏读">脏读</h3>
-<p>Dirty Read.</p>
-<p>广义解释：一个事务<strong>读</strong>到了另一个未提交事务<strong>修改</strong>过的数据。脏读也会引起不一致问题，设我们有一致性约束：x 和 y 始终相等。考虑 T1 和 T2 如下的执行序列，设最初的 x 和 y 都是 0。</p>
-<p><code>W1(x=1) R2(x=1) R2(y=0) COMMIT2 W1(y=1)</code></p>
-<p>可以看到 T2 读到了 T1 已经修改过的未提交的数据，使得读出的 x 和 y 处于不相等的状态。但是最终的数据库是处于一直状态的（x 和 y 相等）</p>
-<p>严格解释：一个事务 T2 读到了另一个事务 T1 尚未提交或回滚的修改过的数据。如果 T1 回滚了，那么 T2 就读到一个<strong>从未存在</strong>过的数据。</p>
-<p>可见广义解释是包含了严格解释的。</p>
-<h3 id="幻读">幻读</h3>
-<p>Phantom.</p>
-<p>一个事务 T1 按某种条件 C 读到了一些记录。一个事务 T2 又向数据库中 INSERT 了满足条件 C 的记录<strong>并提交</strong>。T1 继续按条件 C 读取记录，发现这次读到一些上次读不存在的记录。这些之前不存在的记录也被称为「幻影记录」。</p>
-<h3 id="不可重复读模糊读">不可重复读（模糊读）</h3>
-<p>Non-repeatable Read or Fuzzy Read.</p>
-<p>如果一个事务 T2 修改了另一个未提交事务 T1 <strong>读取</strong>的数据，那么就发生了不可重复读。</p>
-<p>严格解释：T1 先读取了 x 的值，然后 T2 修改了 x 的值并提交，导致 T1 再次读取 x 时读出的值不一样</p>
-<hr>
-<p>通过观察上面几种一致性问题，我们发现，它们均是由于不正确的调度顺序导致的。或者换言之，就是在一个事务尚未结束对一个数据的访问时（这里的「结束」可以是提交，也可以是回滚），另一个事务也「插队」进来，对这些数据进行访问。</p>
-<p>所谓「隔离」，就是通过某种规则将事务的诸操作进行「排队」执行，以消除脏读、幻读、不可重复读。</p>
-<h2 id="ansi-sql-标准的隔离级别">ANSI SQL 标准的隔离级别</h2>
-<p>之前说到，如果所有事务都是串行执行的，那么将不会出现上面提到的任何一致性问题。但问题就是，串行执行会严重降低系统的性能。如若我们只考虑并发性能，即「见缝插针」地执行不同事务，又会带来严重的一致性问题。于是，为了在保证并发性能与保证一致性之间做出平衡，ANSI SQL 标准提出了 4 种隔离级别。总而言之，就是「舍弃一部分隔离性，承担一致性问题的风险，来换取并发性能」。</p>
-<table>
-<thead>
-<tr class="header">
-<th>隔离级别</th>
-<th>脏读</th>
-<th>不可重复读</th>
-<th>幻读</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>READ UNCOMMITTED</td>
-<td>可能</td>
-<td>可能</td>
-<td>可能</td>
-</tr>
-<tr class="even">
-<td>READ COMMITED</td>
-<td>不可能</td>
-<td>可能</td>
-<td>可能</td>
-</tr>
-<tr class="odd">
-<td>REPEATABLE READ</td>
-<td>不可能</td>
-<td>不可能</td>
-<td>可能</td>
-</tr>
-<tr class="even">
-<td>SERIALIZABLE</td>
-<td>不可能</td>
-<td>不可能</td>
-<td>不可能</td>
-</tr>
-</tbody>
-</table>
-<h2 id="mysql-实现的隔离级别">MySQL 实现的隔离级别</h2>
-<ul>
-<li>REPEATABLE READ（默认）</li>
-<li>READ COMMITED</li>
-<li>READ UNCOMMITTED</li>
-<li>SERIALIZABLE</li>
-</ul>
-<p>注意 MySQL 的 REPEATABLE READ 级别已经可以在很大程度上防止幻读的发生</p>
-<h2 id="隔离的实现">隔离的实现</h2>
-<p>todo</p>
-<h2 id="ref">Ref</h2>
+              <h2 id="背景">背景</h2>
+<p>在学习 OSTEP<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="Operating Systems: Three Easy Pieces (wisc.edu)
+">[1]</span></a></sup> 第 28 章时了解到了 GNU libc 中关于上锁和解锁的源码，深感精妙绝伦，故写下一点点我的理解。</p>
+<p>关于源码，可以在 GNU 的官方站点<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="Index of /gnu/libc
+">[2]</span></a></sup>找到。似乎每个版本有区别，我是在 glibc-2.18 中的 /nptl/lowlevellock.h 中找到了本段代码。</p>
+<h2 id="源码">源码</h2>
+<figure class="highlight c"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/* Low level locking macros used in NPTL implementation.  Stub version.</span><br><span class="hljs-comment">   Copyright (C) 2002-2013 Free Software Foundation, Inc.</span><br><span class="hljs-comment">   This file is part of the GNU C Library.</span><br><span class="hljs-comment">   Contributed by Ulrich Drepper &lt;drepper@redhat.com&gt;, 2002.</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">   The GNU C Library is free software; you can redistribute it and/or</span><br><span class="hljs-comment">   modify it under the terms of the GNU Lesser General Public</span><br><span class="hljs-comment">   License as published by the Free Software Foundation; either</span><br><span class="hljs-comment">   version 2.1 of the License, or (at your option) any later version.</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">   The GNU C Library is distributed in the hope that it will be useful,</span><br><span class="hljs-comment">   but WITHOUT ANY WARRANTY; without even the implied warranty of</span><br><span class="hljs-comment">   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</span><br><span class="hljs-comment">   Lesser General Public License for more details.</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">   You should have received a copy of the GNU Lesser General Public</span><br><span class="hljs-comment">   License along with the GNU C Library; if not, see</span><br><span class="hljs-comment">   &lt;http://www.gnu.org/licenses/&gt;.  */</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;atomic.h&gt;</span></span><br><br><br><span class="hljs-comment">/* Mutex lock counter:</span><br><span class="hljs-comment">   bit 31 clear means unlocked;</span><br><span class="hljs-comment">   bit 31 set means locked.</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">   All code that looks at bit 31 first increases the 'number of</span><br><span class="hljs-comment">   interested threads' usage counter, which is in bits 0-30.</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">   All negative mutex values indicate that the mutex is still locked.  */</span><br><br><br><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-type">void</span><br>__generic_mutex_lock (<span class="hljs-type">int</span> *mutex)<br>{<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> v;<br><br>  <span class="hljs-comment">/* Bit 31 was clear, we got the mutex.  (this is the fastpath).  */</span><br>  <span class="hljs-keyword">if</span> (atomic_bit_test_set (mutex, <span class="hljs-number">31</span>) == <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">return</span>;<br><br>  atomic_increment (mutex);<br><br>  <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>)<br>    {<br>      <span class="hljs-keyword">if</span> (atomic_bit_test_set (mutex, <span class="hljs-number">31</span>) == <span class="hljs-number">0</span>)<br>	{<br>	  atomic_decrement (mutex);<br>	  <span class="hljs-keyword">return</span>;<br>	}<br><br>      <span class="hljs-comment">/* We have to wait now. First make sure the futex value we are</span><br><span class="hljs-comment">	 monitoring is truly negative (i.e. locked). */</span><br>      v = *mutex;<br>      <span class="hljs-keyword">if</span> (v &gt;= <span class="hljs-number">0</span>)<br>	<span class="hljs-keyword">continue</span>;<br><br>      lll_futex_wait (mutex, v,<br>		      <span class="hljs-comment">// XYZ check mutex flag</span><br>		      LLL_SHARED);<br>    }<br>}<br><br><br><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-type">void</span><br>__generic_mutex_unlock (<span class="hljs-type">int</span> *mutex)<br>{<br>  <span class="hljs-comment">/* Adding 0x80000000 to the counter results in 0 if and only if</span><br><span class="hljs-comment">     there are not other interested threads - we can return (this is</span><br><span class="hljs-comment">     the fastpath).  */</span><br>  <span class="hljs-keyword">if</span> (atomic_add_zero (mutex, <span class="hljs-number">0x80000000</span>))<br>    <span class="hljs-keyword">return</span>;<br><br>  <span class="hljs-comment">/* There are other threads waiting for this mutex, wake one of them</span><br><span class="hljs-comment">     up.  */</span><br>  lll_futex_wake (mutex, <span class="hljs-number">1</span>,<br>		  <span class="hljs-comment">// XYZ check mutex flag</span><br>		  LLL_SHARED);<br>}<br><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> lll_mutex_lock(futex) __generic_mutex_lock (&amp;(futex))</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> lll_mutex_unlock(futex) __generic_mutex_unlock (&amp;(futex))</span><br><br></code></pre></td></tr></tbody></table></figure>
+<h2 id="要点">要点</h2>
+<ol type="1">
+<li><p>利用一个整数 <strong>v</strong> 同时记录该锁是否被持有、等待该锁的线程数。具体来说，利用一个 32 位 int 的最高位记录锁是否被持有，1 表示持有、0 表示空闲。那么，这个整数为负数即表示锁被持有，为非负数则表示这个锁空闲。</p></li>
+<li><p>这段代码的妙处在于，当锁未被持有时，新线程申请锁的效率很高，因为仅仅只用执行 39、40 两行；当锁的等待队列为空时，当前持有锁的线程释放锁时的效率很高，因为仅仅只用执行 71、72 两行。正如作者在注释中所说，是 <strong>fastpath</strong>。</p></li>
+<li><p>这段代码的实现采用了一种锁方案：两阶段锁(two-phase lcok)。在学习操作系统的过程中，我们认识到自旋锁(spin lock) 是浪费 CPU 资源的，因为它会不停查询锁，在单 CPU 环境下自旋锁会带来极高的性能损失。于是我们引入了睡眠，即当线程意识到要申请的锁已经被占用时，它主动睡眠(sleep)以让出 CPU，将自己加入锁的等待队列中，在锁空闲时被唤醒（这个线程就是代码注释中提到的 <strong>interested</strong> threads）。</p>
+<p>两阶段锁的方案认为，在持有锁的线程很快就要释放锁时，自旋是有用的，它可以让线程很快就能获得锁。于是可以将线程申请锁分为两个阶段，第一个阶段中做有限次数的自旋（即在一个 while 循环中不断查询），第二个阶段中才进行休眠。在上面这段代码中，第一阶段的自旋只重复了一次，即 46-50 行。（注意此处的「两阶段锁」和数据库事务管理中的「两阶段锁协议」是不同的概念！）</p></li>
+</ol>
+<h2 id="参考">参考</h2>
 <section class="footnotes">
 <div class="footnote-list">
 <ol>
 <li>
-<span id="fn:1" class="footnote-text"><span>王珊，萨师煜：数据库系统概论（第五版）。高等教育出版社 <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span>
+<span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://pages.cs.wisc.edu/~remzi/OSTEP/">Operating Systems: Three Easy Pieces (wisc.edu)</a> <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span>
 </li>
 <li>
-<span id="fn:2" class="footnote-text"><span><em>Hal Berenson, Phil Bernstein, Jim Gray, Jim Melton, Elizabeth O'Neil, and Patrick O'Neil. 1995. A critique of ANSI SQL isolation levels. SIGMOD Rec. 24, 2 (May 1995), 1–10. https://doi.org/10.1145/568271.223785</em> <a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span>
+<span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://ftp.gnu.org/gnu/libc/">Index of /gnu/libc</a> <a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span>
 </li>
 </ol>
 </div>
@@ -418,9 +337,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/MySQL/">#MySQL</a>
+        <a href="/tags/Linux/">#Linux</a>
       
-        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">#数据库</a>
+        <a href="/tags/OS/">#OS</a>
+      
+        <a href="/tags/%E6%BA%90%E7%A0%81/">#源码</a>
       
     </div>
   
@@ -432,8 +353,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>SQL 标准和 MySQL 的隔离级别</div>
-      <div>https://balddemian.icu/SQL-Isolation/</div>
+      <div>GNU libc 锁源码学习</div>
+      <div>https://balddemian.icu/Glibc-Lock/</div>
     </div>
     <div class="license-meta">
       
@@ -445,7 +366,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年11月7日</div>
+          <div>2022年11月29日</div>
         </div>
       
       
@@ -475,18 +396,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/Interview-SAP/" title="SAP-VT 笔面试记录">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">SAP-VT 笔面试记录</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/Priority-Inversion/" title="优先级反转">
-                        <span class="hidden-mobile">优先级反转</span>
+                      <a href="/Interview-SAP/" title="SAP-VT 笔面试记录">
+                        <span class="hidden-mobile">SAP-VT 笔面试记录</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
