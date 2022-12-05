@@ -18,22 +18,25 @@
   <meta name="referrer" content="no-referrer" />
   <meta name="baidu-site-verification" content="code-Kbu5eBOiRE" />
   
-    <meta name="description" content="粗略记录阅读 MapReduce 论文时的要点。">
+    <meta name="description" content="在用 Golang 刷算法题实现的数据结构">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MapReduce 论文阅读笔记">
-<meta property="og:url" content="https://balddemian.icu/MapReduce-Notes/index.html">
+<meta property="og:title" content="golang-wheels">
+<meta property="og:url" content="https://balddemian.icu/Golang-Wheels/index.html">
 <meta property="og:site_name" content="Bald Demian">
-<meta property="og:description" content="粗略记录阅读 MapReduce 论文时的要点。">
+<meta property="og:description" content="在用 Golang 刷算法题实现的数据结构">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-11-30T11:53:03.000Z">
-<meta property="article:modified_time" content="2022-11-30T11:54:50.041Z">
+<meta property="og:image" content="https://balddemian.icu/img/golang.jpeg">
+<meta property="article:published_time" content="2022-12-05T01:52:53.000Z">
+<meta property="article:modified_time" content="2022-12-05T01:54:56.578Z">
 <meta property="article:author" content="Peiyang He">
-<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="数据结构">
+<meta property="article:tag" content="Golang">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://balddemian.icu/img/golang.jpeg">
   
   
   
-  <title>MapReduce 论文阅读笔记 - Bald Demian</title>
+  <title>golang-wheels - Bald Demian</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -198,7 +201,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="MapReduce 论文阅读笔记"></span>
+            <span id="subtitle" data-typed-text="golang-wheels"></span>
           
         </div>
 
@@ -209,8 +212,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-11-30 19:53" pubdate>
-          2022年11月30日 晚上
+        <time datetime="2022-12-05 09:52" pubdate>
+          2022年12月5日 上午
         </time>
       </span>
     
@@ -221,7 +224,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          893 字
+          996 字
         
       </span>
     
@@ -232,7 +235,7 @@
         
         
         
-          8 分钟
+          9 分钟
         
       </span>
     
@@ -270,35 +273,33 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">MapReduce 论文阅读笔记</h1>
+            <h1 style="display: none">golang-wheels</h1>
             
             <div class="markdown-body">
               
-              <p>粗略记录阅读 MapReduce<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="6th Symposium on Operating Systems Design and Implementation — Technical Paper (usenix.org)
-">[1]</span></a></sup> 论文时的要点。</p>
+              <h2 id="栈">栈</h2>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> stack []<span class="hljs-type">int</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s stack)</span></span> push(v <span class="hljs-type">int</span>) stack {<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">append</span>(s, v)<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s stack)</span></span> pop() (stack, <span class="hljs-type">int</span>) {<br>    l := <span class="hljs-built_in">len</span>(s)<br>    <span class="hljs-keyword">return</span> s[:l<span class="hljs-number">-1</span>], s[l<span class="hljs-number">-1</span>]<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s stack)</span></span> peek() <span class="hljs-type">int</span> {<br>    l := <span class="hljs-built_in">len</span>(s)<br>    <span class="hljs-keyword">return</span> s[l<span class="hljs-number">-1</span>]<br>}<br></code></pre></td></tr></tbody></table></figure>
 <ul>
-<li><p>可靠性保证的措施</p>
-<ul>
-<li>Master 节点定期 ping 各个 worker 节点，ping 不通的则标记为 failed</li>
-<li>如果是做 map 的节点 fail 了，将会重做那个节点已经完成的工作和尚未完成的工作（为什么还要重做已经完成的工作？因为 map 产生的结果一般是存储在工作节点本地的，连节点主机都 ping 不通了，自然无法取得那个节点上存储的数据）；如果是做 reduce 的节点 fail 了，将会重做那个节点尚未完成的工作（因为 reduce 阶段的结果已经写进了 global file system 中，所以不必重做已经完成的任务）</li>
-<li>当所有的任务都快做完，Master 节点会让部分空闲节点重做当前仍在运行的任务，以避免「落伍者」(straggler)减慢整体的运行速度（因为这些迟迟没能完成任务的「落伍者」可能是出现了某些异常）。当这些备份节点有一个完成了任务，那么其他节点则丢弃这个任务</li>
-</ul></li>
-<li><p>提高效率的措施</p>
-<ul>
-<li>局部性优化(locality optimization)：这里的局部性指的并不是计算机执行指令时的 saptial and temporal locality，而是主要指网络通信上的。要考虑到网络带宽是计算集群中比较稀缺的资源。map 阶段的输入数据一般也是存储在工作节点的磁盘中的，并且一份输入数据拥有备份。那么为了节省网络带宽，可以将某份输入数据的 map 工作交给本地存储了那份数据或其备份数据的节点完成。如果不存在这样的工作节点，那么 Master 也会调度一个接近与输入数据存储节点的工作节点来完成这份数据的 map 工作，比如连接在同一个交换机下的节点</li>
-</ul></li>
-<li><p>Reduce 细节</p>
-<p>Map 阶段产生的中间键值对的键决定了这个键值对会在哪个 reduce 节点上被处理。一种算法是将键的哈希值取 reduce 的模，来决定在哪个 reduce 节点上被处理</p></li>
-<li><p>Map 细节</p>
-<ul>
-<li>可以在 map 节点上进行中间键值对的部分合并，并且这个合并往往与 reduce 用的是同一段代码</li>
-</ul></li>
+<li><p>扩容的工作交给了底层的切片负责</p></li>
+<li><p>接收 append 的返回值是官方文档<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="builtin package - builtin - Go Packages
+">[1]</span></a></sup>推荐的行为，因为当原有的切片容量不够时，会新建一个新的切片，此时必须要将其接收</p>
+<blockquote>
+<p>The append built-in function appends elements to the end of a slice. If it has sufficient capacity, the destination is resliced to accommodate the new elements. If it does not, a new underlying array will be allocated. Append returns the updated slice. It is therefore necessary to store the result of append, often in the variable holding the slice itself</p>
+</blockquote></li>
 </ul>
+<h2 id="集合">集合</h2>
+<p>在阅读「Go语言趣学指南」<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="Go语言趣学指南 (豆瓣) (douban.com)
+">[2]</span></a></sup>时学到了用内置的 map 实现 set 的方法</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// create a set for int</span><br>keys := []<span class="hljs-type">int</span>{<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>}<br>set := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-type">int</span>]<span class="hljs-type">bool</span>, <span class="hljs-built_in">len</span>(keys))<br><span class="hljs-keyword">for</span> _, key := <span class="hljs-keyword">range</span> keys {<br>    set[key] = <span class="hljs-literal">true</span> <span class="hljs-comment">// true means 'exist in the set'</span><br>}<br><span class="hljs-comment">// check if the set contains an element </span><br><span class="hljs-keyword">if</span> set[<span class="hljs-number">1</span>] {<br>    <br>}<br><span class="hljs-comment">// delete an element from the set</span><br><span class="hljs-built_in">delete</span>(set, <span class="hljs-number">3</span>)<br><br><span class="hljs-comment">// add an element to the set</span><br>set[<span class="hljs-number">3</span>] = <span class="hljs-literal">true</span><br></code></pre></td></tr></tbody></table></figure>
+<h2 id="reference">Reference</h2>
 <section class="footnotes">
 <div class="footnote-list">
 <ol>
 <li>
-<span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.usenix.org/legacy/event/osdi04/tech/full_papers/dean/dean_html/">6th Symposium on Operating Systems Design and Implementation — Technical Paper (usenix.org)</a> <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span>
+<span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://pkg.go.dev/builtin#append">builtin package - builtin - Go Packages</a> <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span>
+</li>
+<li>
+<span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://book.douban.com/subject/34951096/">Go语言趣学指南 (豆瓣) (douban.com)</a> <a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span>
 </li>
 </ol>
 </div>
@@ -335,7 +336,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">#数据结构</a>
+      
+        <a href="/tags/Golang/">#Golang</a>
       
     </div>
   
@@ -347,8 +350,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>MapReduce 论文阅读笔记</div>
-      <div>https://balddemian.icu/MapReduce-Notes/</div>
+      <div>golang-wheels</div>
+      <div>https://balddemian.icu/Golang-Wheels/</div>
     </div>
     <div class="license-meta">
       
@@ -360,7 +363,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年11月30日</div>
+          <div>2022年12月5日</div>
         </div>
       
       
@@ -390,18 +393,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/Golang-Wheels/" title="golang-wheels">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">golang-wheels</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/Glibc-Lock/" title="glibc 锁源码学习">
-                        <span class="hidden-mobile">glibc 锁源码学习</span>
+                      <a href="/MapReduce-Notes/" title="MapReduce 论文阅读笔记">
+                        <span class="hidden-mobile">MapReduce 论文阅读笔记</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
