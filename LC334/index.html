@@ -25,11 +25,15 @@
 <meta property="og:site_name" content="Bald Demian">
 <meta property="og:description" content="第 334 场周赛解题记录，又是一题选手的一周">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/1f622.png?v8">
+<meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/1f923.png?v8">
+<meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/1f923.png?v8">
 <meta property="article:published_time" content="2023-02-27T02:13:00.000Z">
 <meta property="article:modified_time" content="2023-02-28T03:08:57.929Z">
 <meta property="article:author" content="Peiyang He">
 <meta property="article:tag" content="算法">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://github.githubassets.com/images/icons/emoji/unicode/1f622.png?v8">
   
   
   
@@ -275,10 +279,10 @@
             <div class="markdown-body">
               
               <blockquote>
-<p>连续两场都只做出来一题了😢，第二题又是只差一点点…</p>
+<p>连续两场都只做出来一题了<span class="github-emoji"><span>😢</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/1f622.png?v8" srcset="/img/loading.gif" lazyload aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span>，第二题又是只差一点点...</p>
 </blockquote>
-<h2 id="T1-动态规划简单运用"><a class="header-anchor" href="#T1-动态规划简单运用">¶</a>T1 动态规划简单运用</h2>
-<h3 id="题目描述"><a class="header-anchor" href="#题目描述">¶</a>题目描述</h3>
+<h2 id="t1-动态规划简单运用">T1 动态规划简单运用</h2>
+<h3 id="题目描述">题目描述</h3>
 <p>给你一个下标从 <strong>0</strong> 开始的整数数组 <code>nums</code> ，请你找出一个下标从 <strong>0</strong> 开始的整数数组 <code>answer</code> ，其中：</p>
 <ul>
 <li><code>answer.length == nums.length</code></li>
@@ -290,11 +294,11 @@
 <li><code>rightSum[i]</code> 是数组 <code>nums</code> 中下标 <code>i</code> 右侧元素之和。如果不存在对应的元素，<code>rightSum[i] = 0</code> 。</li>
 </ul>
 <p>返回数组 <code>answer</code> 。</p>
-<h3 id="我的提交"><a class="header-anchor" href="#我的提交">¶</a>我的提交</h3>
+<h3 id="我的提交">我的提交</h3>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> {<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span>[] leftRigthDifference(<span class="hljs-type">int</span>[] nums) {<br>        <span class="hljs-type">int</span> <span class="hljs-variable">n</span> <span class="hljs-operator">=</span> nums.length;<br>        <span class="hljs-type">int</span>[] ans = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[n];<br>        <span class="hljs-type">int</span>[] left = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[n];<br>        <span class="hljs-type">int</span> <span class="hljs-variable">sum</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; n; i++) {<br>            left[i] = sum;<br>            sum += nums[i];<br>        }<br>        <span class="hljs-type">int</span>[] right = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[n];<br>        sum = <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> n - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) {<br>            right[i] = sum;<br>            sum += nums[i];<br>        }<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; n; i++) {<br>            ans[i] = Math.abs(left[i] - right[i]);<br>        }<br>        <span class="hljs-keyword">return</span> ans;<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
 <p>本题通过。</p>
-<h2 id="T2-取模运算"><a class="header-anchor" href="#T2-取模运算">¶</a>T2 取模运算</h2>
-<h3 id="题目描述-v2"><a class="header-anchor" href="#题目描述-v2">¶</a>题目描述</h3>
+<h2 id="t2-取模运算">T2 取模运算</h2>
+<h3 id="题目描述-1">题目描述</h3>
 <p>给你一个下标从 <strong>0</strong> 开始的字符串 <code>word</code> ，长度为 <code>n</code> ，由从 <code>0</code> 到 <code>9</code> 的数字组成。另给你一个正整数 <code>m</code> 。</p>
 <p><code>word</code> 的 <strong>可整除数组</strong> <code>div</code> 是一个长度为 <code>n</code> 的整数数组，并满足：</p>
 <ul>
@@ -302,31 +306,25 @@
 <li>否则，<code>div[i] = 0</code></li>
 </ul>
 <p>返回 <code>word</code> 的可整除数组。</p>
-<h3 id="我的提交-v2"><a class="header-anchor" href="#我的提交-v2">¶</a>我的提交</h3>
+<h3 id="我的提交-1">我的提交</h3>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> {<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span>[] divisibilityArray(String word, <span class="hljs-type">int</span> m) {<br>        <span class="hljs-type">char</span>[] arr = word.toCharArray();<br>        <span class="hljs-type">long</span> <span class="hljs-variable">num</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-type">int</span>[] ans = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[arr.length];<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; arr.length; i++) {<br>            num = num * <span class="hljs-number">10</span> + (arr[i] - <span class="hljs-string">'0'</span>);<br>            <span class="hljs-keyword">if</span> (num % m == <span class="hljs-number">0</span>) {<br>                ans[i] = <span class="hljs-number">1</span>;<br>            } <span class="hljs-keyword">else</span> {<br>                ans[i] = <span class="hljs-number">0</span>;<br>            }<br>        }<br>        <span class="hljs-keyword">return</span> ans;<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
 <p>答案错误，因为 word 的长度明显超出 long 的表示范围了。</p>
 <p>其实不必维护整个前缀的实际值，而<strong>仅维护前缀的取模值</strong>就够了。</p>
-<h3 id="解法"><a class="header-anchor" href="#解法">¶</a>解法</h3>
+<h3 id="解法">解法</h3>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> {<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span>[] divisibilityArray(String word, <span class="hljs-type">int</span> m) {<br>        <span class="hljs-type">char</span>[] arr = word.toCharArray();<br>        <span class="hljs-type">long</span> <span class="hljs-variable">num</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-type">int</span>[] ans = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[arr.length];<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; arr.length; i++) {<br>            num = (num * <span class="hljs-number">10</span> + (arr[i] - <span class="hljs-string">'0'</span>)) % m;<br>            <span class="hljs-keyword">if</span> (num == <span class="hljs-number">0</span>) {<br>                ans[i] = <span class="hljs-number">1</span>;<br>            } <span class="hljs-keyword">else</span> {<br>                ans[i] = <span class="hljs-number">0</span>;<br>            }<br>        }<br>        <span class="hljs-keyword">return</span> ans;<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
-<h2 id="T3-贪心-二分"><a class="header-anchor" href="#T3-贪心-二分">¶</a>T3 贪心+二分</h2>
+<h2 id="t3-贪心二分">T3 贪心+二分</h2>
 <p>一道质量很高的贪心+二分。</p>
 <p>证明思路参见：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/find-the-maximum-number-of-marked-indices/solutions/2134070/er-fen-tan-xin-by-tsreaper-g7oj/">6367. 求出最多标记下标 - 力扣（Leetcode）</a></p>
-<p>其实二分难的并不是模板，而是怎么看出这个题目可以使用二分。二分常见的题型有两种，一种是搜索，比如 <strong>2563. 统计公平数对的数目</strong>（332 场周赛的第二题，同样的数对题，同样的没做出来🤣）；第二种是二分答案。二分答案的难度较大，因为要看出答案是具有单调性的，比如本题。</p>
+<p>其实二分难的并不是模板，而是怎么看出这个题目可以使用二分。二分常见的题型有两种，一种是搜索，比如 <strong>2563. 统计公平数对的数目</strong>（332 场周赛的第二题，同样的数对题，同样的没做出来<span class="github-emoji"><span>🤣</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/1f923.png?v8" srcset="/img/loading.gif" lazyload aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span>）；第二种是二分答案。二分答案的难度较大，因为要看出答案是具有单调性的，比如本题。</p>
 <figure class="highlight c++"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> {<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">maxNumOfMarkedIndices</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; nums)</span> </span>{<br>        <span class="hljs-built_in">sort</span>(nums.<span class="hljs-built_in">begin</span>(), nums.<span class="hljs-built_in">end</span>());<br>        <span class="hljs-type">int</span> left = <span class="hljs-number">0</span>; <span class="hljs-comment">// minimum of the number of tagged pairs</span><br>        <span class="hljs-type">int</span> right = nums.<span class="hljs-built_in">size</span>() / <span class="hljs-number">2</span>; <span class="hljs-comment">// maximum of the number of tagged pairs</span><br>        <span class="hljs-keyword">while</span> (left &lt; right) {<br>            <span class="hljs-type">int</span> mid = left + (right - left + <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;<br>            <span class="hljs-type">int</span> cnt = <span class="hljs-number">0</span>;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; mid; ++i) {<br>                <span class="hljs-comment">// number of elements in left half: mid</span><br>                <span class="hljs-comment">// number of elements in right half: mid</span><br>                <span class="hljs-comment">// nums[i] in left half matches nums[n - mid + i] in right half</span><br>                <span class="hljs-keyword">if</span> (<span class="hljs-number">2</span> * nums[i] &lt;= nums[nums.<span class="hljs-built_in">size</span>() - mid + i]) {<br>                    cnt++;<br>                }<br>            }<br>            <span class="hljs-keyword">if</span> (cnt == mid) {<br>                left = mid;<br>            } <span class="hljs-keyword">else</span> {<br>                right = mid - <span class="hljs-number">1</span>;<br>            }<br>        }<br>        <span class="hljs-keyword">return</span> left * <span class="hljs-number">2</span>;<br>    }<br>};<br></code></pre></td></tr></tbody></table></figure>
 <p>其他二分答案的例题请看 liweiwei 老师的算法网站：<a target="_blank" rel="noopener" href="https://suanfa8.com/binary-search">算法吧 | 快来算法吧 (suanfa8.com)</a>，其中的<strong>题型三</strong>就是二分答案的类型。</p>
-<h2 id="T4-BFS"><a class="header-anchor" href="#T4-BFS">¶</a>T4 BFS</h2>
-<p>TODO🤣</p>
-<h2 id="反思"><a class="header-anchor" href="#反思">¶</a>反思</h2>
+<h2 id="t4-bfs">T4 BFS</h2>
+<p>TODO<span class="github-emoji"><span>🤣</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/1f923.png?v8" srcset="/img/loading.gif" lazyload aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></p>
+<h2 id="反思">反思</h2>
 <ul>
-<li>
-<p>多练、多练、多练…</p>
-</li>
-<li>
-<p>二分看来是周赛的常客了，数对题也是，两次都没看出来要先排序，下次不管三七二十一先排序一波</p>
-</li>
-<li>
-<p>稳二争三啊啊！！</p>
-</li>
+<li><p>多练、多练、多练......</p></li>
+<li>二分看来是周赛的常客了，数对题也是，两次都没看出来要先排序，下次不管三七二十一先排序一波</li>
+<li><p>稳二争三啊啊！！</p></li>
 </ul>
 
               

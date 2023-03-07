@@ -274,36 +274,36 @@
             
             <div class="markdown-body">
               
-              <p>粗略记录阅读 MapReduce<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="6th Symposium on Operating Systems Design and Implementation — Technical Paper (usenix.org)
+              <p>粗略记录阅读 MapReduce<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="6th Symposium on Operating Systems Design and Implementation — Technical Paper (usenix.org)
 ">[1]</span></a></sup> 论文时的要点。</p>
 <ul>
-<li>
-<p>可靠性保证的措施</p>
+<li><p>可靠性保证的措施</p>
 <ul>
 <li>Master 节点定期 ping 各个 worker 节点，ping 不通的则标记为 failed</li>
 <li>如果是做 map 的节点 fail 了，将会重做那个节点已经完成的工作和尚未完成的工作（为什么还要重做已经完成的工作？因为 map 产生的结果一般是存储在工作节点本地的，连节点主机都 ping 不通了，自然无法取得那个节点上存储的数据）；如果是做 reduce 的节点 fail 了，将会重做那个节点尚未完成的工作（因为 reduce 阶段的结果已经写进了 global file system 中，所以不必重做已经完成的任务）</li>
 <li>当所有的任务都快做完，Master 节点会让部分空闲节点重做当前仍在运行的任务，以避免「落伍者」(straggler)减慢整体的运行速度（因为这些迟迟没能完成任务的「落伍者」可能是出现了某些异常）。当这些备份节点有一个完成了任务，那么其他节点则丢弃这个任务</li>
-</ul>
-</li>
-<li>
-<p>提高效率的措施</p>
+</ul></li>
+<li><p>提高效率的措施</p>
 <ul>
 <li>局部性优化(locality optimization)：这里的局部性指的并不是计算机执行指令时的 saptial and temporal locality，而是主要指网络通信上的。要考虑到网络带宽是计算集群中比较稀缺的资源。map 阶段的输入数据一般也是存储在工作节点的磁盘中的，并且一份输入数据拥有备份。那么为了节省网络带宽，可以将某份输入数据的 map 工作交给本地存储了那份数据或其备份数据的节点完成。如果不存在这样的工作节点，那么 Master 也会调度一个接近与输入数据存储节点的工作节点来完成这份数据的 map 工作，比如连接在同一个交换机下的节点</li>
-</ul>
-</li>
-<li>
-<p>Reduce 细节</p>
-<p>Map 阶段产生的中间键值对的键决定了这个键值对会在哪个 reduce 节点上被处理。一种算法是将键的哈希值取 reduce 的模，来决定在哪个 reduce 节点上被处理</p>
-</li>
-<li>
-<p>Map 细节</p>
+</ul></li>
+<li><p>Reduce 细节</p>
+<p>Map 阶段产生的中间键值对的键决定了这个键值对会在哪个 reduce 节点上被处理。一种算法是将键的哈希值取 reduce 的模，来决定在哪个 reduce 节点上被处理</p></li>
+<li><p>Map 细节</p>
 <ul>
 <li>可以在 map 节点上进行中间键值对的部分合并，并且这个合并往往与 reduce 用的是同一段代码</li>
+</ul></li>
 </ul>
+<section class="footnotes">
+<div class="footnote-list">
+<ol>
+<li>
+<span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.usenix.org/legacy/event/osdi04/tech/full_papers/dean/dean_html/">6th Symposium on Operating Systems Design and Implementation — Technical Paper (usenix.org)</a> <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span>
 </li>
-</ul>
-<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.usenix.org/legacy/event/osdi04/tech/full_papers/dean/dean_html/">6th Symposium on Operating Systems Design and Implementation — Technical Paper (usenix.org)</a>
-<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+</ol>
+</div>
+</section>
+
               
             </div>
             <hr/>
