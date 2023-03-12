@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/1f923.png?v8">
 <meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/1f923.png?v8">
 <meta property="article:published_time" content="2023-03-12T05:20:04.000Z">
-<meta property="article:modified_time" content="2023-03-12T06:15:01.917Z">
+<meta property="article:modified_time" content="2023-03-12T06:21:32.833Z">
 <meta property="article:author" content="Peiyang He">
 <meta property="article:tag" content="算法">
 <meta property="article:tag" content="力扣周赛">
@@ -463,6 +463,12 @@
   
 
 
+  
+  
+
+
+
+
 
 
 
@@ -704,6 +710,44 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        MathJax = {
+          tex    : {
+            inlineMath: { '[+]': [['$', '$']] }
+          },
+          loader : {
+            load: ['ui/lazy']
+          },
+          options: {
+            renderActions: {
+              findScript    : [10, doc => {
+                document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                  const display = !!node.type.match(/; *mode=display/);
+                  const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                  const text = document.createTextNode('');
+                  node.parentNode.replaceChild(text, node);
+                  math.start = { node: text, delim: '', n: 0 };
+                  math.end = { node: text, delim: '', n: 0 };
+                  doc.math.push(math);
+                });
+              }, '', false],
+              insertedScript: [200, () => {
+                document.querySelectorAll('mjx-container').forEach(node => {
+                  let target = node.parentNode;
+                  if (target.nodeName.toLowerCase() === 'li') {
+                    target.parentNode.classList.add('has-jax');
+                  }
+                });
+              }, '', false]
+            }
+          }
+        };
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.0/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 
