@@ -237,7 +237,7 @@
         
         
         
-          24 分钟
+          25 分钟
         
       </span>
     
@@ -279,79 +279,55 @@
             
             <div class="markdown-body">
               
-              <h2 id="实验思路与实验结果"><a class="header-anchor" href="#实验思路与实验结果">¶</a>实验思路与实验结果</h2>
+              <h2 id="实验思路与实验结果">实验思路与实验结果</h2>
 <p>使用 CNN 进行手写数字的分类，涉及到数据集的导入、图片的预处理、模型的建立与训练、模型的评估</p>
 <ul>
-<li>
-<p>数据集的导入</p>
-<p>直接使用 mnist 提供的 API 导入数据集</p>
-</li>
-<li>
-<p>图片的预处理</p>
+<li><p>数据集的导入</p>
+<p>直接使用 mnist 提供的 API 导入数据集</p></li>
+<li><p>图片的预处理</p>
 <ul>
 <li>由于均是灰度图，可以将图片转变为单通道以缩小数据规模</li>
 <li>对分类变量进行热编码</li>
 <li>数据的规范化</li>
-</ul>
-</li>
-<li>
-<p>模型的建立与训练</p>
+</ul></li>
+<li><p>模型的建立与训练</p>
 <ul>
-<li>
-<p>卷积层，使用 ReLU 作为激励函数以进行非线性化；核的初始化采用通常使用的<code>he_uniform</code></p>
-</li>
-<li>
-<p>池化层，2*2</p>
-</li>
-<li>
-<p>展平层</p>
-</li>
-<li>
-<p>全连接层</p>
-</li>
-<li>
-<p>输出层，使用 SoftMax 作为激励函数</p>
-</li>
-<li>
-<p>配置随机梯度下降的参数</p>
-<p><code>learning_rate=0.01, momentum=0.9</code></p>
-</li>
-<li>
-<p>编译模型</p>
+<li><p>卷积层，使用 ReLU 作为激励函数以进行非线性化；核的初始化采用通常使用的<code>he_uniform</code></p></li>
+<li><p>池化层，2*2</p></li>
+<li><p>展平层</p></li>
+<li><p>全连接层</p></li>
+<li><p>输出层，使用 SoftMax 作为激励函数</p></li>
+<li><p>配置随机梯度下降的参数</p>
+<p><code>learning_rate=0.01, momentum=0.9</code></p></li>
+<li><p>编译模型</p>
 <p>遵循通常的配置，即</p>
-<p><code>loss='categorical_crossentropy', metrics=['accuracy']</code></p>
-</li>
-<li>
-<p>训练模型</p>
-<p>代数为5，batch-learning 的大小设为 64</p>
-</li>
-</ul>
-</li>
-<li>
-<p>模型的评估</p>
+<p><code>loss='categorical_crossentropy', metrics=['accuracy']</code></p></li>
+<li><p>训练模型</p>
+<p>代数为5，batch-learning 的大小设为 64</p></li>
+</ul></li>
+<li><p>模型的评估</p>
 <p>使用了三种不同的评估角度</p>
 <ul>
-<li>
-<p>准确率与损失</p>
+<li><p>准确率与损失</p>
 <p>在程序运行的过程中可以观察到每代的损失和准确率，在经过5代后，准确率为0.9857000112533569。事实上，mnist 数据集上，使用简单的 CNN 都能取得很好的准确率</p>
-<p><img src="https://img.balddemian.icu/img/cnn-1.png" srcset="/img/loading.gif" lazyload alt="image-20230321182926343"></p>
-</li>
-<li>
-<p>预测单张图片</p>
+<figure>
+<img src="https://img.balddemian.icu/img/cnn-1.png" srcset="/img/loading.gif" lazyload alt="image-20230321182926343"><figcaption>image-20230321182926343</figcaption>
+</figure></li>
+<li><p>预测单张图片</p>
 <p>预测下面这张图片的分类结果</p>
-<img src="https://img.balddemian.icu/img/cnn2.png" srcset="/img/loading.gif" lazyload style="zoom: 25%;">
+<p><img src="https://img.balddemian.icu/img/cnn2.png" srcset="/img/loading.gif" lazyload style="zoom: 25%;"></p>
 <p>可以看到给出了正确的预测</p>
-<p><img src="https://img.balddemian.icu/img/cnn3.png" srcset="/img/loading.gif" lazyload alt="image-20230321183000468"></p>
-</li>
-<li>
-<p>混淆矩阵</p>
+<figure>
+<img src="https://img.balddemian.icu/img/cnn3.png" srcset="/img/loading.gif" lazyload alt="image-20230321183000468"><figcaption>image-20230321183000468</figcaption>
+</figure></li>
+<li><p>混淆矩阵</p>
 <p>使用混淆矩阵评估分类的效果。可以看到值均匀集中在对角线上，说明分类的准确率较高</p>
-<p><img src="https://img.balddemian.icu/img/cnn4.png" srcset="/img/loading.gif" lazyload alt="image-20230321182940068"></p>
-</li>
+<figure>
+<img src="https://img.balddemian.icu/img/cnn4.png" srcset="/img/loading.gif" lazyload alt="image-20230321182940068"><figcaption>image-20230321182940068</figcaption>
+</figure></li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h2 id="实验代码"><a class="header-anchor" href="#实验代码">¶</a>实验代码</h2>
+<h2 id="实验代码">实验代码</h2>
 <figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> keras.datasets <span class="hljs-keyword">import</span> mnist<br><span class="hljs-keyword">from</span> keras.utils <span class="hljs-keyword">import</span> to_categorical, load_img, img_to_array<br><span class="hljs-keyword">from</span> keras.models <span class="hljs-keyword">import</span> Sequential<br><span class="hljs-keyword">from</span> keras.layers <span class="hljs-keyword">import</span> Conv2D<br><span class="hljs-keyword">from</span> keras.layers <span class="hljs-keyword">import</span> MaxPooling2D<br><span class="hljs-keyword">from</span> keras.layers <span class="hljs-keyword">import</span> Dense<br><span class="hljs-keyword">from</span> keras.layers <span class="hljs-keyword">import</span> Flatten<br><span class="hljs-keyword">from</span> keras.optimizers <span class="hljs-keyword">import</span> SGD<br><span class="hljs-keyword">from</span> numpy <span class="hljs-keyword">import</span> argmax<br><br><span class="hljs-comment"># 导入数据集和数据预处理</span><br><span class="hljs-comment"># 划分训练集和测试集</span><br>(train_X, train_y), (test_X, test_y) = mnist.load_data()<br><span class="hljs-comment"># 由于图像是灰度图，于是将其变为单通道</span><br>train_X = train_X.reshape((train_X.shape[<span class="hljs-number">0</span>], <span class="hljs-number">28</span>, <span class="hljs-number">28</span>, <span class="hljs-number">1</span>))  <span class="hljs-comment"># reshape的参数：样本数，行，列，通道数</span><br>test_X = test_X.reshape((test_X.shape[<span class="hljs-number">0</span>], <span class="hljs-number">28</span>, <span class="hljs-number">28</span>, <span class="hljs-number">1</span>))<br><span class="hljs-comment"># 将label进行热编码</span><br>train_y = to_categorical(train_y, num_classes=<span class="hljs-number">10</span>)<br>test_y = to_categorical(test_y, num_classes=<span class="hljs-number">10</span>)<br><span class="hljs-comment"># 由于是灰度图，将色值规范到[0,1]之间比较合适</span><br>train_X = train_X.astype(<span class="hljs-string">'float32'</span>) / <span class="hljs-number">255.0</span><br>test_X = test_X.astype(<span class="hljs-string">'float32'</span>) / <span class="hljs-number">255.0</span><br><span class="hljs-comment"># 定义模型</span><br>model = Sequential()<br><span class="hljs-comment"># 卷积层使用ReLu作为激励函数进行非线性化</span><br>model.add(Conv2D(<span class="hljs-number">32</span>, (<span class="hljs-number">3</span>, <span class="hljs-number">3</span>), activation=<span class="hljs-string">'relu'</span>, kernel_initializer=<span class="hljs-string">'he_uniform'</span>, input_shape=(<span class="hljs-number">28</span>, <span class="hljs-number">28</span>, <span class="hljs-number">1</span>)))<br><span class="hljs-comment"># 定义池化层</span><br>model.add(MaxPooling2D((<span class="hljs-number">2</span>, <span class="hljs-number">2</span>)))<br><span class="hljs-comment"># 定义展平层</span><br>model.add(Flatten())<br><span class="hljs-comment"># 定义全连接层</span><br>model.add(Dense(<span class="hljs-number">100</span>, activation=<span class="hljs-string">'relu'</span>, kernel_initializer=<span class="hljs-string">'he_uniform'</span>))<br><span class="hljs-comment"># 最终的输出层，由于识别的数字有10种，于是输出层的节点数为10</span><br><span class="hljs-comment"># 使用softmax作为激励函数以进行分类</span><br>model.add(Dense(<span class="hljs-number">10</span>, activation=<span class="hljs-string">'softmax'</span>))<br><span class="hljs-comment"># 指定随机梯度下降的参数</span><br>opt = SGD(learning_rate=<span class="hljs-number">0.01</span>, momentum=<span class="hljs-number">0.9</span>)<br><span class="hljs-comment"># 指定代价函数和模型的评估指标</span><br>model.<span class="hljs-built_in">compile</span>(optimizer=opt, loss=<span class="hljs-string">'categorical_crossentropy'</span>, metrics=[<span class="hljs-string">'accuracy'</span>])<br><span class="hljs-comment"># 训练模型</span><br>model.fit(train_X, train_y, epochs=<span class="hljs-number">5</span>, batch_size=<span class="hljs-number">64</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">evaluate_accuracy</span>():<br>    <span class="hljs-string">"""使用代价和准确率评估模型"""</span><br>    test_loss, test_acc = model.evaluate(test_X, test_y)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">"test_loss: "</span>, test_loss, <span class="hljs-string">" test_acc: "</span>, test_acc)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">evaluate_confusion_matrix</span>():<br>    <span class="hljs-string">"""使用混淆矩阵对CNN进行评估"""</span><br>    <span class="hljs-keyword">from</span> sklearn.metrics <span class="hljs-keyword">import</span> confusion_matrix, accuracy_score<br>    pred_y = model.predict(test_X)<br>    matrix = confusion_matrix(test_y.argmax(axis=<span class="hljs-number">1</span>), pred_y.argmax(axis=<span class="hljs-number">1</span>))<br>    <span class="hljs-built_in">print</span>(matrix)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">evaluate_sample_image</span>(<span class="hljs-params">filename</span>):<br>    img = load_img(filename, grayscale=<span class="hljs-literal">True</span>, target_size=(<span class="hljs-number">28</span>, <span class="hljs-number">28</span>))<br>    img = img_to_array(img)<br>    img = img.reshape(<span class="hljs-number">1</span>, <span class="hljs-number">28</span>, <span class="hljs-number">28</span>, <span class="hljs-number">1</span>)<br>    img = img.astype(<span class="hljs-string">'float32'</span>)<br>    img = img / <span class="hljs-number">255.0</span><br>    pred = model.predict(img)<br>    digit = argmax(pred)  <span class="hljs-comment"># CNN的输出是对应了10种可能分类的概率，这里输出概率最大的类作为识别结果</span><br>    <span class="hljs-built_in">print</span>(digit)<br><br><br>evaluate_accuracy()<br>evaluate_confusion_matrix()<br>evaluate_sample_image(<span class="hljs-string">"img.png"</span>)<br><br></code></pre></td></tr></tbody></table></figure>
 
               
