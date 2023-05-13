@@ -27,10 +27,10 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://balddemian.icu/img/mars.jpg">
 <meta property="article:published_time" content="2022-11-02T10:35:28.000Z">
-<meta property="article:modified_time" content="2022-11-15T11:08:09.601Z">
+<meta property="article:modified_time" content="2023-05-13T03:48:09.791Z">
 <meta property="article:author" content="Peiyang He">
 <meta property="article:tag" content="OS">
-<meta property="article:tag" content="C">
+<meta property="article:tag" content="C-">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://balddemian.icu/img/mars.jpg">
   
@@ -277,28 +277,31 @@
             
             <div class="markdown-body">
               
-              <h2 id="现象描述">现象描述</h2>
+              <blockquote>
+<p>本文于 2023-05-13 修复一些小错误</p>
+</blockquote>
+<h2 id="现象描述"><a class="header-anchor" href="#现象描述">¶</a>现象描述</h2>
 <p>设有三个进程 P1, P2, P3，其优先级分别是 H, M, L，有 H &gt; M &gt; L，其中 P1 和 P3 会访问同一个临界资源，P2 访问的资源与 P1, P3 无关。系统采取抢占式优先级调度算法。</p>
 <p>假设 P3 首先执行，并进入临界区。在 P3 未退出临界区时，P1 进程到达，由于 P1 优先级高于正在执行的 P3，于是 P1 占据处理机。此时 P2 进程到达，由于其优先级低于 P1，所以处于就绪队列中，P1 继续执行。P1 试图进入临界区，发现该临界区正在被 P3 访问，于是阻塞。此时就绪队列中优先级最高的 P2 继续执行。P2 执行完毕后 P3 继续执行，待 P3 退出临界区后，P1 抢占处理机，并进入临界区，继续执行直到结束。</p>
 <p>在这个案例中，P2 的优先级明明低于 P1，却优先于 P1 执行完了，这种现象就是「优先级反转」。</p>
 <p>我们不难发现，出现优先级反转的原因，是先进入临界区的进程优先级不够高，故而被更高优先级的且不需要访问这段临界区的进程抢占，而导致迟迟不能退出临界区，影响了高优先级且需要访问这段临界区的进程的及时执行。</p>
 <p>所以要解决优先级反转的问题，可以从<strong>提高进入临界区的进程的优先级</strong>上入手。</p>
-<h2 id="解决方案">解决方案</h2>
-<h3 id="disabling-all-interrupts-protocol">Disabling All Interrupts Protocol</h3>
+<h2 id="解决方案"><a class="header-anchor" href="#解决方案">¶</a>解决方案</h2>
+<h3 id="Disabling-All-Interrupts-Protocol"><a class="header-anchor" href="#Disabling-All-Interrupts-Protocol">¶</a>Disabling All Interrupts Protocol</h3>
 <p>关中断策略。</p>
 <p>在进程访问临界区时，关闭中断，使其不可被抢占地一直执行完毕直到退出临界区。这就要求临界区的代码必须短小，否则会影响整个系统的并发性和实时性。关中断策略常常用在嵌入式操作系统中，在通用操作系统中不常用。</p>
-<h3 id="priority-inheritance-protocol">Priority Inheritance Protocol</h3>
+<h3 id="Priority-Inheritance-Protocol"><a class="header-anchor" href="#Priority-Inheritance-Protocol">¶</a>Priority Inheritance Protocol</h3>
 <p>优先级继承策略。</p>
-<p>有一优先级为 L 的进程 P1 已经进入临界区。此时一优先级为 H 的进程 P2 也试图进入临界区，且 P1 &lt; P2，那么将 P1 的优先级提升至 H，直到 P1 退出临界区时，再将其优先级恢复到 L。</p>
-<h3 id="priority-ceiling-protocol">Priority Ceiling Protocol</h3>
+<p>有一优先级为 L 的进程 P1 已经进入临界区。此时一优先级为 H 的进程 P2 也试图进入临界区，且 L &lt; H，那么将 P1 的优先级提升至 H，直到 P1 退出临界区时，再将其优先级恢复到 L。</p>
+<h3 id="Priority-Ceiling-Protocol"><a class="header-anchor" href="#Priority-Ceiling-Protocol">¶</a>Priority Ceiling Protocol</h3>
 <p>优先级天花板策略。</p>
 <p>设有一系列试图访问同一临界资源的进程，P 为这些进程的最大优先级。当其中的某一进程对临界资源上锁后（即将访问临界区），将它的优先级提升为 P。</p>
-<h3 id="random-boosting">Random Boosting</h3>
+<h3 id="Random-Boosting"><a class="header-anchor" href="#Random-Boosting">¶</a>Random Boosting</h3>
 <p>正在访问临界区的进程被随机地提升优先级，直到退出临界区。被用于 Windows 系统中。</p>
-<h2 id="真实案例">真实案例</h2>
+<h2 id="真实案例"><a class="header-anchor" href="#真实案例">¶</a>真实案例</h2>
 <p>优先级反转而导致的 Bug 曾经出现在 NASA 的火星探路者任务中（也许这个故事不像 Linux 的闰秒 Bug 那样出名）。</p>
-<p>以下内容是对这篇文章<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="https://www.microsoft.com/en-us/research/people/mbj/just-for-fun/
-">[1]</span></a></sup>中的 "What Really Happend On Mars?" 的拙译。</p>
+<p>以下内容是对这篇文章<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="https://www.microsoft.com/en-us/research/people/mbj/just-for-fun/
+">[1]</span></a></sup>中的 “What Really Happend On Mars?” 的拙译。</p>
 <hr>
 <p><strong>火星上究竟发生了什么？</strong></p>
 <p>在 1997 年 7 月 4 日，火星探路者登陆火星表面。在开始的一段时间中，它正常工作，并发回了照片，这些照片在互联网大热。但是几天之后，就在火星探路者开始收集气象数据时，它经历了一连串不停的重启，并丢失了许多数据。媒体将这些故障称为 「Software glitches」。</p>
@@ -306,12 +309,12 @@
 <p>火星探路者中有一条「信息总线」，你可以将它想象成一块在航天器内部不同组件之间传输信息的共享内存。存在一个周期短的「总线管理线程」，它具有高优先级，作用是将数据送入或送出信息总线。各个线程访问信息总线是同步的，需要上互斥锁。收集气象数据的线程周期较长，优先级低，并且要访问信息总线来传送它收集的数据。当这个线程传送数据时，它会将信息总线上互斥锁，写入数据，然后释放锁。如果一个中断使得总线管理线程被调度上处理机，它会尝试获得信息总线的互斥锁，但是发现这个锁已经被占用，于是总线管理线程被阻塞在这个互斥锁上，直到收集气象数据的线程释放锁。航天器中还运行着一个中优先级的通讯线程。</p>
 <p>大部分时间中这三道线程运行得相安无事，但很少的时刻，这种情况成为可能：出现某个中断，使得中优先级的通讯线程被调度上处理机；于此同时，高优先级的总线管理线程，由于等待低优先级的气象信息收集线程使用总线而被阻塞。（符合上文中的现象描述）此时这个耗时较长的具有中优先级的通讯线程，会阻止低优先级的气象信息收集线程的运行，从而阻止高优先级的总线管理线程的运行。一段时间之后，一段「看门狗计时程序」会注意到，总线管理线程已经有一段时间没有执行了，它假设系统中出现了某种巨大的错误，于是将整个系统重启。</p>
 <blockquote>
-<p>看门狗计时器常用于对稳定性要求较高的嵌入式系统中，通过计时重启，避免程序进入死循环这样的异常情况出现。比如某程序正常运行完所需的时间是 t1，看门狗计时器的定时周期是 t2，且 t1 &gt; t2。当程序完整运行完后，即清空看门狗计时器的计数（这个过程叫做「喂狗」），只要程序正常运行，计时器就不会溢出，也就不会发生重启，当某些异常情况干扰了程序的运行，对应的看门狗计时器就会在 t2 时刻溢出（狗饿了<span class="github-emoji"><span>🐶</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/1f436.png?v8" srcset="/img/loading.gif" lazyload aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span>），引发系统重启。</p>
+<p>看门狗计时器常用于对稳定性要求较高的嵌入式系统中，通过计时重启，避免程序进入死循环这样的异常情况出现。比如某程序正常运行完所需的时间是 t1，看门狗计时器的定时周期是 t2，且 t2 &gt; t1。当程序完整运行完后，即清空看门狗计时器的计数（这个过程叫做「喂狗」）。可以看出，只要程序正常运行，计时器就不会溢出，也就不会发生重启，当某些异常情况干扰了程序的运行，对应的看门狗计时器就会在 t2 时刻溢出（狗饿了🐶），引发系统重启。</p>
 </blockquote>
 <p><strong>这个缺陷是如何 debug 的？</strong></p>
 <p>VxWorks 系统可以在特定模式下工作，这个模式会记录下各种运行时有趣的现象，如上下文切换、同步对象的使用、中断等。在观察到这个缺陷后，JPL 的工程师花费数小时在一台火星探路者的副本上用他们想到的各种方式运行系统，以期复现这个故障。在除了一位工程师以外所有人都离开后，他终于在副本机器上复现了火星探路者上的重启。对于运行信息的分析表明，系统遭遇了优先级反转。</p>
 <p><strong>这个问题是如何被修正的？</strong></p>
-<p>VxWorks 系统用一个 bool 变量表示是否在互斥对象上使用优先级继承，但是它默认为 false。使用优先级继承后，低优先级的气象信息线程会继承高优先级的总线管理线程的优先级，使得它在访问临界区是不可被中优先级的通讯线程抢占，从而避免了优先级反转。</p>
+<p>VxWorks 系统用一个 bool 变量表示是否在互斥对象上使用优先级继承，但是它默认为 false。使用优先级继承后，低优先级的气象信息线程会继承高优先级的总线管理线程的优先级，使得它在访问临界区时不可被中优先级的通讯线程抢占，从而避免了优先级反转。</p>
 <p>VxWorks 系统中提供了一个 C 语言解释器，用来在调试过程中插入表达式和函数。在火星探路者发射时，JPL 的工程师「奇迹」般地决定将这个功能打开。根据编码规范，控制是否使用优先级继承的 bool 变量是编码在全局变量区中的，这些全局变量的地址是存放在发射软件中的符号表里的，并且可以通过 C 解释器修改。一段短短的 C 程序被上传到探路者中，然后被解释运行，从而打开了优先级继承。此后没有再出现系统重启的故障。</p>
 <p><strong>分析和教训</strong></p>
 <p>首先，用黑箱的方法诊断这个问题是不可能的。只有详细的在真实系统上的执行轨迹才能将这个错误的执行序列捕捉到。</p>
@@ -319,30 +322,16 @@
 <p>最后，工程师们最初的这个想法是完全错误的：「数据总线线程执行得非常频繁并且对执行时间敏感，我们不应该让它用多余的时间去实现优先级继承」。正是在这样对执行时间敏感的重要场合，程序的正确性才尤为重要，即使是要付出一些性能上的代价。</p>
 <p><strong>人之常情，DDL 的压力</strong></p>
 <p>David 告诉我们， JPL 的工程师后来承认，在他们几个月的发射前测试中，这样的系统重启现象发生过一两次。这些重启既没法复现也难以解释，所以工程师们，出于对于否认的直觉，认为这些重启可能不是那么重要，用那句经典的「这可能是由于一个硬件故障导致」搪塞过去了。</p>
-<p>还有一部分原因是当时工程师们关注的重点。他们及其专注于确保登陆程序的正确性。如果连控制登陆的程序都出错了，整个任务就都失败了。所以工程师们忽略掉这些在不那么重要的地面任务软件中的偶发错误，也是完全可以理解的，尤其是考虑到，在那个阶段中，航天器的重启也是一个可行的恢复策略。</p>
+<p>还有一部分原因是当时工程师们关注的重点。他们极其专注于确保登陆程序的正确性。如果连控制登陆的程序都出错了，整个任务就都失败了。所以工程师们忽略掉这些在不那么重要的地面任务软件中的偶发错误，也是完全可以理解的，尤其是考虑到，在那个阶段中，航天器的重启也是一个可行的恢复策略。</p>
 <p><strong>优秀的理论和算法的重要性</strong></p>
-<p>David 也说到，一些真正的幕后英雄来自卡内基梅隆大学，他们在几年前发表文章，首先提出了优先级反转的问题并给出了解决措施。他为没能记住这篇文章作者的详细信息而抱歉。凑巧的是，这篇文章的三个作者正坐在这间房间内（David Wilner，Wind River 的 CTO 在 IEEE 的一场嵌入式领域的会议上分享了上面提到的这些内容），在讲话结束后，他们受邀来到讲台接受众人的致意。他们是 Lui Sha, John Lehoczky, 和 Raj Rajkumar<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="https://ieeexplore.ieee.org/abstract/document/57058 L. Sha, R. Rajkumar and J. P. Lehoczky, &quot;Priority inheritance protocols: an approach to real-time synchronization,&quot; in IEEE Transactions on Computers, vol. 39, no. 9, pp. 1175-1185, Sept. 1990, doi: 10.1109/12.57058.&quot;
+<p>David 也说到，一些真正的幕后英雄来自卡内基梅隆大学，他们在几年前发表文章，首先提出了优先级反转的问题并给出了解决措施。他为没能记住这篇文章作者的详细信息而抱歉。凑巧的是，这篇文章的三个作者正坐在这间房间内（David Wilner，Wind River 的 CTO 在 IEEE 的一场嵌入式领域的会议上分享了上面提到的这些内容），在讲话结束后，他们受邀来到讲台接受众人的致意。他们是 Lui Sha, John Lehoczky, 和 Raj Rajkumar<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="https://ieeexplore.ieee.org/abstract/document/57058 L. Sha, R. Rajkumar and J. P. Lehoczky, “Priority inheritance protocols: an approach to real-time synchronization,” in IEEE Transactions on Computers, vol. 39, no. 9, pp. 1175-1185, Sept. 1990, doi: 10.1109/12.57058.&quot;
 ">[2]</span></a></sup>。你上次见到一屋子人为三个计算机理论学家拓宽人类知识的边界的贡献而鼓掌是什么时候了？这真是美妙的一刻。</p>
-<h2 id="ref">Ref</h2>
-<section class="footnotes">
-<div class="footnote-list">
-<ol>
-<li>
-<span id="fn:1" class="footnote-text"><span>https://www.microsoft.com/en-us/research/people/mbj/just-for-fun/ <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span>
-</li>
-<li>
-<span id="fn:2" class="footnote-text"><span>https://ieeexplore.ieee.org/abstract/document/57058 L. Sha, R. Rajkumar and J. P. Lehoczky, "Priority inheritance protocols: an approach to real-time synchronization," in IEEE Transactions on Computers, vol. 39, no. 9, pp. 1175-1185, Sept. 1990, doi: 10.1109/12.57058." <a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span>
-</li>
-<li>
-<span id="fn:3" class="footnote-text"><span>https://www3.nd.edu/~cpoellab/teaching/cse40463/slides6.pdf 一份不错的讲义 <a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span>
-</li>
-<li>
-<span id="fn:4" class="footnote-text"><span>https://nssdc.gsfc.nasa.gov/planetary/marspath_images_2.html 火星探路者任务中拍下的火星照片。生生不息，繁荣昌盛 <span class="github-emoji"><span>🖖</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/1f596.png?v8" srcset="/img/loading.gif" lazyload aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span> <a href="#fnref:4" rev="footnote" class="footnote-backref"> ↩</a></span></span>
-</li>
-</ol>
-</div>
-</section>
-
+<h2 id="Ref"><a class="header-anchor" href="#Ref">¶</a>Ref</h2>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.microsoft.com/en-us/research/people/mbj/just-for-fun/">https://www.microsoft.com/en-us/research/people/mbj/just-for-fun/</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/abstract/document/57058">https://ieeexplore.ieee.org/abstract/document/57058</a> L. Sha, R. Rajkumar and J. P. Lehoczky, “Priority inheritance protocols: an approach to real-time synchronization,” in IEEE Transactions on Computers, vol. 39, no. 9, pp. 1175-1185, Sept. 1990, doi: 10.1109/12.57058."
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www3.nd.edu/~cpoellab/teaching/cse40463/slides6.pdf">https://www3.nd.edu/~cpoellab/teaching/cse40463/slides6.pdf</a> 一份不错的讲义
+<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:4" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://nssdc.gsfc.nasa.gov/planetary/marspath_images_2.html">https://nssdc.gsfc.nasa.gov/planetary/marspath_images_2.html</a> 火星探路者任务中拍下的火星照片。生生不息，繁荣昌盛 🖖
+<a href="#fnref:4" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
               
             </div>
             <hr/>
@@ -383,7 +372,7 @@
       
         <a href="/tags/OS/">#OS</a>
       
-        <a href="/tags/C/">#C</a>
+        <a href="/tags/C/">#C-</a>
       
     </div>
   

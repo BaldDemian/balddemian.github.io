@@ -25,13 +25,13 @@
 <meta property="og:site_name" content="Bald Demian">
 <meta property="og:description" content="2023年春季机器学习课程的实验报告三">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="d:/TyporaPictures/score.png">
+<meta property="og:image" content="d:%5CTyporaPictures%5Cscore.png">
 <meta property="article:published_time" content="2023-04-02T12:28:58.000Z">
 <meta property="article:modified_time" content="2023-04-02T12:46:33.281Z">
 <meta property="article:author" content="Peiyang He">
 <meta property="article:tag" content="ML">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="d:/TyporaPictures/score.png">
+<meta name="twitter:image" content="d:%5CTyporaPictures%5Cscore.png">
   
   
   
@@ -223,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.6k 字
+          3.5k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
         
-          31 分钟
+          30 分钟
         
       </span>
     
@@ -276,7 +276,7 @@
             
             <div class="markdown-body">
               
-              <h2 id="决策树原理">决策树原理</h2>
+              <h2 id="决策树原理"><a class="header-anchor" href="#决策树原理">¶</a>决策树原理</h2>
 <p>决策树的决策过程从根节点开始，测试待分类项中对应的特征属性，并按照其值选择输出分支，直到叶子节点，将叶子节点的存放的类别作为决策结果；每个决策节点上存放一定数量的样本，根节点存放所有样本</p>
 <p>在每个决策节点上，选择<strong>最佳</strong>的一个属性将该节点的样本进行划分，尽量使同一个分支节点中的样本属于<strong>同一个类别</strong>。</p>
 <p>步骤总结如下：</p>
@@ -285,56 +285,62 @@
 <ul>
 <li>对于离散型属性每一个类别可以划分一个节点，比如要么属于 A 要么不属于 A，这就形成了一个二叉树</li>
 <li>对于连续型属性，可以划分为大于 A 和小于 A</li>
-</ul></li>
+</ul>
+</li>
 <li>从根节点开始，选择可以获得最大<strong>信息增益</strong>的属性进行划分</li>
 <li>决策树的生成达成以下条件其一则停止：
-<ol type="1">
+<ol>
 <li>树的深度达到 <code>max_depth</code></li>
 <li>所有叶子节点中的样本属于一个类别</li>
 <li>所有叶子节点中存放的样本数量小于 <code>min_samples_split</code></li>
-</ol></li>
+</ol>
+</li>
 </ul>
-<h3 id="信息增益">信息增益</h3>
+<h3 id="信息增益"><a class="header-anchor" href="#信息增益">¶</a>信息增益</h3>
 <p>Information Gain</p>
-<p>某个节点的信息增益定义为 <span class="math inline">\(IG(D_p, f) = I(D_p) - \sum_{i=1}^{n} \frac{N_i}{N_p}I(D_i)\)</span></p>
-<p>其中 <span class="math inline">\(f\)</span> 是划分的特征，<span class="math inline">\(D_p\)</span> 为当前节点，<span class="math inline">\(D_i\)</span> 是当前节点的第 <span class="math inline">\(i\)</span> 个子节点，<span class="math inline">\(N_i\)</span> 是第 <span class="math inline">\(i\)</span> 个子节点中存储的样本的数量（即符合该划分的样本的数量），<span class="math inline">\(N_p\)</span> 是当前节点存储的样本的数量，<span class="math inline">\(I(D)\)</span> 为某个节点的<strong>不纯度</strong>。可以看出，一个节点的信息增益，等于它的不纯度减去所有子节点的不纯度的加权和。所以子节点的不纯度一定是小于父节点的，决策树生长的过程，同时也是节点不纯度逐渐减少的过程。对于不纯度的度量，有两种常用的计算方式</p>
+<p>某个节点的信息增益定义为 $IG(D_p, f) = I(D_p) - \sum_{i=1}^{n} \frac{N_i}{N_p}I(D_i)$</p>
+<p>其中 $f$ 是划分的特征，$D_p$ 为当前节点，$D_i$ 是当前节点的第 $i$ 个子节点，$N_i$ 是第 $i$ 个子节点中存储的样本的数量（即符合该划分的样本的数量），$N_p$ 是当前节点存储的样本的数量，$I(D)$ 为某个节点的<strong>不纯度</strong>。可以看出，一个节点的信息增益，等于它的不纯度减去所有子节点的不纯度的加权和。所以子节点的不纯度一定是小于父节点的，决策树生长的过程，同时也是节点不纯度逐渐减少的过程。对于不纯度的度量，有两种常用的计算方式</p>
 <ul>
-<li><p>信息熵</p>
+<li>
+<p>信息熵</p>
 <p>Informtation Entropy</p>
-<p>假设随机变量 X 具有 m 种取值，并且每种取值对应的概率是 <span class="math inline">\(p_{i}\)</span>，即 <span class="math display">\[
-P(X=V_1) = p_1\\
-P(X=V_2) = p_2\\
-P(X=V_3) = p_3\\
-......\\
-P(X=V_m) = p_m\\
-\]</span> 定义 X 的信息熵为 <span class="math inline">\(E(X) = -\sum_{i=1}^{m}log_{2}{p_i} * p_{i}\)</span></p>
-<p>直觉上来讲，信息熵用来描述系统信息量的不确定性，信息熵越大，不确定性越大（也称为「不纯度」越大）。对于<strong>随机变量</strong> X，其分布越均匀，则不确定性越大、信息熵越大；当每种取值的概率均为 <span class="math inline">\(\frac{1}{m}\)</span> 时，信息熵取得最大值。</p>
-<p>对于决策树中一个节点，其信息熵由 <span class="math inline">\(I_{H}(t) = -\sum_{i=1}^{c}p(i|t)log_2p(i|t)\)</span> 给出，其中 <span class="math inline">\(t\)</span> 是该节点的样本总体，<span class="math inline">\(i\)</span> 是某一类别的样本，<span class="math inline">\(p(i|t)\)</span> 即 i 类别的样本的占比。可以看出，当节点中的每种样本均匀分布时，该节点的信息熵最大，不纯度也最大</p></li>
-<li><p>基尼系数</p>
+<p>假设随机变量 X 具有 m 种取值，并且每种取值对应的概率是 $p_{i}$，即<br>
+$$<br>
+P(X=V_1) = p_1\<br>
+P(X=V_2) = p_2\<br>
+P(X=V_3) = p_3\<br>
+…\<br>
+P(X=V_m) = p_m\<br>
+$$<br>
+定义 X 的信息熵为 $E(X) = -\sum_{i=1}^{m}log_{2}{p_i} * p_{i}$</p>
+<p>直觉上来讲，信息熵用来描述系统信息量的不确定性，信息熵越大，不确定性越大（也称为「不纯度」越大）。对于<strong>随机变量</strong> X，其分布越均匀，则不确定性越大、信息熵越大；当每种取值的概率均为 $\frac{1}{m}$ 时，信息熵取得最大值。</p>
+<p>对于决策树中一个节点，其信息熵由 $I_{H}(t) = -\sum_{i=1}^{c}p(i|t)log_2p(i|t)$ 给出，其中 $t$ 是该节点的样本总体，$i$ 是某一类别的样本，$p(i|t)$ 即 i 类别的样本的占比。可以看出，当节点中的每种样本均匀分布时，该节点的信息熵最大，不纯度也最大</p>
+</li>
+<li>
+<p>基尼系数</p>
 <p>Gini Index</p>
-<p>定义节点的基尼系数为 <span class="math inline">\(I_{G}(t) = 1 - \sum_{i=1}^{c} p(i|t)^2\)</span>，其中的符号与信息熵中的含义一致。基尼系数越大，不纯度越大。同样，当节点中的样本均匀分布时，基尼系数最大</p></li>
+<p>定义节点的基尼系数为 $I_{G}(t) = 1 - \sum_{i=1}^{c} p(i|t)^2$，其中的符号与信息熵中的含义一致。基尼系数越大，不纯度越大。同样，当节点中的样本均匀分布时，基尼系数最大</p>
+</li>
 </ul>
 <p>需要指出的是，为了避免搜索空间过大（决策树的分支数），许多库的决策树实现均是二叉决策树</p>
-<h2 id="算法实现与结果">算法实现与结果</h2>
-<h3 id="读入数据集和数据清洗">读入数据集和数据清洗</h3>
+<h2 id="算法实现与结果"><a class="header-anchor" href="#算法实现与结果">¶</a>算法实现与结果</h2>
+<h3 id="读入数据集和数据清洗"><a class="header-anchor" href="#读入数据集和数据清洗">¶</a>读入数据集和数据清洗</h3>
 <p>直接清洗掉有空白列的记录，但是发现没有这样的记录;</p>
 <p>数据集中含有较多无用属性，事实上，我认为仅有 <code>UsefulCount</code> 和 <code>SideEffects</code> 是真正有用的属性。<code>reviewComment</code> 中也许可以通过分词、情绪检测等技术提取出使用者对于该药品的评价，但实现较为困难，本实验中不实现</p>
 <figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 读入数据集</span><br>train = pd.read_csv(<span class="hljs-string">"training.csv"</span>)<br>validation = pd.read_csv(<span class="hljs-string">"validation.csv"</span>)<br>test = pd.read_csv(<span class="hljs-string">"testing.csv"</span>)<br><br><span class="hljs-comment"># 数据清洗</span><br>train_X = train.iloc[:, <span class="hljs-number">5</span>:<span class="hljs-number">7</span>].values<br>train_y = train.iloc[:, -<span class="hljs-number">1</span>:].values<br>validation_X = validation.iloc[:, <span class="hljs-number">5</span>:<span class="hljs-number">7</span>].values<br>validation_y = validation.iloc[:, -<span class="hljs-number">1</span>:].values<br>test_X = test.iloc[:, <span class="hljs-number">5</span>:<span class="hljs-number">7</span>].values<br></code></pre></td></tr></tbody></table></figure>
-<h3 id="数据预处理">数据预处理</h3>
+<h3 id="数据预处理"><a class="header-anchor" href="#数据预处理">¶</a>数据预处理</h3>
 <p><code>SideEffects</code> 是<strong>序数</strong>类型的属性，使用 <code>sklearn.OrdinalEncoder</code> 进行编码，代码如下</p>
 <figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 数据预处理</span><br><span class="hljs-keyword">from</span> sklearn.preprocessing <span class="hljs-keyword">import</span> OrdinalEncoder<br><span class="hljs-keyword">from</span> sklearn.compose <span class="hljs-keyword">import</span> ColumnTransformer<br>enc = OrdinalEncoder(categories=[[<br>    <span class="hljs-literal">None</span>, <span class="hljs-comment"># 0</span><br>    <span class="hljs-string">"No Side Effects"</span>, <span class="hljs-comment"># 1</span><br>    <span class="hljs-string">"Mild Side Effects"</span>, <span class="hljs-comment"># 2</span><br>    <span class="hljs-string">"Moderate Side Effects"</span>, <span class="hljs-comment"># 3</span><br>    <span class="hljs-string">"Severe Side Effects"</span>, <span class="hljs-comment"># 4</span><br>    <span class="hljs-string">"Extremely Severe Side Effects"</span> <span class="hljs-comment"># 5</span><br>]])<br><span class="hljs-comment">#print(train_X[0:5, :])</span><br>ct = ColumnTransformer(transformers=[(<span class="hljs-string">'encoder'</span>, enc, [<span class="hljs-number">1</span>])], remainder=<span class="hljs-string">'passthrough'</span>)<br><span class="hljs-comment"># 注意被编码的列移到了最前面，现在第0列是sideEffects，第1列是usefulCount</span><br>train_X = np.array(ct.fit_transform(train_X))<br>validation_X = np.array(ct.transform(validation_X))<br>test_X = np.array(ct.transform(test_X))<br><span class="hljs-comment">#print(train_X[0:5, :])</span><br></code></pre></td></tr></tbody></table></figure>
-<h3 id="创建决策树">创建决策树</h3>
+<h3 id="创建决策树"><a class="header-anchor" href="#创建决策树">¶</a>创建决策树</h3>
 <p>使用 <code>sklearn.tree import DecisionTreeClassifier</code> 构建决策树，其参数有 8 个：criterion, random_state, splitter, max_depth, min_samples_split, min_samples_leaf, max_feature, min_impurity_decrease。实现中仅指定 <code>criterion='entropy'</code>，其他保持默认</p>
 <figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 构建划分函数和决策树模型</span><br><span class="hljs-keyword">from</span> sklearn.tree <span class="hljs-keyword">import</span> DecisionTreeClassifier<br>classifier = DecisionTreeClassifier(criterion=<span class="hljs-string">"entropy"</span>)<br>classifier.fit(train_X, train_y)<br></code></pre></td></tr></tbody></table></figure>
-<h3 id="评估和预测">评估和预测</h3>
+<h3 id="评估和预测"><a class="header-anchor" href="#评估和预测">¶</a>评估和预测</h3>
 <figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python">validation_pred = classifier.predict(validation_X)<br><span class="hljs-comment">#from sklearn.metrics import accuracy_score</span><br><span class="hljs-comment">#print(accuracy_score(validation_y, validation_pred))</span><br><br><span class="hljs-comment"># 使用Micro-F1和Macro-F1在validation上进行评估</span><br><span class="hljs-keyword">from</span> sklearn.metrics <span class="hljs-keyword">import</span> f1_score<br>micro_score = f1_score(validation_y, validation_pred, average=<span class="hljs-string">"micro"</span>)<br>macro_score = f1_score(validation_y, validation_pred, average=<span class="hljs-string">"macro"</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">"micro F1 score: "</span> + <span class="hljs-built_in">str</span>(micro_score))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">"macro F1 score: "</span> + <span class="hljs-built_in">str</span>(macro_score))<br><span class="hljs-comment"># 使用训练好的模型在testing上进行预测</span><br>test_pred = classifier.predict(test_X)<br><span class="hljs-comment"># 将预测结果写入新的csv文件</span><br>res = pd.DataFrame({<br>    <span class="hljs-string">"Prediction"</span>: test_pred<br>})<br>res.to_csv(<span class="hljs-string">"prediction.csv"</span>, index=<span class="hljs-literal">False</span>)<br></code></pre></td></tr></tbody></table></figure>
 <p>结果如下：</p>
-<figure>
-<img src="D:\TyporaPictures\score.png" srcset="/img/loading.gif" lazyload alt="image-20230402201711914"><figcaption>image-20230402201711914</figcaption>
-</figure>
+<p><img src="D:%5CTyporaPictures%5Cscore.png" srcset="/img/loading.gif" lazyload alt="image-20230402201711914"></p>
 <p>预测结果见 <code>prediction.csv</code></p>
 <p>参考文章</p>
-<ol type="1">
+<ol>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42442369/article/details/86625591">决策树算法笔记整理1 - 如何划分？（信息熵，不纯度及信息增益）_高尔夫球决策树_sevieryang的博客-CSDN博客</a></li>
 </ol>
 
