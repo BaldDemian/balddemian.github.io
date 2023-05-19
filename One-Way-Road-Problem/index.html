@@ -18,25 +18,23 @@
   <meta name="referrer" content="no-referrer" />
   <meta name="baidu-site-verification" content="code-Kbu5eBOiRE" />
   
-    <meta name="description" content="本文简要介绍B树和B+数的性质，并不涉及代码">
+    <meta name="description" content="经典的同步互斥问题-单行线问题">
 <meta property="og:type" content="article">
-<meta property="og:title" content="B树和B+树">
-<meta property="og:url" content="https://balddemian.icu/B-Tree-And-B-Plus-Tree/index.html">
+<meta property="og:title" content="单行线问题">
+<meta property="og:url" content="https://balddemian.icu/One-Way-Road-Problem/index.html">
 <meta property="og:site_name" content="Bald Demian">
-<meta property="og:description" content="本文简要介绍B树和B+数的性质，并不涉及代码">
+<meta property="og:description" content="经典的同步互斥问题-单行线问题">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://balddemian.icu/img/page1.jpg">
-<meta property="article:published_time" content="2022-05-26T17:00:00.000Z">
-<meta property="article:modified_time" content="2023-03-22T01:44:04.626Z">
+<meta property="article:published_time" content="2023-05-19T12:18:18.000Z">
+<meta property="article:modified_time" content="2023-05-19T12:20:00.267Z">
 <meta property="article:author" content="Peiyang He">
 <meta property="article:tag" content="考研">
-<meta property="article:tag" content="数据结构">
+<meta property="article:tag" content="OS">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://balddemian.icu/img/page1.jpg">
   
   
   
-  <title>B树和B+树 - Bald Demian</title>
+  <title>单行线问题 - Bald Demian</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -201,7 +199,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="B树和B+树"></span>
+            <span id="subtitle" data-typed-text="单行线问题"></span>
           
         </div>
 
@@ -212,8 +210,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-05-27 01:00" pubdate>
-          2022年5月27日 凌晨
+        <time datetime="2023-05-19 20:18" pubdate>
+          2023年5月19日 晚上
         </time>
       </span>
     
@@ -224,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.6k 字
+          941 字
         
       </span>
     
@@ -235,7 +233,7 @@
         
         
         
-          14 分钟
+          8 分钟
         
       </span>
     
@@ -273,60 +271,20 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">B树和B+树</h1>
+            <h1 style="display: none">单行线问题</h1>
             
             <div class="markdown-body">
               
-              <div class="note note-success">
-            <p>本文于 2023-03-15 更新</p>
-          </div>
-<h2 id="b-树">B 树</h2>
-<p>B 树，即 m 阶的平衡<strong>查找树</strong>。根据定义，树的阶是指树中所有节点孩子节点数的最大值。m 阶 B 树，即树中任意节点至多能有 m 个子树，亦即每个节点至多有 m - 1 个关键字。并且，每个节点的平衡因子均为 <strong>0</strong>。（绝对平衡）此外，B 树还必须满足以下性质：</p>
-<ol type="1">
-<li>树中每个节点<strong>至多</strong>有 m 棵子树，即<strong>至多</strong>含有 m - 1 个关键字</li>
-<li>若根节点不是叶节点，则根节点至少有 2 棵子树（因为至少有 1 个关键字，那么必然至少有 2 棵子树）</li>
-<li>除根节点以外的所有非叶节点，<strong>至少</strong>含有 <span class="math inline">\(\lceil m/2\rceil\)</span> 棵子树，亦即<strong>至少</strong>含有 <span class="math inline">\(\lceil m/2\rceil-1\)</span> 个关键字</li>
-<li>所有的叶节点均在同一层</li>
-</ol>
-<p>实际上，B 树中的叶节点是虚构出来的节点，类似于二分查找和顺序查找判定树中的失败节点。</p>
-<p>注意：一个 m 阶的 B 树，并<strong>不是一定</strong>要存在一个节点，它的子树有 m 个！</p>
-<p><strong>性质推导</strong></p>
-<p>一个含有 <span class="math inline">\(n\)</span> 个关键字，阶为 <span class="math inline">\(m\)</span> 的 B 树的最大高度和最小高度是多少？（高度不计算叶节点）</p>
-<ul>
-<li><p>最小高度</p>
-<p>高度最小，即每个节点尽可能地<strong>满</strong>。对于所有内节点，根据 B 树的定义，可以至多有 m 个子节点、至多有 m - 1 个关键字。</p>
-<p>那么第一层（仅有根节点）一共有 <span class="math inline">\(m - 1\)</span> 个关键字，亦即 <span class="math inline">\(m^{0} * (m-1)\)</span></p>
-<p>第二层（有 <span class="math inline">\(m\)</span> 个节点）一共有 <span class="math inline">\(m * (m-1)\)</span> 个关键字</p>
-<p>第三层（有 <span class="math inline">\(m^{2}\)</span> 个节点）一共有 <span class="math inline">\(m^{2} * (m-1)\)</span> 个关键字</p>
-<p>则第 <span class="math inline">\(h\)</span> 层一共有 <span class="math inline">\(m^{h-1} * (m-1)\)</span> 个关键字</p>
-<p>那么有 <span class="math inline">\((m^{0}+m^{1}+...+m^{h-1})(m-1) &gt;= n\)</span></p>
-<p>解得 <span class="math inline">\(h &gt;= log_{m}^{n+1}\)</span></p></li>
-<li><p>最大高度</p>
-<p><strong>推导 1：</strong></p>
-<p>高度最大，那么每个节点要尽可能地<strong>不满</strong>。但是由于 B 树的定义，根节点的子树至少有 2 个、其余所有内节点的子节点数不小于 <span class="math inline">\(\lceil m/2 \rceil\)</span>。记 <span class="math inline">\(\lceil m/2 \rceil\)</span> 为 <span class="math inline">\(k\)</span>，那么非根内节点至少有 <span class="math inline">\(k-1\)</span> 个关键字</p>
-<p>那么第一层至少有 1 个节点，有 1 个关键字</p>
-<p>第二层至少有 2 个节点，有 <span class="math inline">\(2*(k-1)\)</span> 个关键字</p>
-<p>第三层至少有 2k 个节点，有 <span class="math inline">\(2k*(k-1)\)</span> 个关键字</p>
-<p>第 <span class="math inline">\(h\)</span> 层至少有 <span class="math inline">\(2k^{h-2}\)</span> 个节点 <span class="math inline">\(2k^{h-2}*(k-1)\)</span> 个关键字</p>
-<p>第 <span class="math inline">\(h+1\)</span> 层至少有 <span class="math inline">\(2k^{h-1}\)</span> 个节点</p>
-<p>我们考察最下面一层（即第 <span class="math inline">\(h+1\)</span> 层）的叶节点，不难发现，对于含有 <span class="math inline">\(n\)</span> 个关键字的 B 树，其查找失败的失败节点数是 <span class="math inline">\(n+1\)</span>（事实上，任何的<strong>查找判定树</strong>都有这个性质）</p>
-<p>那么有：<span class="math inline">\(2k^{h-1} &lt;= n+1\)</span>，即 <span class="math inline">\(h &lt;= \log_k^{(n+1)/2} + 1\)</span></p>
-<p><strong>推导 2：</strong></p>
-<p>沿用最小高度的推导。根据以上，得到 <span class="math inline">\(h\)</span> 层<strong>至少</strong>有 <span class="math inline">\(2k^{h-1}-1\)</span> 个节点。</p>
-<p>那么有 <span class="math inline">\(2k^{h-1}-1 &lt;= n\)</span>，同样推出 <span class="math inline">\(h &lt;= \log_k^{(n+1)/2} + 1\)</span></p></li>
-</ul>
-<h2 id="b-树-1">B+ 树</h2>
-<p>B+ 树主要用于<strong>数据库</strong>，是对 B 树的一种变体。比如 MySQL 就使用 B+ 树作为其索引的数据结构</p>
-<p>一个 m 阶的 B+ 树，每个节点最多有 m 个子节点。同时，每个节点的平衡因子为 0</p>
-<p>B+ 树还有如下性质：</p>
-<ol type="1">
-<li>每个分支节点最多有 <span class="math inline">\(m\)</span> 棵子树</li>
-<li>非叶根节点至少有 2 棵子树，其他分支节点最少有 <span class="math inline">\(\lceil m/2 \rceil\)</span> 棵子树</li>
-<li>每个节点的关键字数目和子树数目<strong>相同</strong>（区别于 B 树！）</li>
-<li>所有叶子节点包含全部关键字及指向相应记录的指针，叶子节点内部各关键字按大小升序排列，并且相邻叶子节点有指向下一个叶子节点的指针</li>
-<li>分支节点中的每个关键字是其对应子树中的最大关键字的<strong>副本</strong>。B+ 树的叶子节点包含全部的关键字及指向对应<strong>记录</strong>的指针，所有非叶节点仅起到索引作用，即索引的索引</li>
-<li>一个 B+ 树，支持从根节点做随机查找，也支持从最左边的叶节点开始做顺序查找（区别于 B 树，B 树仅能从根节点出发做随机查找）。并且无论查找成功与否，B+ 树的查找路径均是从根节点到某个叶节点；B 树的查找可能停止在某个内节点</li>
-</ol>
+              <blockquote>
+<p>单行线问题，也可以是汽车过窄桥问题，是读者-写者问题的变体</p>
+<p><a target="_blank" rel="noopener" href="https://www.cs.umd.edu/~hollings/cs412/s96/synch/eastwest.html">412--East West Bridge Problem (umd.edu)</a></p>
+</blockquote>
+<h2 id="单行线每次只能有一辆车行驶">单行线每次只能有一辆车行驶</h2>
+<figure class="highlight c"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c">semaphore road = <span class="hljs-number">1</span>; <span class="hljs-comment">// mutex</span><br>process <span class="hljs-title function_">car</span><span class="hljs-params">()</span> {<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) {<br>    	P(road);<br>        <span class="hljs-comment">// pass through the road</span><br>        V(road);<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+<h2 id="单行线允许有多辆同一方向行驶的车辆">单行线允许有多辆同一方向行驶的车辆</h2>
+<figure class="highlight c"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs c">semaphore road = <span class="hljs-number">1</span>;<br>semaphore cnt1_mutex = <span class="hljs-number">1</span>;<br>semaphore cnt2_mutex = <span class="hljs-number">1</span>;<br><span class="hljs-type">int</span> cnt1, cnt2;<br>process <span class="hljs-title function_">car1</span><span class="hljs-params">()</span> {<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) {<br>        P(cnt1_mutex);<br>        cnt1++;<br>        <span class="hljs-keyword">if</span> (cn1 == <span class="hljs-number">1</span>) {<br>            P(road)<br>        }<br>        V(cnt1_mutex);<br>        <span class="hljs-comment">// pass through the road</span><br>        P(cnt1_mutex);<br>        cnt1--;<br>        <span class="hljs-keyword">if</span> (cnt1 == <span class="hljs-number">0</span>) {<br>            V(road);<br>        }<br>        V(cnt1_mutex);<br>    }<br>}<br>process <span class="hljs-title function_">car2</span><span class="hljs-params">()</span> {<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) {<br>        P(cnt2_mutex);<br>        cnt2++;<br>        <span class="hljs-keyword">if</span> (cn2 == <span class="hljs-number">1</span>) {<br>            P(road)<br>        }<br>        V(cnt2_mutex);<br>        <span class="hljs-comment">// pass through the road</span><br>        P(cnt2_mutex);<br>        cnt2--;<br>        <span class="hljs-keyword">if</span> (cnt2 == <span class="hljs-number">0</span>) {<br>            V(road);<br>        }<br>        V(cnt2_mutex);<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+<p>本场景下有些类似读者-写者问题。在读者-写者问题中，第一个开始执行的读者进程负责获取锁，最后一个执行完成的读者进程负责释放锁。本题中，每个方向上第一个开始执行的进程负责获取 road 的互斥锁，最后一个结束执行的进程负责释放锁。由于使用了变量来记录当前路上每个方向正在通行的车的数量，因此需要额外的信号量来控制对计数变量的互斥访问</p>
+<p>与读者-写者问题类似，该方法会导致「<strong>饥饿</strong>现象」，即一个方向的来车一直无法获得通行的机会</p>
 
               
             </div>
@@ -361,7 +319,7 @@
       
         <a href="/tags/%E8%80%83%E7%A0%94/">#考研</a>
       
-        <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">#数据结构</a>
+        <a href="/tags/OS/">#OS</a>
       
     </div>
   
@@ -373,8 +331,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>B树和B+树</div>
-      <div>https://balddemian.icu/B-Tree-And-B-Plus-Tree/</div>
+      <div>单行线问题</div>
+      <div>https://balddemian.icu/One-Way-Road-Problem/</div>
     </div>
     <div class="license-meta">
       
@@ -386,7 +344,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年5月27日</div>
+          <div>2023年5月19日</div>
         </div>
       
       
@@ -416,18 +374,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/Flyweight-Pattern/" title="享元模式">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">享元模式</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/Hello-World/" title="HelloWorld">
-                        <span class="hidden-mobile">HelloWorld</span>
+                      <a href="/LC-345/" title="LC 周赛 345 解题记录">
+                        <span class="hidden-mobile">LC 周赛 345 解题记录</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -481,12 +433,6 @@
 
 
   
-
-
-  
-  
-
-
 
 
 
@@ -730,44 +676,6 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
-
-  
-      <script>
-        MathJax = {
-          tex    : {
-            inlineMath: { '[+]': [['$', '$']] }
-          },
-          loader : {
-            load: ['ui/lazy']
-          },
-          options: {
-            renderActions: {
-              findScript    : [10, doc => {
-                document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
-                  const display = !!node.type.match(/; *mode=display/);
-                  const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-                  const text = document.createTextNode('');
-                  node.parentNode.replaceChild(text, node);
-                  math.start = { node: text, delim: '', n: 0 };
-                  math.end = { node: text, delim: '', n: 0 };
-                  doc.math.push(math);
-                });
-              }, '', false],
-              insertedScript: [200, () => {
-                document.querySelectorAll('mjx-container').forEach(node => {
-                  let target = node.parentNode;
-                  if (target.nodeName.toLowerCase() === 'li') {
-                    target.parentNode.classList.add('has-jax');
-                  }
-                });
-              }, '', false]
-            }
-          }
-        };
-      </script>
-    
-
-  <script  src="https://lib.baomitu.com/mathjax/3.2.0/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 
