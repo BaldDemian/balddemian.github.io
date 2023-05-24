@@ -25,17 +25,17 @@
 <meta property="og:site_name" content="Bald Demian">
 <meta property="og:description" content="记录下一些杂七杂八的基础知识，硬件、算法、数学...">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="d:/TyporaPictures/image-20220928180755290.png">
+<meta property="og:image" content="d:%5CTyporaPictures%5Cimage-20220928180755290.png">
 <meta property="og:image" content="d:/TyporaPictures/image-20230214205640492.png">
 <meta property="og:image" content="https://img.balddemian.icu/img/AOP.png">
 <meta property="article:published_time" content="2022-09-03T05:47:38.000Z">
 <meta property="article:modified_time" content="2023-03-23T07:21:46.386Z">
 <meta property="article:author" content="Peiyang He">
+<meta property="article:tag" content="施工中">
 <meta property="article:tag" content="计算机基础">
 <meta property="article:tag" content="计算机组成">
-<meta property="article:tag" content="施工中">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="d:/TyporaPictures/image-20220928180755290.png">
+<meta name="twitter:image" content="d:%5CTyporaPictures%5Cimage-20220928180755290.png">
   
   
   
@@ -280,55 +280,57 @@
             
             <div class="markdown-body">
               
-              <h2 id="硬件与体系结构">硬件与体系结构</h2>
-<h3 id="冯诺依曼架构与哈佛架构">冯诺依曼架构与哈佛架构</h3>
+              <h2 id="硬件与体系结构"><a class="header-anchor" href="#硬件与体系结构">¶</a>硬件与体系结构</h2>
+<h3 id="冯诺依曼架构与哈佛架构"><a class="header-anchor" href="#冯诺依曼架构与哈佛架构">¶</a>冯诺依曼架构与哈佛架构</h3>
 <ul>
 <li>冯诺依曼架构：数据和程序存放在一个存储空间中，统一编址，指令和数据通过同一条总线访问</li>
 <li>哈佛架构：数据和程序存放在不同的存储空间中，即程序存储器和数据存储器是两个不同的存储器，每个存储器独立编址、独立访问。与之相对应的是系统中设置的两条总线：程序总线与数据总线，从而使得数据（包括指令）的吞吐量大了一倍</li>
 </ul>
-<h3 id="位数字长">位数、字长</h3>
+<h3 id="位数、字长"><a class="header-anchor" href="#位数、字长">¶</a>位数、字长</h3>
 <p>现在最常用的 CPU 都是 64 位。64 位的 CPU 指的是：<strong>机器字长</strong>是 64 位。那么机器字长又是什么呢？<strong>机器字长</strong>，即计算机进行一次<strong>整数</strong>运算所<strong>最多</strong>能处理的二进制数据的位数。我们也许还会看到这几个名词：指令字长、存储字长、数据字长。哇这都是些啥啊，要被绕昏了，且看：</p>
-<ol type="1">
+<ol>
 <li>存储字长：主存（即内存）中的每个存储<strong>单元</strong>所能存储的二进制数据的位数称为<strong>存储字长</strong>。需要注意的是存储字长和<strong>地址空间</strong>也不是一个东西。地址空间是指能有多少个存储单元，存储字长是单个存储单元中存储的二进制代码的长度。编址方式就决定了存储字长，比如按字节编址，就是说一个存储单元中有 1 个字节，存储字长是 1 个字节；地址空间是由地址码长度决定的</li>
 <li>指令字长：我们知道一条指令由操作码和地址码组成，一条指令的长度就是指令字长。同一个指令集中，不同指令的字长可以不同</li>
 <li>数据总线的宽度叫做<strong>数据字长</strong>，数据总线的宽度与 CPU 控制器中的 MDR 寄存器的位数相同。数据字长可以是存储字长的整数倍，意味着 CPU 一次访存可以同时访问多个存储单元</li>
 <li>早期的计算机，存储字长一般与指令字长、数据字长相等。但是现代计算机中可以不一样，例如指令字长是存储字长的两倍，那我们称这条指令是一条双字指令，它占据内存中两个连续的存储单元，那么则需要两次访存才能取出一条完整的指令（即取指周期是机器周期的两倍。什么是机器周期？我们暂且认为机器周期就是主存一个存储单元的存取周期）</li>
 <li>操作系统的字长指的是操作系统可寻址的位数。64 位的操作系统是为 64 位的架构的计算机设计的操作系统，32 位的操作系统也可以用于 64 位架构的机器，但是 64 位的操作系统不可以运行在 32 位架构的计算机上</li>
 </ol>
-<h3 id="硬堆栈与软堆栈">硬堆栈与软堆栈</h3>
+<h3 id="硬堆栈与软堆栈"><a class="header-anchor" href="#硬堆栈与软堆栈">¶</a>硬堆栈与软堆栈</h3>
 <p>堆栈的实现方式有两种：</p>
 <ul>
 <li>硬堆栈：用寄存器<strong>组</strong>实现堆栈，优点是速度快，缺点是成本高、容量小</li>
 <li>软堆栈：用内存实现堆栈，优点是容量大、成本低</li>
 </ul>
 <p>不管是哪种实现方式，均有一个 SP 寄存器（stack pointer）指向当前的栈顶元素的地址（或者下一个地址）</p>
-<h3 id="risc-与-cisc">RISC 与 CISC</h3>
+<h3 id="RISC-与-CISC"><a class="header-anchor" href="#RISC-与-CISC">¶</a>RISC 与 CISC</h3>
 <ul>
-<li><p>RISC, Reduced Instrcution Set Computer。通过少量的简单指令来组合出复杂的功能。RISC 的出现与计算机中的「二八法则」有关<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="「二八法则」广泛存在于现实世界中：例如任何国家的 20％ 的人口拥有 80％ 的国民财富，完成 80％ 的工作需要 20％的工作量等
+<li>
+<p>RISC, Reduced Instrcution Set Computer。通过少量的简单指令来组合出复杂的功能。RISC 的出现与计算机中的「二八法则」有关<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="「二八法则」广泛存在于现实世界中：例如任何国家的 20％ 的人口拥有 80％ 的国民财富，完成 80％ 的工作需要 20％的工作量等
 ">[1]</span></a></sup>，即 80% 的功能只用到了 20% 的指令；</p>
 <p>电路简单（？），并且由于每个指令都不复杂，使得它们的执行时间差不多（几乎都可以在一个时钟周期中完成），一定使用<strong>指令流水线技术</strong>；</p>
 <p>仅有 LOAD 与 STORE 指令可以访存，因此 RISC 中的寄存器较多，因为必须先将数据从主存中 LOAD 进寄存器中；</p>
 <p>可以进行编译优化；</p>
 <p>控制器采用「硬布线控制器」</p>
-<p>代表：ARM 架构</p></li>
-<li><p>CISC, Complex Instruction Set Computer。为复杂的功能单独设计指令；</p>
+<p>代表：ARM 架构</p>
+</li>
+<li>
+<p>CISC, Complex Instruction Set Computer。为复杂的功能单独设计指令；</p>
 <p>可以访存的指令有很多；如某些运算指令可以直接从主存读取数据进行运算，不需要 LOAD 指令</p>
 <p>难以进行编译优化；</p>
 <p>控制器采用「微程序控制器」</p>
-<p>代表：PC 上的 x86 架构</p></li>
+<p>代表：PC 上的 x86 架构</p>
+</li>
 </ul>
-<h3 id="gpu">GPU</h3>
+<h3 id="GPU"><a class="header-anchor" href="#GPU">¶</a>GPU</h3>
 <p>GPU 是 Graphics Processing Unit 的简称。</p>
 <p>CPU 追求低延时(latency)，而 GPU追求 高吞吐(throuputs)。</p>
 <p>GPU 有着更多的 ALU，因此 GPU 具有强大的<strong>并行计算</strong>能力，如<strong>矩阵</strong>的计算。因此，GPU 常用于加速深度学习。</p>
 <p>GPU 有自己的 RAM，即 VRAM(video ram)。VRAM 比 CPU 中的 RAM 容量<strong>小</strong>。</p>
 <p>GPU 在处理控制逻辑（分支、跳转、循环）较多的运算时不如 CPU。</p>
-<h3 id="大端序小端序">大端序、小端序</h3>
+<h3 id="大端序、小端序"><a class="header-anchor" href="#大端序、小端序">¶</a>大端序、小端序</h3>
 <p>现代计算机主存一般采用按字节编址，即一个存储单元存储 1 个字节（或者理解为 8 个比特共享一个地址）。但是对于那些占据多个字节的数据类型，应该如何安排不同字节在内存中的排列方式呢？我们有两种解决方案：大端序和小端序</p>
 <p>口诀：小端序：高字节高地址；大端序：高字节低地址</p>
-<figure>
-<img src="D:\TyporaPictures\image-20220928180755290.png" srcset="/img/loading.gif" lazyload alt="image-20220928180755290"><figcaption>image-20220928180755290</figcaption>
-</figure>
+<p><img src="D:%5CTyporaPictures%5Cimage-20220928180755290.png" srcset="/img/loading.gif" lazyload alt="image-20220928180755290"></p>
 <p>指的是多字节的哪一端存储在该值的起始地址处。</p>
 <p>大端序中，最高有效字节 MSB 存储在地址的最低位，最低有效字节 LSB 存储在地址的最高位；小端序则与大端序相反。具体看下面示例：</p>
 <p>我们观察十进制数 9877，其原码为 10011010010101，补码为 0010 0110 1001 0101（补 0 扩展为 2 个字节，计算机内部存储的是数的补码、补码原码的转换等不再赘述）。</p>
@@ -345,47 +347,65 @@
 <p>某些 ARM 架构的处理器可以自己选择大端序还是小端序</p>
 <p><strong>拓展：判断机器是大端序还是小端序</strong></p>
 <figure class="highlight c++"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-type">short</span> big = <span class="hljs-number">0xff00</span>; <span class="hljs-comment">// 最高有效字节是0xff，最低有效字节是0x00. C++中short为16位，占两个字节</span><br><span class="hljs-type">char</span> little = big; <span class="hljs-comment">// C++中little为一个字节，并且将short赋值给char时，截取的是低地址起的部分</span><br><span class="hljs-keyword">if</span> (little == <span class="hljs-number">0xff</span>) {<br>    cout &lt;&lt; <span class="hljs-string">"Big-Endian"</span> &lt;&lt; endl; <span class="hljs-comment">// 低地址高字节，大端序</span><br>} <span class="hljs-keyword">else</span> {<br>    cout &lt;&lt; <span class="hljs-string">"Little-Endian"</span> &lt;&lt; endl; <span class="hljs-comment">// little=0x00，低地址低字节，小端序</span><br>}<br><span class="hljs-comment">// 本机使用10代i7，运行结果为小端序</span><br></code></pre></td></tr></tbody></table></figure>
-<h3 id="热插拔-热加载-热部署">热插拔 热加载 热部署</h3>
+<h3 id="热插拔-热加载-热部署"><a class="header-anchor" href="#热插拔-热加载-热部署">¶</a>热插拔 热加载 热部署</h3>
 <ul>
-<li><p>热插拔</p>
-<p>热插拔 <strong>Hot Swap</strong> 即带电插拔，指的是在<strong>不</strong>关闭系统电源的情况下，将模块、板卡插入或拔出系统而不影响系统的正常工作，从而提高了系统的<strong>可靠性、快速维修性、冗余性和对灾难的及时恢复能力</strong>等。对于大功率模块化电源系统而言，热插拔技术可在维持整个电源系统电压的情况下，更换发生故障的电源模块，并保证模块化电源系统中其他电源模块正常运作。（摘自百度百科）</p></li>
-<li><p>热加载</p>
-<p>指的是在<strong>不重启</strong>服务的情况下，使得修改的程序代码生效。典型的热加载的案例是 Vue，比如新加了一个页面，可以不必重新运行 <code>npm build</code> 和 <code>npm serve</code> 即可查看网页变更</p></li>
-<li><p>热部署</p>
-<p>与以上两个概念相似，指为软件增加新模块后，可以<strong>不必重启</strong>整个系统。对于某些重要系统而言，重启关机是不可接受的，所以热部署很重要</p></li>
+<li>
+<p>热插拔</p>
+<p>热插拔 <strong>Hot Swap</strong> 即带电插拔，指的是在<strong>不</strong>关闭系统电源的情况下，将模块、板卡插入或拔出系统而不影响系统的正常工作，从而提高了系统的<strong>可靠性、快速维修性、冗余性和对灾难的及时恢复能力</strong>等。对于大功率模块化电源系统而言，热插拔技术可在维持整个电源系统电压的情况下，更换发生故障的电源模块，并保证模块化电源系统中其他电源模块正常运作。（摘自百度百科）</p>
+</li>
+<li>
+<p>热加载</p>
+<p>指的是在<strong>不重启</strong>服务的情况下，使得修改的程序代码生效。典型的热加载的案例是 Vue，比如新加了一个页面，可以不必重新运行 <code>npm build</code> 和 <code>npm serve</code> 即可查看网页变更</p>
+</li>
+<li>
+<p>热部署</p>
+<p>与以上两个概念相似，指为软件增加新模块后，可以<strong>不必重启</strong>整个系统。对于某些重要系统而言，重启关机是不可接受的，所以热部署很重要</p>
+</li>
 </ul>
-<h3 id="从按下开机键到操作系统启动发生了什么">从按下开机键到操作系统启动发生了什么？</h3>
+<h3 id="从按下开机键到操作系统启动发生了什么？"><a class="header-anchor" href="#从按下开机键到操作系统启动发生了什么？">¶</a>从按下开机键到操作系统启动发生了什么？</h3>
 <p><s>老八股了</s></p>
 <p><strong>主要基于 X86 架构</strong></p>
 <ul>
-<li><p>通电后激活 CPU，IR(Intruction Register) 置为 BIOS 的第一条指令(存储在 CPU 内部的 ROM 中，包括指令集的<strong>微指令序列</strong>也存储在这个 ROM 中)，CPU 开始执行 BIOS 程序</p></li>
-<li><p>BIOS 执行 POST 自检，即 Power-On Self Test</p></li>
-<li><p>一台机器中可能有多个磁盘，BIOS 根据保存在 CMOS（主板上的另一个区域，保存主板的重要参数，如电压、系统时间）的磁盘启动顺序，或与用户交互的顺序，启动第一位的磁盘</p></li>
-<li><p>BIOS 搜寻该磁盘第 0 盘面第 0 磁道第 1 扇区，如果该扇区以 <code>0xAA55</code>（一个特定的<strong>魔数</strong>） 结尾，则被 BIOS 视为<strong>主引导扇区</strong></p>
+<li>
+<p>通电后激活 CPU，IR(Intruction Register) 置为 BIOS 的第一条指令(存储在 CPU 内部的 ROM 中，包括指令集的<strong>微指令序列</strong>也存储在这个 ROM 中)，CPU 开始执行 BIOS 程序</p>
+</li>
+<li>
+<p>BIOS 执行 POST 自检，即 Power-On Self Test</p>
+</li>
+<li>
+<p>一台机器中可能有多个磁盘，BIOS 根据保存在 CMOS（主板上的另一个区域，保存主板的重要参数，如电压、系统时间）的磁盘启动顺序，或与用户交互的顺序，启动第一位的磁盘</p>
+</li>
+<li>
+<p>BIOS 搜寻该磁盘第 0 盘面第 0 磁道第 1 扇区，如果该扇区以 <code>0xAA55</code>（一个特定的<strong>魔数</strong>） 结尾，则被 BIOS 视为<strong>主引导扇区</strong></p>
 <blockquote>
 <p>主引导扇区也叫 MBR，Master Boot Record，其内容是一段二进制代码、磁盘分区表、魔数</p>
 </blockquote>
 <blockquote>
 <p>磁盘分区表是什么？磁盘分区(partition)是什么？</p>
 <p>磁盘分区就是将磁盘分为一个或多个<strong>柱面</strong>（柱面：不同盘面上的同一位置的扇区构成一个柱面，想象一下圆柱的形状~），每个分区可以使用不同的文件系统。比如 Windows 下经典的 C 盘和 D 盘就是两个分区。那么操作系统怎么知道每个分区开始于哪个柱面、占据几个柱面呢？每个分区的起始扇区和大小被记录在 MBR 的分区表中。</p>
-</blockquote></li>
-<li><p>此时将这个扇区装入<strong>物理</strong>地址 07C00H 处，修改 PC 为 07C00H，BIOS 交出 CPU，开始执行 BootLoader。前面提到过，MBR 中的可执行代码很短，其唯一的作用是将第二级的 BootLoader 加载进内存，并开始执行</p></li>
-<li><p>第二级的 BootLoader 可以让用户选择要加载的操作系统。将对应的操作系统内核加载进内存后，交由内核执行更多的工作...</p></li>
+</blockquote>
+</li>
+<li>
+<p>此时将这个扇区装入<strong>物理</strong>地址 07C00H 处，修改 PC 为 07C00H，BIOS 交出 CPU，开始执行 BootLoader。前面提到过，MBR 中的可执行代码很短，其唯一的作用是将第二级的 BootLoader 加载进内存，并开始执行</p>
+</li>
+<li>
+<p>第二级的 BootLoader 可以让用户选择要加载的操作系统。将对应的操作系统内核加载进内存后，交由内核执行更多的工作…</p>
+</li>
 </ul>
 <p>再补充一个有意思的细节</p>
 <ul>
 <li>我们知道读取键盘输入、在屏幕上显示信息，是通过<strong>中断</strong>实现的，在汇编编程中，我们调用操作系统提供的中断。但是在二阶段的引导操作系统时，屏幕上已经出现了输入，并且可以读取键盘输入（让用户选择要启动哪个操作系统），这<strong>同样</strong>是通过中断实现的。这里的中断是由 BIOS 提供的。也就是说，<strong>存在两套中断</strong>，一套由 BIOS 提供，一套由操作系统提供</li>
 </ul>
 <p>Ref：</p>
-<ol type="1">
+<ol>
 <li><a target="_blank" rel="noopener" href="https://en.wikibooks.org/wiki/X86_Assembly/Bootloaders">x86 Assembly/Bootloaders - Wikibooks, open books for an open world</a></li>
 <li><a target="_blank" rel="noopener" href="https://web.mit.edu/rhel-doc/4/RH-DOCS/rhel-rg-en-4/s1-boot-init-shutdown-process.html">A Detailed Look at the Boot Process (mit.edu)</a></li>
 </ol>
-<h3 id="符号链接与硬链接">符号链接与硬链接</h3>
+<h3 id="符号链接与硬链接"><a class="header-anchor" href="#符号链接与硬链接">¶</a>符号链接与硬链接</h3>
 <p><s>老 408 了</s></p>
-<h2 id="数学">数学</h2>
-<h3 id="停机问题">停机问题</h3>
-<p>停机问题，halting problem，<strong>离散数学</strong>中的一个经典问题。通俗地说，停机问题就是判断任意一个程序是否能在<strong>有限的时间之内</strong>结束运行的问题。（摘自维基百科）<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="停机问题 - 维基百科，自由的百科全书 (wikipedia.org)
+<h2 id="数学"><a class="header-anchor" href="#数学">¶</a>数学</h2>
+<h3 id="停机问题"><a class="header-anchor" href="#停机问题">¶</a>停机问题</h3>
+<p>停机问题，halting problem，<strong>离散数学</strong>中的一个经典问题。通俗地说，停机问题就是判断任意一个程序是否能在<strong>有限的时间之内</strong>结束运行的问题。（摘自维基百科）<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="停机问题 - 维基百科，自由的百科全书 (wikipedia.org)
 ">[2]</span></a></sup></p>
 <p>该问题<strong>等价</strong>于如下的判定问题：是否<strong>存在</strong>一个程序 P，对于<strong>任意</strong>输入的程序 W ，能够判断 W 会在有限时间内结束或者死循环。事实上并不存在这样的程序 P，停机问题是一个<strong>不可判定问题</strong>。下面引用维基百科中的反证法证明：</p>
 <p>形式化的表述停机问题，我们假设存在一个这样的程序（也可以理解为函数）<code>int H(P, i)</code>，它可以判断给定的<strong>程序</strong> P 在 i 的输入下（表示为 P(i)）是否可以停机，可以停机则返回1，不可停机（陷入死循环）则输出0。显然，H 本身也可以作为参数中的 P 和 i（H本身是一个程序，所以作为 P 是显然的；程序本身也可以是一种输入，所以 H 可以作为 i）。下面我们再定义一个函数 <code>U(P)</code>，这个函数在其内部调用 H(P, P) 并根据其输出输出相反结果，伪码如下：</p>
@@ -397,34 +417,38 @@
 <li>综上，停机问题不可解</li>
 </ul>
 <p>P.S. <a href="">这是一个借助理发师悖论解释停机问题的知乎回答</a>。理发师问题：有这样一个奇怪的理发师，他给且仅给那些不给自己理发的人理发（这听上去就是一个理发师该干的事嘛，但是我们如果思考这个理发师会不会给自己理发，就很容易找出悖论）</p>
-<h3 id="素性测试todo">素性测试(todo)</h3>
-<h3 id="求最大公约数">求最大公约数</h3>
+<h3 id="素性测试-todo"><a class="header-anchor" href="#素性测试-todo">¶</a>素性测试(todo)</h3>
+<h3 id="求最大公约数"><a class="header-anchor" href="#求最大公约数">¶</a>求最大公约数</h3>
 <p>使用<strong>欧几里得算法</strong>。</p>
-<p>要点：对于 <span class="math inline">\(a, b\)</span>，设两者的最大公约数为 <span class="math inline">\(d\)</span>，再设 <span class="math inline">\(a &gt;= b\)</span>。显然有 <span class="math inline">\(gcd(a-b, b) = d\)</span> 成立</p>
+<p>要点：对于 $a, b$，设两者的最大公约数为 $d$，再设 $a &gt;= b$。显然有 $gcd(a-b, b) = d$ 成立</p>
 <figure class="highlight c++"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">gcd</span><span class="hljs-params">(<span class="hljs-type">int</span> a, <span class="hljs-type">int</span> b)</span> </span>{<br>    <span class="hljs-keyword">if</span> (b == <span class="hljs-number">0</span>) {<br>        <span class="hljs-keyword">return</span> a;<br>    }<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">gcd</span>(b, a % b);<br>}<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">gcd0</span><span class="hljs-params">(<span class="hljs-type">int</span> a, <span class="hljs-type">int</span> b)</span> </span>{<br>    <span class="hljs-keyword">if</span> (a == <span class="hljs-number">0</span>) {<br>        <span class="hljs-keyword">return</span> b;<br>    }<br>    <span class="hljs-keyword">if</span> (b == <span class="hljs-number">0</span>) {<br>        <span class="hljs-keyword">return</span> a;<br>    }<br>    <span class="hljs-keyword">if</span> (a == b) {<br>        <span class="hljs-keyword">return</span> a;<br>    }<br>    <span class="hljs-keyword">if</span> (a &gt; b) {<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">gcd</span>(b, a - b);<br>    }<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">gcd</span>(a, b - a);<br>}<br></code></pre></td></tr></tbody></table></figure>
-<h3 id="裴蜀定理-bézouts-lemma">裴蜀定理 Bézout's lemma</h3>
-<p>设 <span class="math inline">\(a, b\)</span> 是不全为 0 的整数，则存在<strong>整数</strong> <span class="math inline">\(x, y\)</span>，使得 <span class="math inline">\(xa+yb=gcd(a, b)\)</span> 成立</p>
+<h3 id="裴蜀定理-Bezout’s-lemma"><a class="header-anchor" href="#裴蜀定理-Bezout’s-lemma">¶</a>裴蜀定理 Bézout’s lemma</h3>
+<p>设 $a, b$ 是不全为 0 的整数，则存在<strong>整数</strong> $x, y$，使得 $xa+yb=gcd(a, b)$ 成立</p>
 <ul>
-<li>可以推广至 <span class="math inline">\(n\)</span> 个<strong>整数</strong>的情形</li>
-<li>常用变形：<span class="math inline">\(xa+yb=n*gcd(a, b)\)</span></li>
+<li>可以推广至 $n$ 个<strong>整数</strong>的情形</li>
+<li>常用变形：$xa+yb=n*gcd(a, b)$</li>
 </ul>
 <p>证明：（todo）</p>
 <p>力扣题</p>
 <ul>
-<li><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/check-if-it-is-a-good-array/">1250. 检查「好数组」 - 力扣（LeetCode）</a></p>
+<li>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/check-if-it-is-a-good-array/">1250. 检查「好数组」 - 力扣（LeetCode）</a></p>
 <p>本题利用到了裴蜀定理在 <code>n</code> 个数上的推广。题目转换为，存在一段区间，其中的所有的数的最大公约数为 1。观察发现，如果某个子区间的最大公约数为 1，那么整个数组的最大公约数应该也为 1。事实上，可以证明，当整个数组的最大公约数为 1，则一定存在某段子区间，其中的元素的最大公约数为 1。</p>
-<p>根据以上推导，我们从左到右遍历数组，求取元素的最大公约数，如果某轮求取的最大公约数为 1，那这个数组就是一个「好数组」，直接返回；循环退出，即返回 <code>false</code></p></li>
-<li><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/water-and-jug-problem/">365. 水壶问题 - 力扣（LeetCode）</a></p>
-<p>其实这道题的难点在于证明为何可以利用裴蜀定理</p></li>
+<p>根据以上推导，我们从左到右遍历数组，求取元素的最大公约数，如果某轮求取的最大公约数为 1，那这个数组就是一个「好数组」，直接返回；循环退出，即返回 <code>false</code></p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/water-and-jug-problem/">365. 水壶问题 - 力扣（LeetCode）</a></p>
+<p>其实这道题的难点在于证明为何可以利用裴蜀定理</p>
+</li>
 </ul>
 <p>Ref：</p>
 <p><a target="_blank" rel="noopener" href="https://oi-wiki.org/math/number-theory/bezouts/">裴蜀定理 - OI Wiki (oi-wiki.org)</a></p>
-<h3 id="卡特兰数">卡特兰数</h3>
-<h3 id="埃氏筛">埃氏筛</h3>
-<h3 id="摩尔投票法">摩尔投票法</h3>
-<h3 id="格雷码">格雷码</h3>
-<p>在一个整数的二进制表示的序列中，如果前一个数与后一个数仅有一个二进制位不同，且首尾元素也仅有一个二进制位不同，那么这个序列中的编码就是<strong>格雷编码</strong>。如序列 <span class="math inline">\(0, 1, 3, 2\)</span>，其对应的二进制序列为 <code>00, 01, 11, 10</code>。</p>
-<p><span class="math inline">\(n\)</span> 位的格雷码序列，即每个二进制数均为 <span class="math inline">\(n\)</span> 位，那么对应的十进制数有 <span class="math inline">\(2^n\)</span> 个，即 <span class="math inline">\([0, 2^n-1]\)</span>。在该序列第 <span class="math inline">\(i\)</span> 个位置上的格雷码，计算方式如下：$gray[i]=i (i&gt;&gt;1) $</p>
+<h3 id="卡特兰数"><a class="header-anchor" href="#卡特兰数">¶</a>卡特兰数</h3>
+<h3 id="埃氏筛"><a class="header-anchor" href="#埃氏筛">¶</a>埃氏筛</h3>
+<h3 id="摩尔投票法"><a class="header-anchor" href="#摩尔投票法">¶</a>摩尔投票法</h3>
+<h3 id="格雷码"><a class="header-anchor" href="#格雷码">¶</a>格雷码</h3>
+<p>在一个整数的二进制表示的序列中，如果前一个数与后一个数仅有一个二进制位不同，且首尾元素也仅有一个二进制位不同，那么这个序列中的编码就是<strong>格雷编码</strong>。如序列 $0, 1, 3, 2$，其对应的二进制序列为 <code>00, 01, 11, 10</code>。</p>
+<p>$n$ 位的格雷码序列，即每个二进制数均为 $n$ 位，那么对应的十进制数有 $2^n$ 个，即 $[0, 2^n-1]$。在该序列第 $i$ 个位置上的格雷码，计算方式如下：$gray[i]=i \oplus (i&gt;&gt;1) $</p>
 <p>相关题目：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/gray-code/description/?orderBy=most_votes">89. 格雷编码 - 力扣（Leetcode）</a></li>
@@ -434,10 +458,10 @@
 <ul>
 <li><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/circular-permutation-in-binary-representation/solutions/2127953/python3javacgo-yi-ti-shuang-jie-er-jin-z-6mgs/">1238. 循环码排列 - 力扣（Leetcode）</a></li>
 </ul>
-<h3 id="十进制小数转二进制数">十进制小数转二进制数</h3>
+<h3 id="十进制小数转二进制数"><a class="header-anchor" href="#十进制小数转二进制数">¶</a>十进制小数转二进制数</h3>
 <figure class="highlight c++"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> {<br><span class="hljs-keyword">public</span>:<br><br>    <span class="hljs-function">string <span class="hljs-title">printBin</span><span class="hljs-params">(<span class="hljs-type">double</span> num)</span> </span>{<br>        string ans = <span class="hljs-string">"0."</span>;<br>        <span class="hljs-keyword">while</span> (num != <span class="hljs-number">0.0</span>) {<br>            num *= <span class="hljs-number">2</span>;<br>            <span class="hljs-keyword">if</span> (num &gt;= <span class="hljs-number">1.0</span>) {<br>                num -= <span class="hljs-number">1</span>;<br>                ans += <span class="hljs-string">"1"</span>;<br>            } <span class="hljs-keyword">else</span> {<br>                ans += <span class="hljs-string">"0"</span>;<br>            }<br>            <span class="hljs-keyword">if</span> (ans.<span class="hljs-built_in">size</span>() &gt; <span class="hljs-number">32</span>) {<br>                <span class="hljs-keyword">return</span> <span class="hljs-string">"ERROR"</span>;<br>            }<br>        }<br>        <span class="hljs-keyword">if</span> (num == <span class="hljs-number">0.0</span>) {<br>            <span class="hljs-keyword">return</span> ans;<br>        }<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">"ERROR"</span>;<br>    }<br>};<br></code></pre></td></tr></tbody></table></figure>
-<h2 id="数据结构">数据结构</h2>
-<h3 id="布隆过滤器">布隆过滤器</h3>
+<h2 id="数据结构"><a class="header-anchor" href="#数据结构">¶</a>数据结构</h2>
+<h3 id="布隆过滤器"><a class="header-anchor" href="#布隆过滤器">¶</a>布隆过滤器</h3>
 <p>在平常的算法题中，判断元素<strong>是否存在</strong>在某个集合中，我们常用的是哈希表。但是在千万级的数据量时，使用哈希表显然是不合适的。布隆过滤器可以节省空间，并且插入元素和查询元素的速度都很快，缺点是有一定概率误判：如果一个元素经布隆过滤器判断后存在，那么它也有可能不存在（由于哈希碰撞的原因）；但是一个元素经布隆过滤器判断后不存在，那么它就一定不存在。</p>
 <p>从上述描述中，我们发现布隆过滤器的效率取决于哈希碰撞的概率。那相比一般的 HashTable，布隆过滤器是如何降低哈希冲突的概率呢？</p>
 <p>布隆过滤器实现的简述：</p>
@@ -448,10 +472,10 @@
 <p>我们对待加入的元素 x 执行 n 次不同的散列，得到 n 个的结果，我们将这 n 个结果对应的 BitSet 下标处置 1，这就完成了元素的插入；</p>
 <p>当查询元素是否存在时，我们对待查元素 x 同样执行 n 次不同的散列，得到 n 个 BitSet 中的下标，然后去检查这 n 个下标处是不是均为 1；若均为 1，那说明待查元素 x 「可能」存在在集合中（虽然布隆过滤器的算法导致哈希碰撞的概率较低，但毕竟不是不可能事件）；若有一处不为 1，那么 x 「肯定不在」集合中。</p>
 <p>同时相比于一般的哈希表，由于布隆过滤器中存储的不是实际的数据，数据的安全性也提高了</p>
-<h2 id="工程实践">工程实践</h2>
-<h3 id="java-web-开发中的一些基本概念">Java Web 开发中的一些基本概念</h3>
-<h4 id="servlet-与-jsp">Servlet 与 JSP</h4>
-<p><img src="D:\TyporaPictures\image-20230214205640492.png" srcset="/img/loading.gif" lazyload alt="image-20230214205640492" style="zoom:50%;"></p>
+<h2 id="工程实践"><a class="header-anchor" href="#工程实践">¶</a>工程实践</h2>
+<h3 id="Java-Web-开发中的一些基本概念"><a class="header-anchor" href="#Java-Web-开发中的一些基本概念">¶</a>Java Web 开发中的一些基本概念</h3>
+<h4 id="Servlet-与-JSP"><a class="header-anchor" href="#Servlet-与-JSP">¶</a>Servlet 与 JSP</h4>
+<img src="D:\TyporaPictures\image-20230214205640492.png" srcset="/img/loading.gif" lazyload alt="image-20230214205640492" style="zoom:50%;">
 <ul>
 <li>Servlet 是一种用于创建 <strong>Web 应用</strong>的技术，用于处理服务器收到的请求。大致的过程时，服务器收到请求后，发送给<strong>对应的 Servlet</strong></li>
 <li>Servlet 是一套 <strong>API</strong>，一个 Java <strong>类</strong></li>
@@ -459,44 +483,64 @@
 <li>JSP 即 Java Server Pages。简单来说，即基于 Java 的 HTML。在经典的后端 MVC 分层中，可以认为 JSP 在 view 层，Servlet 在 controller 层</li>
 <li>使用 JSP 的 Web 应用开发属于前后端不分离，正逐步被前后端分离的范式所取代。因此，JSP 逐渐被淘汰；而 Servlet 仍是 Java Web 开发的基石，著名的 Spring 框架的底层仍是 Servlet。可以认为，在前后端分离的开发中，MVC 变成了 MC，没有了 view</li>
 </ul>
-<h4 id="jar-与-war">JAR 与 WAR</h4>
+<h4 id="JAR-与-WAR"><a class="header-anchor" href="#JAR-与-WAR">¶</a>JAR 与 WAR</h4>
 <ul>
-<li><p>JAR 即 Java Archive。是一个压缩文件，存储<strong>字节码</strong>文件和<strong>编译好</strong>的库，及 JAR 包的元信息</p>
-<figure class="highlight stata"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">META</span>-<span class="hljs-keyword">INF</span>/<br>    MANIFEST.MF<br>com/<br>    baeldung/<br>        MyApplication.<span class="hljs-keyword">class</span><br></code></pre></td></tr></tbody></table></figure></li>
-<li><p>WAR 即 Web Application Resource 或 Web Archive。其中存储部署在 <strong>Servlet/JSP 容器</strong>中的<strong>网络应用</strong>，比如静态的 HTML、CSS、JS 文件</p>
-<figure class="highlight stylus"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs stylus">META-INF/<br>    MANIFEST<span class="hljs-selector-class">.MF</span><br>WEB-INF/<br>    web<span class="hljs-selector-class">.xml</span><br>    jsp/<br>        helloWorld<span class="hljs-selector-class">.jsp</span><br>    classes/<br>        static/<br>        templates/<br>        application<span class="hljs-selector-class">.properties</span><br>    lib/<br>        <span class="hljs-comment">// *.jar files as libs</span><br></code></pre></td></tr></tbody></table></figure></li>
-<li><p>关键区别</p>
+<li>
+<p>JAR 即 Java Archive。是一个压缩文件，存储<strong>字节码</strong>文件和<strong>编译好</strong>的库，及 JAR 包的元信息</p>
+<figure class="highlight stata"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">META</span>-<span class="hljs-keyword">INF</span>/<br>    MANIFEST.MF<br>com/<br>    baeldung/<br>        MyApplication.<span class="hljs-keyword">class</span><br></code></pre></td></tr></tbody></table></figure>
+</li>
+<li>
+<p>WAR 即 Web Application Resource 或 Web Archive。其中存储部署在 <strong>Servlet/JSP 容器</strong>中的<strong>网络应用</strong>，比如静态的 HTML、CSS、JS 文件</p>
+<figure class="highlight stylus"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs stylus">META-INF/<br>    MANIFEST<span class="hljs-selector-class">.MF</span><br>WEB-INF/<br>    web<span class="hljs-selector-class">.xml</span><br>    jsp/<br>        helloWorld<span class="hljs-selector-class">.jsp</span><br>    classes/<br>        static/<br>        templates/<br>        application<span class="hljs-selector-class">.properties</span><br>    lib/<br>        <span class="hljs-comment">// *.jar files as libs</span><br></code></pre></td></tr></tbody></table></figure>
+</li>
+<li>
+<p>关键区别</p>
 <p>JAR 的用途更加广泛，可以将其用作库或者是应用（比如想不借助 Maven 使用第三方的库，可以直接下载对应 JAR 包导入工程路径下）；而 WAR 仅能用于 Web 应用。</p>
-<p>此外，<strong>可执行的</strong> JAR 可以直接通过命令行运行，而所有的 WAR 必须在服务器上运行</p></li>
+<p>此外，<strong>可执行的</strong> JAR 可以直接通过命令行运行，而所有的 WAR 必须在服务器上运行</p>
+</li>
 </ul>
-<h4 id="spring-中的概念">Spring 中的概念</h4>
+<h4 id="Spring-中的概念"><a class="header-anchor" href="#Spring-中的概念">¶</a>Spring 中的概念</h4>
 <ul>
-<li><p>Bean</p>
-<p>可以理解为 Java 中的对象</p></li>
+<li>
+<p>Bean</p>
+<p>可以理解为 Java 中的对象</p>
+</li>
 </ul>
-<h5 id="dependency-injection-依赖注入">Dependency Injection 依赖注入</h5>
+<h5 id="Dependency-Injection-依赖注入"><a class="header-anchor" href="#Dependency-Injection-依赖注入">¶</a>Dependency Injection 依赖注入</h5>
 <p>即 Spring 装配好 Bean 以构成一个可以运行的应用</p>
 <p>有三种配置方案：</p>
 <ul>
-<li><p>自动化配置</p>
+<li>
+<p>自动化配置</p>
 <ul>
-<li><p><code>@Component</code></p>
+<li>
+<p><code>@Component</code></p>
 <p>Spring 会将扫描到的带有 <code>@Component</code> 的类自动生成<strong>实例</strong>（因此带有此注解的应该是具体的实现类）</p>
-<p>该注解可以带参数，指定组件的名字</p></li>
-<li><p><code>@ComponentScan</code></p>
-<p>Spring 将扫描带有 <code>@ComponentScan</code> 注解的类所处的<strong>包和子包</strong>中的所有类</p></li>
-<li><p><code>@Autowired</code></p>
+<p>该注解可以带参数，指定组件的名字</p>
+</li>
+<li>
+<p><code>@ComponentScan</code></p>
+<p>Spring 将扫描带有 <code>@ComponentScan</code> 注解的类所处的<strong>包和子包</strong>中的所有类</p>
+</li>
+<li>
+<p><code>@Autowired</code></p>
 <p>当一个类的实例变量中持有另一类的接口，那么这两个类之间构成依赖关系，即</p>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">B</span> {<br>    <span class="hljs-keyword">private</span> C c;<br>}<br></code></pre></td></tr></tbody></table></figure>
 <p>那么在创建 A 类的实例时，需要 C 的一个实例。Spring 将寻找当前的<strong>应用上下文</strong>（也叫<strong>容器</strong>）中是否已经有实现 C 接口的一个实例，并将这个实例的引用注入到 A 的实例中。这就是<strong>依赖注入</strong></p>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">B</span> {<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> C c,<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">A</span><span class="hljs-params">()</span> {<br>        <br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">B</span> {<br>    <span class="hljs-keyword">private</span> C c;<br>    <br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">A</span><span class="hljs-params">(C c)</span> {<br>        <span class="hljs-built_in">this</span>.c = c;<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
-<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">B</span> {<br>    <span class="hljs-keyword">private</span> C c;<br>    <br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setC</span><span class="hljs-params">(C c)</span> {<br>        <span class="hljs-built_in">this</span>.c = c;<br>    }<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">A</span><span class="hljs-params">()</span> {<br>        <br>    }<br>}<br></code></pre></td></tr></tbody></table></figure></li>
-</ul></li>
-<li><p>JavaConfig</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">B</span> {<br>    <span class="hljs-keyword">private</span> C c;<br>    <br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setC</span><span class="hljs-params">(C c)</span> {<br>        <span class="hljs-built_in">this</span>.c = c;<br>    }<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">A</span><span class="hljs-params">()</span> {<br>        <br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>JavaConfig</p>
 <p>在一个单独的类中，指定创建实例时想要使用的构造方法</p>
-<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CDPlayerConfig</span> {<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> CompactDisc <span class="hljs-title function_">compactDisc</span><span class="hljs-params">()</span> {<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SgtPeppers</span>();<br>    }<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> CDPlayer <span class="hljs-title function_">cdPlayer</span><span class="hljs-params">(CompactDisc cd)</span> {<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CDPlayer</span>(cd);<br>    }<br><br>}<br></code></pre></td></tr></tbody></table></figure></li>
-<li><p>使用 XML 文件配置（已不常用）</p></li>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CDPlayerConfig</span> {<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> CompactDisc <span class="hljs-title function_">compactDisc</span><span class="hljs-params">()</span> {<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SgtPeppers</span>();<br>    }<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> CDPlayer <span class="hljs-title function_">cdPlayer</span><span class="hljs-params">(CompactDisc cd)</span> {<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CDPlayer</span>(cd);<br>    }<br><br>}<br></code></pre></td></tr></tbody></table></figure>
+</li>
+<li>
+<p>使用 XML 文件配置（已不常用）</p>
+</li>
 </ul>
 <p>某些情况下，在工程开发和部署时，我们想要创建的 Bean 和创建 Bean 的方式是不同的，那么就需要 <code>@Profile</code> 注解</p>
 <p>比如我们可以创建两个 JavaConfig 类</p>
@@ -513,40 +557,48 @@
 <p><code>@Session</code> 一个会话维持一个实例</p>
 <p><code>@Request</code> 一个请求维持一个实例（一个会话中有多个请求）</p>
 <p>比如考虑一个在线商城系统，对于数据访问会有一个 DAO，这个 DAO 在整个系统中应该是唯一的，即 Singleton。而对于每一个用户（即一个会话），他都有自己的 Chart 购物车实例，即 Session</p>
-<h5 id="aop-aspect-oriented-programming-面向切面编程">AOP, Aspect Oriented Programming 面向切面编程</h5>
+<h5 id="AOP-Aspect-Oriented-Programming-面向切面编程"><a class="header-anchor" href="#AOP-Aspect-Oriented-Programming-面向切面编程">¶</a>AOP, Aspect Oriented Programming 面向切面编程</h5>
 <ul>
-<li><p>Advice</p>
+<li>
+<p>Advice</p>
 <p><strong>通知</strong></p>
 <p>切面做什么和何时做。有 5 种类型的 Advice</p>
-<p><img src="https://img.balddemian.icu/img/AOP.png" srcset="/img/loading.gif" lazyload alt="image-20230301124255044" style="zoom:50%;"></p>
+<img src="https://img.balddemian.icu/img/AOP.png" srcset="/img/loading.gif" lazyload alt="image-20230301124255044" style="zoom:50%;">
 <ul>
-<li><p><span class="citation" data-cites="Before">@Before</span></p></li>
-<li><p><span class="citation" data-cites="After">@After</span></p></li>
-<li><p><span class="citation" data-cites="AfterRunning">@AfterRunning</span></p></li>
-<li><p><span class="citation" data-cites="Around">@Around</span></p></li>
-<li><p><span class="citation" data-cites="AfterThrowing">@AfterThrowing</span></p></li>
-</ul></li>
-<li><p>Aspect</p>
-<p>实现了关注点(concern, 比如日志，事务)的类就是 Aspect。可以通过 XML 进行配置，或是在一个普通类上使用 <code>@Aspect</code> 注解</p></li>
-<li><p>Weaving</p>
-<p>织入，将切面应用到对象上的过程。Spring AOP 在<strong>运行时</strong>进行织入</p></li>
-<li>cross-cutting concern</li>
+<li>
+<p>@Before</p>
+</li>
+<li>
+<p>@After</p>
+</li>
+<li>
+<p>@AfterRunning</p>
+</li>
+<li>
+<p>@Around</p>
+</li>
+<li>
+<p>@AfterThrowing</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Aspect</p>
+<p>实现了关注点(concern, 比如日志，事务)的类就是 Aspect。可以通过 XML 进行配置，或是在一个普通类上使用 <code>@Aspect</code> 注解</p>
+</li>
+<li>
+<p>Weaving</p>
+<p>织入，将切面应用到对象上的过程。Spring AOP 在<strong>运行时</strong>进行织入</p>
+</li>
+<li>
+<p>cross-cutting concern</p>
+</li>
 <li></li>
 </ul>
-<h5 id="ioc-inversion-of-control-控制反转">IoC, Inversion of Control 控制反转</h5>
-<section class="footnotes">
-<div class="footnote-list">
-<ol>
-<li>
-<span id="fn:1" class="footnote-text"><span>「二八法则」广泛存在于现实世界中：例如任何国家的 20％ 的人口拥有 80％ 的国民财富，完成 80％ 的工作需要 20％的工作量等 <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span>
-</li>
-<li>
-<span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/停机问题">停机问题 - 维基百科，自由的百科全书 (wikipedia.org)</a> <a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span>
-</li>
-</ol>
-</div>
-</section>
-
+<h5 id="IoC-Inversion-of-Control-控制反转"><a class="header-anchor" href="#IoC-Inversion-of-Control-控制反转">¶</a>IoC, Inversion of Control 控制反转</h5>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span>「二八法则」广泛存在于现实世界中：例如任何国家的 20％ 的人口拥有 80％ 的国民财富，完成 80％ 的工作需要 20％的工作量等
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%81%9C%E6%9C%BA%E9%97%AE%E9%A2%98">停机问题 - 维基百科，自由的百科全书 (wikipedia.org)</a>
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
               
             </div>
             <hr/>
@@ -578,11 +630,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
+        <a href="/tags/%E6%96%BD%E5%B7%A5%E4%B8%AD/">#施工中</a>
+      
         <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">#计算机基础</a>
       
         <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90/">#计算机组成</a>
-      
-        <a href="/tags/%E6%96%BD%E5%B7%A5%E4%B8%AD/">#施工中</a>
       
     </div>
   

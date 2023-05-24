@@ -222,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          941 字
+          942 字
         
       </span>
     
@@ -277,11 +277,11 @@
               
               <blockquote>
 <p>单行线问题，也可以是汽车过窄桥问题，是读者-写者问题的变体</p>
-<p><a target="_blank" rel="noopener" href="https://www.cs.umd.edu/~hollings/cs412/s96/synch/eastwest.html">412--East West Bridge Problem (umd.edu)</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cs.umd.edu/~hollings/cs412/s96/synch/eastwest.html">412–East West Bridge Problem (umd.edu)</a></p>
 </blockquote>
-<h2 id="单行线每次只能有一辆车行驶">单行线每次只能有一辆车行驶</h2>
+<h2 id="单行线每次只能有一辆车行驶"><a class="header-anchor" href="#单行线每次只能有一辆车行驶">¶</a>单行线每次只能有一辆车行驶</h2>
 <figure class="highlight c"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c">semaphore road = <span class="hljs-number">1</span>; <span class="hljs-comment">// mutex</span><br>process <span class="hljs-title function_">car</span><span class="hljs-params">()</span> {<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) {<br>    	P(road);<br>        <span class="hljs-comment">// pass through the road</span><br>        V(road);<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
-<h2 id="单行线允许有多辆同一方向行驶的车辆">单行线允许有多辆同一方向行驶的车辆</h2>
+<h2 id="单行线允许有多辆同一方向行驶的车辆"><a class="header-anchor" href="#单行线允许有多辆同一方向行驶的车辆">¶</a>单行线允许有多辆同一方向行驶的车辆</h2>
 <figure class="highlight c"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs c">semaphore road = <span class="hljs-number">1</span>;<br>semaphore cnt1_mutex = <span class="hljs-number">1</span>;<br>semaphore cnt2_mutex = <span class="hljs-number">1</span>;<br><span class="hljs-type">int</span> cnt1, cnt2;<br>process <span class="hljs-title function_">car1</span><span class="hljs-params">()</span> {<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) {<br>        P(cnt1_mutex);<br>        cnt1++;<br>        <span class="hljs-keyword">if</span> (cn1 == <span class="hljs-number">1</span>) {<br>            P(road)<br>        }<br>        V(cnt1_mutex);<br>        <span class="hljs-comment">// pass through the road</span><br>        P(cnt1_mutex);<br>        cnt1--;<br>        <span class="hljs-keyword">if</span> (cnt1 == <span class="hljs-number">0</span>) {<br>            V(road);<br>        }<br>        V(cnt1_mutex);<br>    }<br>}<br>process <span class="hljs-title function_">car2</span><span class="hljs-params">()</span> {<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) {<br>        P(cnt2_mutex);<br>        cnt2++;<br>        <span class="hljs-keyword">if</span> (cn2 == <span class="hljs-number">1</span>) {<br>            P(road)<br>        }<br>        V(cnt2_mutex);<br>        <span class="hljs-comment">// pass through the road</span><br>        P(cnt2_mutex);<br>        cnt2--;<br>        <span class="hljs-keyword">if</span> (cnt2 == <span class="hljs-number">0</span>) {<br>            V(road);<br>        }<br>        V(cnt2_mutex);<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
 <p>本场景下有些类似读者-写者问题。在读者-写者问题中，第一个开始执行的读者进程负责获取锁，最后一个执行完成的读者进程负责释放锁。本题中，每个方向上第一个开始执行的进程负责获取 road 的互斥锁，最后一个结束执行的进程负责释放锁。由于使用了变量来记录当前路上每个方向正在通行的车的数量，因此需要额外的信号量来控制对计数变量的互斥访问</p>
 <p>与读者-写者问题类似，该方法会导致「<strong>饥饿</strong>现象」，即一个方向的来车一直无法获得通行的机会</p>
@@ -373,6 +373,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/Boot-The-Kernel/" title="操作系统引导">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">操作系统引导</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
