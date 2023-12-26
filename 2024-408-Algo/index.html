@@ -18,23 +18,22 @@
   <meta name="referrer" content="no-referrer" />
   <meta name="baidu-site-verification" content="code-Kbu5eBOiRE" />
   
-    <meta name="description" content="第 358 场周赛解题记录，浅偷一下 T3">
+    <meta name="description" content="今年算法题再次放水，又考图的应用">
 <meta property="og:type" content="article">
-<meta property="og:title" content="LC 周赛 358 解题记录">
-<meta property="og:url" content="https://balddemian.github.io/LC358/index.html">
+<meta property="og:title" content="2024年408算法题">
+<meta property="og:url" content="https://balddemian.github.io/2024-408-Algo/index.html">
 <meta property="og:site_name" content="Bald Demian">
-<meta property="og:description" content="第 358 场周赛解题记录，浅偷一下 T3">
+<meta property="og:description" content="今年算法题再次放水，又考图的应用">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-08-13T04:01:01.000Z">
-<meta property="article:modified_time" content="2023-08-13T04:16:19.849Z">
+<meta property="article:published_time" content="2023-12-26T11:00:00.000Z">
+<meta property="article:modified_time" content="2023-12-26T11:46:31.006Z">
 <meta property="article:author" content="Peiyang He">
-<meta property="article:tag" content="算法">
-<meta property="article:tag" content="力扣周赛">
+<meta property="article:tag" content="考研">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>LC 周赛 358 解题记录 - Bald Demian</title>
+  <title>2024年408算法题 - Bald Demian</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +198,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="LC 周赛 358 解题记录"></span>
+            <span id="subtitle" data-typed-text="2024年408算法题"></span>
           
         </div>
 
@@ -210,8 +209,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-08-13 12:01" pubdate>
-          2023年8月13日 中午
+        <time datetime="2023-12-26 19:00" pubdate>
+          2023年12月26日 晚上
         </time>
       </span>
     
@@ -222,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2k 字
+          1.2k 字
         
       </span>
     
@@ -233,7 +232,7 @@
         
         
         
-          17 分钟
+          11 分钟
         
       </span>
     
@@ -271,24 +270,17 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">LC 周赛 358 解题记录</h1>
+            <h1 style="display: none">2024年408算法题</h1>
             
             <div class="markdown-body">
               
-              <blockquote>
-<p>暑假已过半，然鹅我的数一还没复习完一半…</p>
+              <h2 id="题目描述与分析"><a class="header-anchor" href="#题目描述与分析">¶</a>题目描述与分析</h2>
+<blockquote>
+<p>给出一个以邻接矩阵表示的有向图，实现一个判断其拓扑排序是否唯一的函数</p>
 </blockquote>
-<h2 id="T1"><a class="header-anchor" href="#T1">¶</a>T1</h2>
-<p>T1 想怎么做就怎么做，暴力枚举每一个数对也可以，反正数据量小</p>
-<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> {<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">maxSum</span><span class="hljs-params">(<span class="hljs-type">int</span>[] nums)</span> {<br>        <span class="hljs-type">int</span>[] memo = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[<span class="hljs-number">10</span>];<br>        Arrays.fill(memo, -<span class="hljs-number">1</span>);<br>        <span class="hljs-type">int</span> <span class="hljs-variable">ans</span> <span class="hljs-operator">=</span> -<span class="hljs-number">1</span>;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; nums.length; i++) {<br>            <span class="hljs-type">int</span> <span class="hljs-variable">cur</span> <span class="hljs-operator">=</span> nums[i];<br>            <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> cur + <span class="hljs-string">" "</span>;<br>            <span class="hljs-type">char</span> <span class="hljs-variable">c</span> <span class="hljs-operator">=</span> <span class="hljs-string">'0'</span>;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> ch: s.toCharArray()) {<br>                <span class="hljs-keyword">if</span> (ch &gt; c) {<br>                    c = ch;<br>                }<br>            }<br>            <span class="hljs-type">int</span> <span class="hljs-variable">idx</span> <span class="hljs-operator">=</span> c - <span class="hljs-string">'0'</span>;<br>            <span class="hljs-keyword">if</span> (memo[idx] == -<span class="hljs-number">1</span>) {<br>                memo[idx] = cur;<br>                <span class="hljs-keyword">continue</span>;<br>            }<br>            ans = Math.max(ans, memo[idx] + cur);<br>            memo[idx] = Math.max(memo[idx], cur);<br>        }<br>        <span class="hljs-keyword">return</span> ans;<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
-<h2 id="T2"><a class="header-anchor" href="#T2">¶</a>T2</h2>
-<p>先把所有节点保存下来，按题意构造即可，终于 T2 不是思维题了！</p>
-<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> {<br>    <span class="hljs-keyword">public</span> ListNode <span class="hljs-title function_">doubleIt</span><span class="hljs-params">(ListNode head)</span> {<br>        ArrayList&lt;ListNode&gt; arr = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>        <span class="hljs-type">ListNode</span> <span class="hljs-variable">itr</span> <span class="hljs-operator">=</span> head;<br>        <span class="hljs-keyword">while</span> (itr != <span class="hljs-literal">null</span>) {<br>            arr.add(itr);<br>            itr = itr.next;<br>        }<br>        <span class="hljs-type">int</span> <span class="hljs-variable">carry</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> arr.size() - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) {<br>            <span class="hljs-type">int</span> <span class="hljs-variable">cur</span> <span class="hljs-operator">=</span> arr.get(i).val;<br>            cur = cur * <span class="hljs-number">2</span> + carry;<br>            carry = cur / <span class="hljs-number">10</span>;<br>            cur %= <span class="hljs-number">10</span>;<br>            arr.get(i).val = cur;<br>        }<br>        <span class="hljs-keyword">if</span> (carry &gt; <span class="hljs-number">0</span>) {<br>            <span class="hljs-type">ListNode</span> <span class="hljs-variable">node</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ListNode</span>(carry);<br>            node.next = head;<br>            <span class="hljs-keyword">return</span> node;<br>        }<br>        <span class="hljs-keyword">return</span> head;<br>    }<br>}<br></code></pre></td></tr></tbody></table></figure>
-<h2 id="T3"><a class="header-anchor" href="#T3">¶</a>T3</h2>
-<p>上点黑科技</p>
-<p>枚举每一个位置，用近似滑动窗口的技巧保存与当前枚举元素下标距离大于等于 x 的元素。然后在窗口中用二分查找找到大于等于当前枚举元素的最小元素，和小于等于当前枚举元素的最大元素，则当前元素的最小绝对值差必然在这两个数中产生。然后再更新最终的 ans。如果 ans 中间变为 0 了则直接返回（起到一点聊胜于无的作用）</p>
-<p>综合以上的朴素思路，使用 C++ 中的 multiset 和 lower_bound、upper_bound 解决</p>
-<figure class="highlight c++"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> {<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">minAbsoluteDifference</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; nums, <span class="hljs-type">int</span> x)</span> </span>{<br>        <span class="hljs-type">int</span> n = nums.<span class="hljs-built_in">size</span>();<br>        <span class="hljs-type">int</span> ans = <span class="hljs-built_in">abs</span>(nums[<span class="hljs-number">0</span>] - nums[n - <span class="hljs-number">1</span>]);<br>        <span class="hljs-keyword">if</span> (ans == <span class="hljs-number">0</span>) {<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>        }<br>        multiset&lt;<span class="hljs-type">int</span>&gt; set;<br>        <span class="hljs-type">int</span> l = -x - <span class="hljs-number">1</span>;<br>        <span class="hljs-type">int</span> r = x;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = r; i &lt; n; i++) {<br>            set.<span class="hljs-built_in">insert</span>(nums[i]);<br>        }<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {<br>            <span class="hljs-type">int</span> cur = nums[i];<br>            l++;<br>            <span class="hljs-keyword">if</span> (l &gt;= <span class="hljs-number">0</span> &amp;&amp; l &lt;= n - <span class="hljs-number">1</span>) {<br>                set.<span class="hljs-built_in">insert</span>(nums[l]);<br>            }<br>            <span class="hljs-keyword">auto</span> it = set.<span class="hljs-built_in">lower_bound</span>(cur); <span class="hljs-comment">// 返回第一个大于或等于cur的元素</span><br>            <span class="hljs-keyword">auto</span> it1 = set.<span class="hljs-built_in">upper_bound</span>(cur); <span class="hljs-comment">// 返回第一个大于cur的元素</span><br>            <span class="hljs-keyword">if</span> (it != set.<span class="hljs-built_in">end</span>()) {<br>                ans = <span class="hljs-built_in">min</span>(ans, *it - cur);<br>            }<br>            <span class="hljs-keyword">if</span> (it1 != set.<span class="hljs-built_in">begin</span>()) {<br>                --it1;<br>                ans = <span class="hljs-built_in">min</span>(ans, cur - *it1);<br>            }<br>            <span class="hljs-keyword">if</span> (ans == <span class="hljs-number">0</span>) {<br>                <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>            }<br>            <span class="hljs-keyword">if</span> (i + x &lt;= n - <span class="hljs-number">1</span>) {<br>                <span class="hljs-keyword">auto</span> itr = set.<span class="hljs-built_in">find</span>(nums[i + x]);<br>                set.<span class="hljs-built_in">erase</span>(itr);<br>            }<br>        }<br>        <span class="hljs-keyword">return</span> ans;<br>    }<br>};<br></code></pre></td></tr></tbody></table></figure>
+<p>拓扑排序首次考代码大题。在 408 算法大题中，由于不可以使用 STL，因此要用一个容量很大的数列去模拟队列。但是思考本题后发现，如果一个图的拓扑排序是唯一的，那么它的辅助队列的任何时刻，容量都不超过 1，否则在下一轮输出时可以任选队列中的一个输出，从而造成拓扑排序不唯一。基于这个原理，且考虑到图的节点编号非负，那么可以用一个 int 型变量模拟队列，其值为 1 表示队列为空，否则其值就是队列中的唯一元素。该方法实现了最优空间复杂度，避免了用数组模拟队列的麻烦。类似的优化思路还有，如果语言中没有 <code>pair</code> 类似的实现，但是想使用一个 int 类型的二元组，可考虑用一个 long 变量进行模拟，高 32 位和低 32 位存储两个 int，取出和放入时使用相应的掩码 AND 运算即可</p>
+<h2 id="答案"><a class="header-anchor" href="#答案">¶</a>答案</h2>
+<figure class="highlight c++"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">unique</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; &amp;graph)</span> </span>{<br>    <span class="hljs-type">int</span> queue = <span class="hljs-number">-1</span>; <span class="hljs-comment">// 本题的性质决定合法的队列大小为1，因此用一个int模拟就够了</span><br>    <span class="hljs-type">int</span> num = <span class="hljs-number">0</span>; <span class="hljs-comment">// 统计以构建拓扑排序的节点数</span><br>    <span class="hljs-type">int</span> n = graph.<span class="hljs-built_in">size</span>();<br>    <span class="hljs-type">int</span> inDegree[n];<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {<br>        inDegree[i] = <span class="hljs-number">0</span>;<br>    }<br>    <span class="hljs-comment">// 首次遍历邻接矩阵，统计每个节点的入度</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {<br>        <span class="hljs-type">int</span> degree = <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; n; j++) {<br>            <span class="hljs-keyword">if</span> (graph[j][i] != <span class="hljs-number">0</span>) {<br>                degree++;<br>            }<br>        } <br>        <span class="hljs-comment">// 入队入度为1的节点</span><br>        <span class="hljs-keyword">if</span> (degree == <span class="hljs-number">0</span>) {<br>            <span class="hljs-keyword">if</span> (queue != <span class="hljs-number">-1</span>) {<br>                <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>; <span class="hljs-comment">// 不存在唯一拓扑排序</span><br>            }<br>            queue = i; <span class="hljs-comment">// 模拟入队</span><br>        }<br>    }<br>    <span class="hljs-comment">// 构建拓扑排序</span><br>    <span class="hljs-keyword">while</span> (queue != <span class="hljs-number">-1</span>) {<br>        <span class="hljs-comment">// 模拟出队</span><br>        <span class="hljs-type">int</span> cur = queue;<br>        num++;<br>        queue = <span class="hljs-number">-1</span>; <span class="hljs-comment">// queue要置-1.否则死循环</span><br>        <span class="hljs-comment">// 遍历以cur作为弧尾的边，将弧头的入度-1</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {<br>            <span class="hljs-keyword">if</span> (graph[cur][i] != <span class="hljs-number">0</span>) {<br>                graph[cur][i] = <span class="hljs-number">0</span>;<br>                inDegree[i]--;<br>                <span class="hljs-keyword">if</span> (inDegree[i] == <span class="hljs-number">0</span>) {<br>                    <span class="hljs-keyword">if</span> (queue != <span class="hljs-number">-1</span>) {<br>                        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>                    }<br>                    queue = i;<br>                }<br>            }<br>        }<br>    }<br>    <span class="hljs-comment">// 若最终未能构建拓扑排序，也返回-1</span><br>    <span class="hljs-keyword">if</span> (num != n) {<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    }<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; <span class="hljs-comment">// ok</span><br>}<br></code></pre></td></tr></tbody></table></figure>
 
               
             </div>
@@ -321,9 +313,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E7%AE%97%E6%B3%95/">#算法</a>
-      
-        <a href="/tags/%E5%8A%9B%E6%89%A3%E5%91%A8%E8%B5%9B/">#力扣周赛</a>
+        <a href="/tags/%E8%80%83%E7%A0%94/">#考研</a>
       
     </div>
   
@@ -335,8 +325,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>LC 周赛 358 解题记录</div>
-      <div>https://balddemian.github.io/LC358/</div>
+      <div>2024年408算法题</div>
+      <div>https://balddemian.github.io/2024-408-Algo/</div>
     </div>
     <div class="license-meta">
       
@@ -348,7 +338,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年8月13日</div>
+          <div>2023年12月26日</div>
         </div>
       
       
@@ -378,18 +368,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024-408-Algo/" title="2024年408算法题">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">2024年408算法题</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/Bit-Masking/" title="状态压缩从入门到入土">
-                        <span class="hidden-mobile">状态压缩从入门到入土</span>
+                      <a href="/LC358/" title="LC 周赛 358 解题记录">
+                        <span class="hidden-mobile">LC 周赛 358 解题记录</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

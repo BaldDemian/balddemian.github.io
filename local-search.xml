@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>2024年408算法题</title>
+    <link href="/2024-408-Algo/"/>
+    <url>/2024-408-Algo/</url>
+    
+    <content type="html"><![CDATA[<h2 id="题目描述与分析"><a class="header-anchor" href="#题目描述与分析">¶</a>题目描述与分析</h2><blockquote><p>给出一个以邻接矩阵表示的有向图，实现一个判断其拓扑排序是否唯一的函数</p></blockquote><p>拓扑排序首次考代码大题。在 408 算法大题中，由于不可以使用 STL，因此要用一个容量很大的数列去模拟队列。但是思考本题后发现，如果一个图的拓扑排序是唯一的，那么它的辅助队列的任何时刻，容量都不超过 1，否则在下一轮输出时可以任选队列中的一个输出，从而造成拓扑排序不唯一。基于这个原理，且考虑到图的节点编号非负，那么可以用一个 int 型变量模拟队列，其值为 1 表示队列为空，否则其值就是队列中的唯一元素。该方法实现了最优空间复杂度，避免了用数组模拟队列的麻烦。类似的优化思路还有，如果语言中没有 <code>pair</code> 类似的实现，但是想使用一个 int 类型的二元组，可考虑用一个 long 变量进行模拟，高 32 位和低 32 位存储两个 int，取出和放入时使用相应的掩码 AND 运算即可</p><h2 id="答案"><a class="header-anchor" href="#答案">¶</a>答案</h2><figure class="highlight c++"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">unique</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; &amp;graph)</span> </span>{<br>    <span class="hljs-type">int</span> queue = <span class="hljs-number">-1</span>; <span class="hljs-comment">// 本题的性质决定合法的队列大小为1，因此用一个int模拟就够了</span><br>    <span class="hljs-type">int</span> num = <span class="hljs-number">0</span>; <span class="hljs-comment">// 统计以构建拓扑排序的节点数</span><br>    <span class="hljs-type">int</span> n = graph.<span class="hljs-built_in">size</span>();<br>    <span class="hljs-type">int</span> inDegree[n];<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {<br>        inDegree[i] = <span class="hljs-number">0</span>;<br>    }<br>    <span class="hljs-comment">// 首次遍历邻接矩阵，统计每个节点的入度</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {<br>        <span class="hljs-type">int</span> degree = <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; n; j++) {<br>            <span class="hljs-keyword">if</span> (graph[j][i] != <span class="hljs-number">0</span>) {<br>                degree++;<br>            }<br>        } <br>        <span class="hljs-comment">// 入队入度为1的节点</span><br>        <span class="hljs-keyword">if</span> (degree == <span class="hljs-number">0</span>) {<br>            <span class="hljs-keyword">if</span> (queue != <span class="hljs-number">-1</span>) {<br>                <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>; <span class="hljs-comment">// 不存在唯一拓扑排序</span><br>            }<br>            queue = i; <span class="hljs-comment">// 模拟入队</span><br>        }<br>    }<br>    <span class="hljs-comment">// 构建拓扑排序</span><br>    <span class="hljs-keyword">while</span> (queue != <span class="hljs-number">-1</span>) {<br>        <span class="hljs-comment">// 模拟出队</span><br>        <span class="hljs-type">int</span> cur = queue;<br>        num++;<br>        queue = <span class="hljs-number">-1</span>; <span class="hljs-comment">// queue要置-1.否则死循环</span><br>        <span class="hljs-comment">// 遍历以cur作为弧尾的边，将弧头的入度-1</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {<br>            <span class="hljs-keyword">if</span> (graph[cur][i] != <span class="hljs-number">0</span>) {<br>                graph[cur][i] = <span class="hljs-number">0</span>;<br>                inDegree[i]--;<br>                <span class="hljs-keyword">if</span> (inDegree[i] == <span class="hljs-number">0</span>) {<br>                    <span class="hljs-keyword">if</span> (queue != <span class="hljs-number">-1</span>) {<br>                        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>                    }<br>                    queue = i;<br>                }<br>            }<br>        }<br>    }<br>    <span class="hljs-comment">// 若最终未能构建拓扑排序，也返回-1</span><br>    <span class="hljs-keyword">if</span> (num != n) {<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    }<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; <span class="hljs-comment">// ok</span><br>}<br></code></pre></td></tr></tbody></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>study</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>考研</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>LC 周赛 358 解题记录</title>
     <link href="/LC358/"/>
     <url>/LC358/</url>
@@ -381,9 +406,9 @@
     
     <tags>
       
-      <tag>数据结构</tag>
-      
       <tag>考研</tag>
+      
+      <tag>数据结构</tag>
       
       <tag>算法</tag>
       
@@ -842,9 +867,9 @@
     
     <tags>
       
-      <tag>数据结构</tag>
-      
       <tag>考研</tag>
+      
+      <tag>数据结构</tag>
       
     </tags>
     
