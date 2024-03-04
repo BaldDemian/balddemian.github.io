@@ -25,13 +25,15 @@
 <meta property="og:site_name" content="Bald Demian">
 <meta property="og:description" content="用超级马里奥解释享元模式(flyweight pattern)">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://balddemian.github.io/img/super-mario-banner.jpg">
+<meta property="og:image" content="https://balddemian.github.io/img/super-mario.png">
+<meta property="og:image" content="https://balddemian.github.io/img/flyweight-uml.jpg">
+<meta property="og:image" content="https://balddemian.github.io/img/flyweight-process.jpg">
 <meta property="article:published_time" content="2022-05-27T15:13:34.000Z">
-<meta property="article:modified_time" content="2022-11-03T10:55:47.084Z">
+<meta property="article:modified_time" content="2024-03-04T03:52:05.127Z">
 <meta property="article:author" content="Peiyang He">
 <meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://balddemian.github.io/img/super-mario-banner.jpg">
+<meta name="twitter:image" content="https://balddemian.github.io/img/super-mario.png">
   
   
   
@@ -276,75 +278,81 @@
             
             <div class="markdown-body">
               
-              <h2 id="站在巨人的肩膀上"><a class="header-anchor" href="#站在巨人的肩膀上">¶</a>站在巨人的肩膀上</h2>
-<p>在大名鼎鼎的GoF(Gang of Four)的"Design Patterns: Elements of Reusable Object-Oriented Software"<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="Gamma, Erich, Richard Helm, Ralph Johnson, and John Vlissides(四人被合称为&quot;Gang of Four&quot;). 1995.Design Patterns: Elements of Reusable Object-Oriented Software. Reading, MA: Addison-Wesley. ISBN: 0321349601.
+              <h2 id="站在巨人的肩膀上">站在巨人的肩膀上</h2>
+<p>在大名鼎鼎的GoF(Gang of Four)的"Design Patterns: Elements of Reusable Object-Oriented Software"<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="Gamma, Erich, Richard Helm, Ralph Johnson, and John Vlissides(四人被合称为&quot;Gang of Four&quot;). 1995.Design Patterns: Elements of Reusable Object-Oriented Software. Reading, MA: Addison-Wesley. ISBN: 0321349601.
 ">[1]</span></a></sup>一书中，对于享元模式(<strong>flyweight pattern</strong>)的描述是这样的：</p>
 <blockquote>
 <p>Use sharing to support large numbers of fine-grained objects efficiently.</p>
 </blockquote>
 <p>即“共享大量细粒度的对象以提高效率”</p>
 <p>下面用<strong>超级马里奥</strong>来进一步说明享元模式。</p>
-<h2 id="超级马里奥中的玄机"><a class="header-anchor" href="#超级马里奥中的玄机">¶</a>超级马里奥中的玄机</h2>
+<h2 id="超级马里奥中的玄机">超级马里奥中的玄机</h2>
 <p>也许你从来没有注意过（或者像我一样从来没有玩过）最早的超级马里奥游戏中的云和草：</p>
-<p><img src="/img/super-mario.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/super-mario.png" srcset="/img/loading.gif" lazyload></p>
 <p>它们竟然只是颜色不一样而已！</p>
 <p>游戏中这么多的云和草，如果为每一个都创建一个新的对象，对于那个年代的红白机的内存来说是不现实的。</p>
-<p>这里的云和草就符合“大量的细粒度的对象“的定义，于是根据享元模式的理念，我们考虑为云和草各自仅创建一个<strong>实例</strong>(instance)，在程序需要时<strong>复用</strong>（即共享）这两个实例。看到这里，如何实现<strong>控制实例的创建</strong>呢？聪明的<s>我</s>你肯定想到了，这不就是工厂模式嘛！</p>
+<p>这里的云和草就符合“大量的细粒度的对象“的定义，于是根据享元模式的理念，我们考虑为云和草各自仅创建一个<strong>实例</strong>(instance)，在程序需要时<strong>复用</strong>（即共享）这两个实例。看到这里，如何实现<strong>控制实例的创建</strong>呢？聪明的<del>我</del>你肯定想到了，这不就是工厂模式嘛！</p>
 <p>——是的，享元模式经常配合工厂模式使用。</p>
-<h2 id="UML"><a class="header-anchor" href="#UML">¶</a>UML</h2>
+<h2 id="uml">UML</h2>
 <p>这是四人帮那部大名鼎鼎的设计模式一书中享元模式的类图，下面我们来分析：</p>
-<p><img src="/img/flyweight-uml.jpg" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/flyweight-uml.jpg" srcset="/img/loading.gif" lazyload></p>
 <ul>
 <li><code>Client</code>: 用户代码，即想要使用享元的代码，它向<code>FlywightFactory</code>申请返回想要的对象</li>
 <li><code>FlyweightFactory</code>: 享元工厂，控制实例的创建，内部维护一个<strong>享元池</strong>，池子中的对象均是实现了<code>Flyweight</code>接口的具体享元(即<code>ConcreteFlyweight</code>)。享元池一般用<code>map</code>实现，实例详见下面的代码示例</li>
 <li>享元工厂、享元池、其中的具体享元、客户代码之间的关系是这样的：（同样来自GoF的那本书）</li>
 </ul>
-<p><img src="/img/flyweight-process.jpg" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/flyweight-process.jpg" srcset="/img/loading.gif" lazyload></p>
 <ul>
 <li><code>UnsharedConcreteFlyweight</code>: 这个用官方定义来解释吧：</li>
 </ul>
 <blockquote>
-<p>not all Flyweight subclasses need to be shared. The Flyweight interface enables sharing; it doesn’t enforce it. It’s common for UnsharedConcreteFlyweight objects to have ConcreteFlyweight objects as children at some level in the flyweight object structure (as the Row and Column classes have)</p>
+<p>not all Flyweight subclasses need to be shared. The Flyweight interface enables sharing; it doesn't enforce it. It's common for UnsharedConcreteFlyweight objects to have ConcreteFlyweight objects as children at some level in the flyweight object structure (as the Row and Column classes have)</p>
 </blockquote>
 <p>即非共享享元派生自享元接口，具体享元可以继承自某个非共享享元。</p>
 <ul>
-<li>
-<p>此外还需要注意一点，各个享元有<strong>内部状态</strong>（intrinsic state）和<strong>外部状态</strong>（extrinsic state）</p>
+<li><p>此外还需要注意一点，各个享元有<strong>内部状态</strong>（intrinsic state）和<strong>外部状态</strong>（extrinsic state）</p>
 <ul>
 <li>内部状态：</li>
 </ul>
 <blockquote>
-<p>“Intrinsic state is stored in the ConcreteFlyweight object.”</p>
+<p>"Intrinsic state is stored in the ConcreteFlyweight object."</p>
 <p>即每个享元内部的属性，通常来说是不可变的</p>
 </blockquote>
 <ul>
 <li>外部状态：</li>
 </ul>
 <blockquote>
-<p>“Extrinsic state is stored or computed by Client objects.”</p>
+<p>"Extrinsic state is stored or computed by Client objects."</p>
 <p>可以理解为客户代码传入的参数</p>
-</blockquote>
-</li>
+</blockquote></li>
 </ul>
 <p>下面结合代码进一步理解</p>
-<h2 id="云和草"><a class="header-anchor" href="#云和草">¶</a>云和草</h2>
+<h2 id="云和草">云和草</h2>
 <p>下面尝试用享元模式实现上面提到的云和草：</p>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">Color</span> {<br>    WHITE, GREEN;<br>}<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">Flyweight</span> {<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">block</span><span class="hljs-params">()</span>;<br>    <span class="hljs-comment">// 也许云和雨都可以有一个“阻挡”方法？？？</span><br>}<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Cloud</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Flyweight</span> {<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Color</span> <span class="hljs-variable">color</span> <span class="hljs-operator">=</span> Color.WHITE;<br>    <span class="hljs-comment">// color就是cloud的一个内部的不可变属性</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">block</span><span class="hljs-params">()</span> {<br>        <span class="hljs-comment">// do something...</span><br>    }<br>}<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Bush</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Flyweight</span> {<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Color</span> <span class="hljs-variable">color</span> <span class="hljs-operator">=</span> Color.GREEN;<br>    <span class="hljs-comment">// color是clound内部的一个不可变的属性</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">block</span><span class="hljs-params">()</span> {<br>        <span class="hljs-comment">// do something...</span><br>    }<br>}<br><br><span class="hljs-comment">// 工厂类，client仅能与工厂进行交互</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FlyweightFactory</span> {<br>    <span class="hljs-comment">// 享元池，一般用map实现</span><br>    <span class="hljs-comment">// 享元池也可以预先填入一些享元，类似于单例模式中的饿汉和懒汉</span><br>    <span class="hljs-keyword">private</span> staic HashMap&lt;String, Flyweight&gt; pool = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Flyweight <span class="hljs-title function_">getFlyweight</span> <span class="hljs-params">(String type)</span> {<br>        <span class="hljs-comment">// 参数列表中的type由客户代码提供，可以看作是享元的外部属性</span><br>        <span class="hljs-type">Flyweight</span> <span class="hljs-variable">flyweight</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.pool.get(type);<br>        <span class="hljs-keyword">if</span> (type == <span class="hljs-literal">null</span>) {<br>            <span class="hljs-comment">// Map.find()找不到对应的value，会返回null</span><br>            <span class="hljs-comment">// 创建享元</span><br>            <span class="hljs-keyword">switch</span> type {<br>                <span class="hljs-keyword">case</span> <span class="hljs-string">"cloud"</span>:<br>                    flyweight = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Cloud</span>();<br>                    <span class="hljs-keyword">break</span>;<br>                <span class="hljs-keyword">case</span> <span class="hljs-string">"bush"</span>:<br>                    flyweight = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Bush</span>();<br>                    <span class="hljs-keyword">break</span>;<br>                <span class="hljs-keyword">default</span>:<br>                    <span class="hljs-comment">// do something...</span><br>            }<br>            <span class="hljs-comment">// 将享元加入pool</span><br>            <span class="hljs-built_in">this</span>.pool.put(type, flyweight);<br>        }<br>        <span class="hljs-keyword">return</span> flyweight;<br>    }<br>}<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(String[] args)</span> {<br>    <span class="hljs-comment">// 客户代码</span><br>    <span class="hljs-type">Flyweight</span> <span class="hljs-variable">flyweight</span> <span class="hljs-operator">=</span> FlyweightFactory.getFlyweight(<span class="hljs-string">"cloud"</span>);<br>    flyweight.block();<br>    <span class="hljs-comment">//...</span><br>}<br></code></pre></td></tr></tbody></table></figure>
-<h2 id="总结"><a class="header-anchor" href="#总结">¶</a>总结</h2>
+<h2 id="总结">总结</h2>
 <p>享元模式类似于维护了多个唯一实例的单例模式。</p>
 <p>另外，对于何时使用享元模式，四人帮提出了如下建议：</p>
 <blockquote>
-<p>It’s often best to implement State (305) and Strategy (315) objects as flyweights.</p>
+<p>It's often best to implement State (305) and Strategy (315) objects as flyweights.</p>
 </blockquote>
-<h2 id="杂七杂八"><a class="header-anchor" href="#杂七杂八">¶</a>杂七杂八</h2>
+<h2 id="杂七杂八">杂七杂八</h2>
 <ul>
 <li>初始享元模式是在看<em>Effective Java</em>中遇到的</li>
 <li>然后去看了这本<a target="_blank" rel="noopener" href="https://leetcode.cn/leetbook/detail/design-patterns/">LeetBook</a>，用超级马里奥解释享元模式的点子来自于这本书的作者，感谢启发！</li>
 <li>作为一个名词癖患者，很好奇<code>flyweight</code>这个词的来源，查了一下是拳击里面的术语，即<code>蝇量级</code>，也可以理解为<code>轻型</code>。然而还是无法理解为什么去这个名字。看了一圈貌似是“节省内存所以轻量”的意思？倒是中文译名「享元」有点信达雅</li>
 <li>算是第一篇严肃意义上的技术博客？无视期末复习进度和几个DDL来写，又是一种从来没有体会到的愉悦</li>
 </ul>
-<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span>Gamma, Erich, Richard Helm, Ralph Johnson, and John Vlissides(四人被合称为"Gang of Four"). 1995.Design Patterns: Elements of Reusable Object-Oriented Software. Reading, MA: Addison-Wesley. ISBN: 0321349601.
-<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+<section class="footnotes">
+<div class="footnote-list">
+<ol>
+<li>
+<span id="fn:1" class="footnote-text"><span>Gamma, Erich, Richard Helm, Ralph Johnson, and John Vlissides(四人被合称为"Gang of Four"). 1995.Design Patterns: Elements of Reusable Object-Oriented Software. Reading, MA: Addison-Wesley. ISBN: 0321349601. <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span>
+</li>
+</ol>
+</div>
+</section>
+
               
             </div>
             <hr/>

@@ -25,14 +25,12 @@
 <meta property="og:site_name" content="Bald Demian">
 <meta property="og:description" content="在用 Golang 刷算法题实现的数据结构">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://balddemian.github.io/img/golang.jpeg">
 <meta property="article:published_time" content="2022-12-05T01:52:53.000Z">
-<meta property="article:modified_time" content="2022-12-05T02:29:24.822Z">
+<meta property="article:modified_time" content="2024-03-04T03:52:38.289Z">
 <meta property="article:author" content="Peiyang He">
 <meta property="article:tag" content="数据结构">
 <meta property="article:tag" content="Golang">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://balddemian.github.io/img/golang.jpeg">
   
   
   
@@ -277,34 +275,40 @@
             
             <div class="markdown-body">
               
-              <h2 id="栈"><a class="header-anchor" href="#栈">¶</a>栈</h2>
+              <h2 id="栈">栈</h2>
 <figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> stack []<span class="hljs-type">int</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s stack)</span></span> push(v <span class="hljs-type">int</span>) stack {<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">append</span>(s, v)<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s stack)</span></span> pop() (stack, <span class="hljs-type">int</span>) {<br>    l := <span class="hljs-built_in">len</span>(s)<br>    <span class="hljs-keyword">return</span> s[:l<span class="hljs-number">-1</span>], s[l<span class="hljs-number">-1</span>]<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s stack)</span></span> peek() <span class="hljs-type">int</span> {<br>    l := <span class="hljs-built_in">len</span>(s)<br>    <span class="hljs-keyword">return</span> s[l<span class="hljs-number">-1</span>]<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s stack)</span></span> size() <span class="hljs-type">int</span> {<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(s)<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s stack)</span></span> isEmpty() <span class="hljs-type">bool</span> {<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(s) == <span class="hljs-number">0</span><br>}<br></code></pre></td></tr></tbody></table></figure>
 <ul>
-<li>
-<p>扩容的工作交给了底层的切片负责</p>
-</li>
-<li>
-<p>接收 append 的返回值是官方文档<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="builtin package - builtin - Go Packages
+<li><p>扩容的工作交给了底层的切片负责</p></li>
+<li><p>接收 append 的返回值是官方文档<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="builtin package - builtin - Go Packages
 ">[1]</span></a></sup>推荐的行为，因为当原有的切片容量不够时，会新建一个新的切片，此时必须要将其接收</p>
 <blockquote>
 <p>The append built-in function appends elements to the end of a slice. If it has sufficient capacity, the destination is resliced to accommodate the new elements. If it does not, a new underlying array will be allocated. Append returns the updated slice. It is therefore necessary to store the result of append, often in the variable holding the slice itself</p>
-</blockquote>
-</li>
+</blockquote></li>
 </ul>
-<h2 id="集合"><a class="header-anchor" href="#集合">¶</a>集合</h2>
-<p>在阅读「Go语言趣学指南」<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="Go语言趣学指南 (豆瓣) (douban.com)
+<h2 id="集合">集合</h2>
+<p>在阅读「Go语言趣学指南」<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="Go语言趣学指南 (豆瓣) (douban.com)
 ">[2]</span></a></sup>时学到了用内置的 map 实现 set 的方法</p>
 <figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// create a set for int</span><br>keys := []<span class="hljs-type">int</span>{<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>}<br>set := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-type">int</span>]<span class="hljs-type">bool</span>, <span class="hljs-built_in">len</span>(keys))<br><span class="hljs-keyword">for</span> _, key := <span class="hljs-keyword">range</span> keys {<br>    set[key] = <span class="hljs-literal">true</span> <span class="hljs-comment">// true means 'exist in the set'</span><br>}<br><span class="hljs-comment">// check if the set contains an element </span><br><span class="hljs-keyword">if</span> set[<span class="hljs-number">1</span>] {<br>    <br>}<br><span class="hljs-comment">// delete an element from the set</span><br><span class="hljs-built_in">delete</span>(set, <span class="hljs-number">3</span>)<br><br><span class="hljs-comment">// add an element to the set</span><br>set[<span class="hljs-number">3</span>] = <span class="hljs-literal">true</span><br></code></pre></td></tr></tbody></table></figure>
-<h2 id="队列"><a class="header-anchor" href="#队列">¶</a>队列</h2>
+<h2 id="队列">队列</h2>
 <p>队列最重要的两个操作就是 addLast 和 removeFirst，即入队和出队。同时查看(peek) 队首元素也要支持</p>
 <figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> queue []<span class="hljs-type">int</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(q queue)</span></span> addLast(v <span class="hljs-type">int</span>) queue {<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">append</span>(q, v)<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(q queue)</span></span> removeFirst() (queue, <span class="hljs-type">int</span>) {<br>    <span class="hljs-keyword">return</span> q[<span class="hljs-number">1</span>:], q[<span class="hljs-number">0</span>]<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(q queue)</span></span> peekFirst() <span class="hljs-type">int</span> {<br>    <span class="hljs-keyword">return</span> q[<span class="hljs-number">0</span>]<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(q queue)</span></span> size() <span class="hljs-type">int</span> {<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(q)<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(q queue)</span></span> isEmpty() <span class="hljs-type">bool</span> {<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(q) == <span class="hljs-number">0</span><br>}<br></code></pre></td></tr></tbody></table></figure>
-<h2 id="双端队列"><a class="header-anchor" href="#双端队列">¶</a>双端队列</h2>
+<h2 id="双端队列">双端队列</h2>
 <p>双端队列的队头队尾可以同时 remove 和 add</p>
 <figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> deque []<span class="hljs-type">int</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(d deque)</span></span> addFirst(v <span class="hljs-type">int</span>) deque {<br>    temp := []<span class="hljs-type">int</span>{v}<br>    temp = <span class="hljs-built_in">append</span>(temp, d...)<br>    <span class="hljs-keyword">return</span> temp<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(d deque)</span></span> addLast(v <span class="hljs-type">int</span>) deque {<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">append</span>(d, v)<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(d deque)</span></span> removeFirst() (deque, <span class="hljs-type">int</span>) {<br>    <span class="hljs-keyword">return</span> d[<span class="hljs-number">1</span>:], d[<span class="hljs-number">0</span>]<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(d deque)</span></span> removeLast() (deque, <span class="hljs-type">int</span>) {<br>    <span class="hljs-keyword">return</span> d[<span class="hljs-number">0</span>:<span class="hljs-built_in">len</span>(d)<span class="hljs-number">-1</span>], d[<span class="hljs-built_in">len</span>(d)<span class="hljs-number">-1</span>]<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(d deque)</span></span> peekFirst() <span class="hljs-type">int</span> {<br>    <span class="hljs-keyword">return</span> d[<span class="hljs-number">0</span>]<br>}<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(d deque)</span></span> peekLast() <span class="hljs-type">int</span> {<br>    <span class="hljs-keyword">return</span> d[<span class="hljs-built_in">len</span>(d)<span class="hljs-number">-1</span>]<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(d deque)</span></span> size() <span class="hljs-type">int</span> {<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(d)<br>}<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(d deque)</span></span> isEmpty() <span class="hljs-type">bool</span> {<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(d) == <span class="hljs-number">0</span><br>}<br></code></pre></td></tr></tbody></table></figure>
-<h2 id="Reference"><a class="header-anchor" href="#Reference">¶</a>Reference</h2>
-<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://pkg.go.dev/builtin#append">builtin package - builtin - Go Packages</a>
-<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://book.douban.com/subject/34951096/">Go语言趣学指南 (豆瓣) (douban.com)</a>
-<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+<h2 id="reference">Reference</h2>
+<section class="footnotes">
+<div class="footnote-list">
+<ol>
+<li>
+<span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://pkg.go.dev/builtin#append">builtin package - builtin - Go Packages</a> <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span>
+</li>
+<li>
+<span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://book.douban.com/subject/34951096/">Go语言趣学指南 (豆瓣) (douban.com)</a> <a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span>
+</li>
+</ol>
+</div>
+</section>
+
               
             </div>
             <hr/>
