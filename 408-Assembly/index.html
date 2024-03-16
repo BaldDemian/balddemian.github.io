@@ -28,9 +28,9 @@
 <meta property="article:published_time" content="2023-04-24T12:36:36.000Z">
 <meta property="article:modified_time" content="2023-04-24T12:40:10.892Z">
 <meta property="article:author" content="Peiyang He">
+<meta property="article:tag" content="考研">
 <meta property="article:tag" content="计组">
 <meta property="article:tag" content="汇编">
-<meta property="article:tag" content="考研">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -279,19 +279,24 @@
               <blockquote>
 <p>408 考试中在计算机组成原理的大题中会考察汇编语言，主要是赋值、函数调用、循环、选择；中断应该不用太关注</p>
 </blockquote>
-<h2 id="intel-格式汇编">Intel 格式汇编</h2>
+<h2 id="Intel-格式汇编"><a class="header-anchor" href="#Intel-格式汇编">¶</a>Intel 格式汇编</h2>
 <ul>
 <li>byte 8bits, word 16bits, dword 32bits</li>
 <li>目的操作数在前，源操作数在后，如 <code>mov eax, ebx</code> 即 (ebx)-&gt;eax</li>
 <li>取出内存中的值用 <code>[]</code>，如 <code>mov eax, [esp+4]</code> 即 (esp+4)-&gt;eax</li>
 <li>不允许直接在内存单元之间进行赋值，必须用寄存器作为中转，详见下面的实例</li>
 </ul>
-<h2 id="赋值语句的汇编指令">赋值语句的汇编指令</h2>
+<h2 id="赋值语句的汇编指令"><a class="header-anchor" href="#赋值语句的汇编指令">¶</a>赋值语句的汇编指令</h2>
 <ul>
-<li><p>源代码</p>
-<figure class="highlight c"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> {<br>    <span class="hljs-type">int</span> num = <span class="hljs-number">3</span>;<br>    num = <span class="hljs-number">4</span>;<br>    <span class="hljs-type">int</span> arr[<span class="hljs-number">3</span>] = {<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>};<br>    <span class="hljs-type">int</span> *p;<br>    p = arr;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>}<br></code></pre></td></tr></tbody></table></figure></li>
-<li><p>使用 <code>gcc -m32 -S -masm=intel -fverbose-asm main.c</code> 在当前目录下生成 <code>main.s</code> 汇编语言文件</p></li>
-<li><p>汇编代码</p>
+<li>
+<p>源代码</p>
+<figure class="highlight c"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> {<br>    <span class="hljs-type">int</span> num = <span class="hljs-number">3</span>;<br>    num = <span class="hljs-number">4</span>;<br>    <span class="hljs-type">int</span> arr[<span class="hljs-number">3</span>] = {<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>};<br>    <span class="hljs-type">int</span> *p;<br>    p = arr;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>}<br></code></pre></td></tr></tbody></table></figure>
+</li>
+<li>
+<p>使用 <code>gcc -m32 -S -masm=intel -fverbose-asm main.c</code> 在当前目录下生成 <code>main.s</code> 汇编语言文件</p>
+</li>
+<li>
+<p>汇编代码</p>
 <figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs assembly">	.text<br>	.def	___main;	.scl	2;	.type	32;	.endef<br>	.globl	_main<br>	.def	_main;	.scl	2;	.type	32;	.endef<br>_main:<br>	push	ebp	 #<br>	mov	ebp, esp	 #,<br>	and	esp, -16	 #,<br>	sub	esp, 32	 #,<br> # draft.c:1: int main() {<br>	call	___main	 #<br> # draft.c:2:     int num = 3;<br>	mov	DWORD PTR [esp+28], 3	 # num,<br> # draft.c:3:     num = 4;<br>	mov	DWORD PTR [esp+28], 4	 # num,<br> # draft.c:4:     int arr[3] = {1, 2, 3};<br>	mov	DWORD PTR [esp+12], 1	 # arr,<br>	mov	DWORD PTR [esp+16], 2	 # arr,<br>	mov	DWORD PTR [esp+20], 3	 # arr,<br> # draft.c:6:     p = arr;<br>	lea	eax, [esp+12]	 # tmp89,<br>	mov	DWORD PTR [esp+24], eax	 # p, tmp89<br> # draft.c:7:     return 0;<br>	mov	eax, 0	 # _8,<br> # draft.c:8: }<br>	leave	<br>	ret	<br>	.ident	"GCC: (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 8.1.0"<br><br></code></pre></td></tr></tbody></table></figure>
 <p>详解</p>
 <ul>
@@ -300,10 +305,11 @@
 <li>13 行语句，<code>mov DWORD PTR[esp+28], 3</code>，将 esp 指针偏移 28 个字节处开始的 4 个字节（一个 int 4 个字节）赋值为 3。esp 即函数的栈顶指针寄存器</li>
 <li>17-19 行语句进行数组三个元素的赋值，可以看到数组的元素的地址偏移是小于 num 的地址偏移的</li>
 <li>21-22 行使用了两条汇编语句完成了 <code>p=arr</code>，原因是不允许内存之间直接进行数据交换；<code>lea eax, [esp+12]</code>，前面说到 <code>[]</code> 用于取出内存单元中的值，但是在 <code>lea</code> 语句中，表示将内存单元的<strong>地址</strong>取出，常用于<strong>指针的赋值</strong></li>
-</ul></li>
 </ul>
-<h2 id="函数调用的汇编指令">函数调用的汇编指令</h2>
-<h3 id="函数调用的基本过程">函数调用的基本过程</h3>
+</li>
+</ul>
+<h2 id="函数调用的汇编指令"><a class="header-anchor" href="#函数调用的汇编指令">¶</a>函数调用的汇编指令</h2>
+<h3 id="函数调用的基本过程"><a class="header-anchor" href="#函数调用的基本过程">¶</a>函数调用的基本过程</h3>
 
               
             </div>
@@ -336,11 +342,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
+        <a href="/tags/%E8%80%83%E7%A0%94/">#考研</a>
+      
         <a href="/tags/%E8%AE%A1%E7%BB%84/">#计组</a>
       
         <a href="/tags/%E6%B1%87%E7%BC%96/">#汇编</a>
-      
-        <a href="/tags/%E8%80%83%E7%A0%94/">#考研</a>
       
     </div>
   
@@ -505,7 +511,7 @@
     <div class="footer-inner">
   
     <div class="footer-content">
-       <span>Powered By</span> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+       <span>Powered By</span> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br/> <span>Copyright </span><i class="iconfont icon-copyright"></i><span> 2022-2024 Peiyang He. All Rights Reserved.</span> 
     </div>
   
   
