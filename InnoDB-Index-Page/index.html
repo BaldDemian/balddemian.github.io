@@ -26,11 +26,10 @@
 <meta property="og:description" content="介绍 InnoDB 的索引页结构">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/InnoDB-Index-Page.png">
-<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/Compact-Row.png">
-<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/PageHeader.png">
-<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/FileHeader.png">
+<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/InnoDB-Compact-Row.png">
+<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/202210012107233.png">
 <meta property="article:published_time" content="2022-09-13T07:45:46.000Z">
-<meta property="article:modified_time" content="2024-03-04T03:51:45.389Z">
+<meta property="article:modified_time" content="2024-03-23T04:35:13.722Z">
 <meta property="article:author" content="Peiyang He">
 <meta property="article:tag" content="MySQL">
 <meta name="twitter:card" content="summary_large_image">
@@ -279,10 +278,7 @@
             
             <div class="markdown-body">
               
-              <blockquote>
-<p>本文是「<a target="_blank" rel="noopener" href="https://juejin.cn/book/6844733769996304392">MySQL 是怎样运行的：从根儿上理解 MySQL - 小孩子4919 - 掘金小册 (juejin.cn)</a>」第 5 章的学习笔记</p>
-</blockquote>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/InnoDB-Index-Page.png" srcset="/img/loading.gif" lazyload style="zoom:67%;"></p>
+              <p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/InnoDB-Index-Page.png" srcset="/img/loading.gif" lazyload alt="image-20220913122308276" style="zoom:67%;"></p>
 <table>
 <thead>
 <tr class="header">
@@ -338,13 +334,15 @@
 </tbody>
 </table>
 <h2 id="背景compact-格式下的记录头结构">背景：Compact 格式下的记录头结构</h2>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/Compact-Row.png" srcset="/img/loading.gif" lazyload></p>
+<figure>
+<img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/InnoDB-Compact-Row.png" srcset="/img/loading.gif" lazyload alt="image-20220913141146701"><figcaption>image-20220913141146701</figcaption>
+</figure>
 <p>记录头的前 5 个字节信息：</p>
 <ul>
 <li><p>预留位 1、2 没有使用</p></li>
 <li><p><code>delete_mask</code>: 该行记录是否被删除？InnoDB 中的一条用户记录被删除后，它并没有立即从磁盘中删除，而是<strong>仅仅被标记</strong>为删除。所有被删除的记录会形成一个<strong>垃圾链表</strong>，这片空间称为<strong>可重用空间</strong>，要使用时直接覆盖即可（将删除标志位改为 1 和将这条记录移进垃圾链表其实是两个阶段）</p></li>
 <li><p><code>min_rec_mask</code>: B+ 树的每层非叶子节点中的最小目录项记录都会添加该标记</p></li>
-<li><p><code>n_owned</code>: 4 bit, 表示当前记录所在的组拥有的记录数（且看<a href="##Page%20Directory">下文</a>）</p></li>
+<li><p><code>n_owned</code>: 4 bit, 表示当前记录所在的组拥有的记录数（仅有本组主键最大的那条记录本字段不为 0；且看<a href="##Page%20Directory">下文</a>）</p></li>
 <li><p><code>heap_no</code>: 13 bit, 表示当前记录在<strong>记录堆中的位置信息，以本记录的主键大小作为排序依据（升序），但是最小记录与最大记录这两个</strong>虚拟记录占据了 0、1 两个 <code>heap_no</code>。值得注意的是一条记录一旦被插入数据页中，其 <code>heap_no</code> 就是固定的了，即使它被删除，这个 <code>heap_no</code> 也不会被回收</p></li>
 <li><p><code>record_type</code>: 3 bit, 表示当前<strong>记录的类型</strong>， 0 表示普通记录， 1 表示 B+ 树非叶节点记录， 2 表示最小记录(Infimum)， 3 表示最大记录 (Supremum)</p></li>
 <li><p><code>next_record</code>: 16 bit, 表示下一条记录的相对位置（因为各条<strong>记录</strong>之间是以<strong>单向链表</strong>的形式组织的）。具体来说，是从当前记录的<strong>真实数据</strong>（记录头信息的最后一位的下一位开始的信息）到下一条记录（按主键大小排列的下一个，可能不是存储顺序的下一个，中间可能隔着几条被标记为删除的记录）的<strong>真实数据</strong>的地址偏移量。特别地，Infimum 的 <code>next_record</code> 指向为主键值最小的用户记录；Supremum 的 <code>next_record</code> 为 0</p>
@@ -387,10 +385,9 @@
 <p>（其实访问的是这个槽的上一个槽，因为槽中存储的是本组中主键最大的那条记录的地址，但是我们要从本组中主键最小的那条记录开始遍历链表。那怎么找到本组中主键最小的记录的地址呢？上一个槽的主键最大的那条记录所链接的下一条记录就是本组主键最小的那个记录了呀~因为记录中间以主键的大小顺序排列）</p>
 <h2 id="page-header">Page Header</h2>
 <p>InnoDB 中有很多的页，但是<strong>只有</strong>索引页（数据页）具有 PageHeader，它记录了本数据页中有几条记录、有几个槽等等：</p>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/PageHeader.png" srcset="/img/loading.gif" lazyload style="zoom: 67%;"></p>
+<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/202210012107233.png" srcset="/img/loading.gif" lazyload alt="image-20220913152706381" style="zoom: 67%;"></p>
 <h2 id="file-header">File Header</h2>
 <p>所有的页都有文件头和文件尾。文件头存储了各种页中都通用的信息，如页编号、本页的下一个页、本页的上一个页</p>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/FileHeader.png" srcset="/img/loading.gif" lazyload></p>
 <ul>
 <li><code>FIL_PAGE_SPACE_OR_CHKSUM</code> 页面的校验和</li>
 <li><code>FIL_PAGE_OFFSET</code> 页面的偏移量，即页号</li>
@@ -507,8 +504,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/Lost-In-Rust-1/" title="Rust 漫谈 1">
-                        <span class="hidden-mobile">Rust 漫谈 1</span>
+                      <a href="/Interview-Tencent-1/" title="企鹅游戏开发课面试">
+                        <span class="hidden-mobile">企鹅游戏开发课面试</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

@@ -20,13 +20,13 @@
   
     <meta name="description" content="并查集、线段树、最短路、数学...">
 <meta property="og:type" content="article">
-<meta property="og:title" content="数据结构模板">
+<meta property="og:title" content="数据结构和算法模板">
 <meta property="og:url" content="https://balddemian.github.io/Algo-Template/index.html">
 <meta property="og:site_name" content="Bald Demian">
 <meta property="og:description" content="并查集、线段树、最短路、数学...">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-03-04T03:00:00.000Z">
-<meta property="article:modified_time" content="2024-03-20T03:32:44.990Z">
+<meta property="article:modified_time" content="2024-03-23T05:29:12.212Z">
 <meta property="article:author" content="Peiyang He">
 <meta property="article:tag" content="算法">
 <meta property="article:tag" content="数据结构">
@@ -34,7 +34,7 @@
   
   
   
-  <title>数据结构模板 - Bald Demian</title>
+  <title>数据结构和算法模板 - Bald Demian</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +199,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="数据结构模板"></span>
+            <span id="subtitle" data-typed-text="数据结构和算法模板"></span>
           
         </div>
 
@@ -271,7 +271,7 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">数据结构模板</h1>
+            <h1 style="display: none">数据结构和算法模板</h1>
             
             <div class="markdown-body">
               
@@ -285,12 +285,7 @@
 <h3 id="floyd">Floyd</h3>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">int</span>[][] floyd(<span class="hljs-type">int</span> n, <span class="hljs-type">int</span>[][] graph) {<br>    <span class="hljs-type">int</span>[][] dis = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[n][n];<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; n; i++) {<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">j</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; j &lt; n; j++) {<br>            dis[i][j] = graph[i][j];<br>        }<br>    }<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span>[] edge: graph) {<br>        <span class="hljs-type">int</span> <span class="hljs-variable">from</span> <span class="hljs-operator">=</span> edge[<span class="hljs-number">0</span>];<br>        <span class="hljs-type">int</span> <span class="hljs-variable">to</span> <span class="hljs-operator">=</span> edge[<span class="hljs-number">1</span>];<br>        <span class="hljs-type">int</span> <span class="hljs-variable">cost</span> <span class="hljs-operator">=</span> edge[<span class="hljs-number">2</span>];<br>    }<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">k</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; k &lt; n; k++) { <span class="hljs-comment">// 枚举中转点</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; n; i++) { <span class="hljs-comment">// 枚举起点</span><br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">j</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; j &lt; n; j++) { <span class="hljs-comment">// 枚举终点</span><br>                dis[i][j] = Math.min(dis[i][j], dis[i][k] + dis[k][j]);<br>            }<br>        }<br>    }<br>    <span class="hljs-keyword">return</span> dis;<br>}<br></code></pre></td></tr></tbody></table></figure>
 <h2 id="快速幂">快速幂</h2>
-<p>使用<strong>二分减治</strong>和<strong>递归</strong>的思想进行快速幂的计算</p>
-<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">double</span> <span class="hljs-title function_">myPow</span><span class="hljs-params">(<span class="hljs-type">double</span> x, <span class="hljs-type">int</span> n)</span> {<br>    <span class="hljs-keyword">if</span> (n == <span class="hljs-number">0</span>) {<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1.0</span>;<br>    }<br>    <span class="hljs-keyword">if</span> (n == <span class="hljs-number">1</span>) {<br>        <span class="hljs-keyword">return</span> x; <br>    }<br>    <span class="hljs-keyword">if</span> (n &lt; <span class="hljs-number">0</span>) {<br>        n = -n; <span class="hljs-comment">// 可能导致溢出</span><br>        x = <span class="hljs-number">1</span> / x;<br>    }<br>    <span class="hljs-type">int</span> <span class="hljs-variable">halfExpo</span> <span class="hljs-operator">=</span> n / <span class="hljs-number">2</span>;<br>    <span class="hljs-type">double</span> <span class="hljs-variable">halfRes</span> <span class="hljs-operator">=</span> myPow(x, halfExpo);<br>    <span class="hljs-type">double</span> <span class="hljs-variable">ans</span> <span class="hljs-operator">=</span> halfRes * halfRes;<br>    <span class="hljs-keyword">if</span> ((n &amp; <span class="hljs-number">1</span>) == <span class="hljs-number">1</span>) {<br>        ans *= x;<br>    }<br>    <span class="hljs-keyword">return</span> ans;<br>}<br></code></pre></td></tr></tbody></table></figure>
-<blockquote>
-<p>注意本题代码无法通过 <a target="_blank" rel="noopener" href="https://leetcode.cn/problems/powx-n/description/">50. Pow(x, n) - 力扣（LeetCode）</a>，原因是某个用例的 n 为整型最小值，导致取相反数时溢出。可以重载一个 n 为 long 的函数解决</p>
-</blockquote>
-<h2 id="埃氏筛">埃氏筛</h2>
+<p>使用<strong>二分减治</strong>和<strong>递归</strong>的思想进行快速幂的计算 </p><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">double</span> <span class="hljs-title function_">myPow</span><span class="hljs-params">(<span class="hljs-type">double</span> x, <span class="hljs-type">int</span> n)</span> {<br>    <span class="hljs-keyword">if</span> (n == <span class="hljs-number">0</span>) {<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1.0</span>;<br>    }<br>    <span class="hljs-keyword">if</span> (n == <span class="hljs-number">1</span>) {<br>        <span class="hljs-keyword">return</span> x; <br>    }<br>    <span class="hljs-keyword">if</span> (n &lt; <span class="hljs-number">0</span>) {<br>        n = -n; <span class="hljs-comment">// 可能导致溢出</span><br>        x = <span class="hljs-number">1</span> / x;<br>    }<br>    <span class="hljs-type">int</span> <span class="hljs-variable">halfExpo</span> <span class="hljs-operator">=</span> n / <span class="hljs-number">2</span>;<br>    <span class="hljs-type">double</span> <span class="hljs-variable">halfRes</span> <span class="hljs-operator">=</span> myPow(x, halfExpo);<br>    <span class="hljs-type">double</span> <span class="hljs-variable">ans</span> <span class="hljs-operator">=</span> halfRes * halfRes;<br>    <span class="hljs-keyword">if</span> ((n &amp; <span class="hljs-number">1</span>) == <span class="hljs-number">1</span>) {<br>        ans *= x;<br>    }<br>    <span class="hljs-keyword">return</span> ans;<br>}<br></code></pre></td></tr></tbody></table></figure> &gt; 注意本题代码无法通过 <a target="_blank" rel="noopener" href="https://leetcode.cn/problems/powx-n/description/">50. Pow(x, n) - 力扣（LeetCode）</a>，原因是某个用例的 n 为整型最小值，导致取相反数时溢出。可以重载一个 n 为 long 的函数解决 ## 埃氏筛<p></p>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">countPrimes</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span> {<br>    <span class="hljs-type">int</span> <span class="hljs-variable">ans</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-type">boolean</span>[] isPrime = <span class="hljs-keyword">new</span> <span class="hljs-title class_">boolean</span>[n];<br>    Arrays.fill(isPrime, <span class="hljs-literal">true</span>);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">2</span>; i * i &lt; n; i++) {<br>        <span class="hljs-keyword">if</span> (isPrime[i]) { <span class="hljs-comment">// i is prime</span><br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">j</span> <span class="hljs-operator">=</span> i * i; j &lt; n; j += i) {<br>                isPrime[j] = <span class="hljs-literal">false</span>;<br>            }<br>        }<br>    }<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">2</span>; i &lt; n; i++) {<br>        <span class="hljs-keyword">if</span> (isPrime[i]) {<br>            ans++;<br>        }<br>    }<br>    <span class="hljs-keyword">return</span> ans;<br>}<br></code></pre></td></tr></tbody></table></figure>
 
               
@@ -338,7 +333,7 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>数据结构模板</div>
+      <div>数据结构和算法模板</div>
       <div>https://balddemian.github.io/Algo-Template/</div>
     </div>
     <div class="license-meta">
@@ -391,8 +386,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024-408-Algo/" title="2024年408算法题">
-                        <span class="hidden-mobile">2024年408算法题</span>
+                      <a href="/2024-408-Algo/" title="2024年408算法大题">
+                        <span class="hidden-mobile">2024年408算法大题</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
