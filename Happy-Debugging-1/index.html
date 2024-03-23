@@ -222,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.8k 字
+          1.7k 字
         
       </span>
     
@@ -233,7 +233,7 @@
         
         
         
-          16 分钟
+          15 分钟
         
       </span>
     
@@ -275,30 +275,44 @@
             
             <div class="markdown-body">
               
-              <h2 id="缘起"><a class="header-anchor" href="#缘起">¶</a>缘起</h2>
+              <h2 id="缘起">缘起</h2>
 <p>今天在做<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/water-and-jug-problem/">365. 水壶问题 - 力扣（LeetCode）</a>时想把一个二元组放进一个 <code>HashSet</code> 中进行去重，由于 JDK 中没有 C++ STL 中那样现成的 Pair 类，所以我最开始使用了 <code>int[]</code> 类型作为 <code>HashSet</code> 中的元素类型。结果在某个用例时进了死循环，排查后发现是 <code>HashSet</code> 没有如我设想那样对 <code>int[]</code> 类型的元素去重</p>
-<h2 id="现象"><a class="header-anchor" href="#现象">¶</a>现象</h2>
+<h2 id="现象">现象</h2>
 <p>考虑下面这两段代码，看看输出是不是符合你的预设</p>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> {<br>	Set&lt;<span class="hljs-type">int</span>[]&gt; set = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashSet</span>&lt;&gt;();<br>	<span class="hljs-type">int</span>[] arr1 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[]{<span class="hljs-number">1</span>, <span class="hljs-number">1</span>};<br>	<span class="hljs-type">int</span>[] arr2 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[]{<span class="hljs-number">1</span>, <span class="hljs-number">1</span>};<br>	set.add(arr1);<br>	set.add(arr2);<br>	System.out.println(set.size());<br>}<br><span class="hljs-comment">// output</span><br><span class="hljs-comment">// 2</span><br></code></pre></td></tr></tbody></table></figure>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> {<br>	Set&lt;<span class="hljs-type">int</span>[]&gt; set = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashSet</span>&lt;&gt;();<br>	<span class="hljs-type">int</span>[] arr1 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[]{<span class="hljs-number">1</span>, <span class="hljs-number">1</span>};<br>	<span class="hljs-type">int</span>[] arr2 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[]{<span class="hljs-number">1</span>, <span class="hljs-number">1</span>};<br>	set.add(arr1);<br>	System.out.println(set.contains(arr2));    <br>}<br><span class="hljs-comment">// output</span><br><span class="hljs-comment">// false</span><br></code></pre></td></tr></tbody></table></figure>
-<h2 id="解释"><a class="header-anchor" href="#解释">¶</a>解释</h2>
+<h2 id="解释">解释</h2>
 <p><code>HashSet</code> 没有对 <code>int[]</code> 类型的元素进行「去重」是因为数组类型并<strong>没有</strong>重载 <code>equals()</code> 方法。</p>
-<p>我们知道，Java 中的数组类型被视为对象，是被创建在堆上的<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="[Chapter 10. Arrays (oracle.com)](https://docs.oracle.com/javase/specs/jls/se7/html/jls-10.html#:~:text=In the Java programming language,be invoked on an array.)
+<p>我们知道，Java 中的数组类型被视为对象，是被创建在堆上的<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="Chapter 10. Arrays (oracle.com)
 ">[1]</span></a></sup>。既然是对象，那就继承了 Object 超类的 <code>equals()</code> 方法，这个方法是默认是比较元素的引用（即元素的地址）。</p>
 <p><code>Set</code> 类的 <code>add()</code> 或者 <code>contains()</code> 方法是调用对应元素类型的 <code>equals()</code> 方法对元素进行比较。由于 <code>int[]</code> 类型没有重载这个方法，因此还是以地址进行比较，<code>arr1</code> 和 <code>arr2</code> 是创建在堆上的不同位置的，故 <code>arr1.equals(arr2)</code> 返回 <code>false</code></p>
 <p>（<code>arr1.equals(arr2)</code> 等价于 <code>arr1 == arr2</code>）</p>
-<h2 id="解决"><a class="header-anchor" href="#解决">¶</a>解决</h2>
-<p>如果一定要利用 <code>Set</code> 对二元组进行去重，可以考虑 <code>Set&lt;List&lt;Integer&gt;&gt;</code><sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="arrays - java Set vs Set> - Stack Overflow
+<h2 id="解决">解决</h2>
+<p>如果一定要利用 <code>Set</code> 对二元组进行去重，可以考虑 <code>Set&lt;List&lt;Integer&gt;&gt;</code><sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="arrays - java Set vs Set> - Stack Overflow
 ">[2]</span></a></sup>，<code>List&lt;&gt;</code> 类型重载了 <code>equals()</code> 方法，并且是按照顺序对其中的元素进行比较。</p>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> {<br>	Set&lt;List&lt;Integer&gt;&gt; set = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashSet</span>&lt;&gt;();<br>	set.add(Arrays.asList(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>));<br>	set.add(Arrays.asList(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>));<br>	System.out.println(set.size());<br>}<br><span class="hljs-comment">// output</span><br><span class="hljs-comment">// 1</span><br></code></pre></td></tr></tbody></table></figure>
-<p>如果要对 <code>int[]</code> 类型进行比较，要使用 <code>Arrays</code> 工具类中的 <code>Arrays.equals()</code> 方法<sup id="fnref:3" class="footnote-ref"><a href="#fn:3" rel="footnote"><span class="hint--top hint--rounded" aria-label="equals vs Arrays.equals in Java - Stack Overflow
+<p>如果要对 <code>int[]</code> 类型进行比较，要使用 <code>Arrays</code> 工具类中的 <code>Arrays.equals()</code> 方法<sup id="fnref:3" class="footnote-ref"><a href="#fn:3" rel="footnote"><span class="hint--top hint--rounded" data-aria-label="equals vs Arrays.equals in Java - Stack Overflow
 ">[3]</span></a></sup>。该方法也是按顺序对两个数组的元素进行依次比较</p>
 <figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> {<br>	<span class="hljs-type">int</span>[] arr1 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[]{<span class="hljs-number">1</span>, <span class="hljs-number">1</span>};<br>	<span class="hljs-type">int</span>[] arr2 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[]{<span class="hljs-number">1</span>, <span class="hljs-number">1</span>};<br>	System.out.println(Arrays.equals(arr1, arr2));<br>}<br><span class="hljs-comment">// output</span><br><span class="hljs-comment">// true</span><br></code></pre></td></tr></tbody></table></figure>
-<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span>[Chapter 10. Arrays (<a target="_blank" rel="noopener" href="http://oracle.com">oracle.com</a>)](<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-10.html#:~:text=In">https://docs.oracle.com/javase/specs/jls/se7/html/jls-10.html#:~:text=In</a> the Java programming language,be invoked on an array.)
-<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/51234678/java-setint-vs-setlistinteger">arrays - java Set vs Set&gt; - Stack Overflow</a>
-<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/8777257/equals-vs-arrays-equals-in-java">equals vs Arrays.equals in Java - Stack Overflow</a>
-<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:4" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.themarketingtechnologist.co/about-debugging-8-things-i-wish-i-knew-earlier-in-my-career/">About debugging: 8 things I wish I knew earlier in my career (themarketingtechnologist.co)</a>（目录页图片来源）
-<a href="#fnref:4" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+<section class="footnotes">
+<div class="footnote-list">
+<ol>
+<li>
+<span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-10.html#:~:text=In%20the%20Java%20programming%20language,be%20invoked%20on%20an%20array.">Chapter 10. Arrays (oracle.com)</a> <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span>
+</li>
+<li>
+<span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/51234678/java-setint-vs-setlistinteger">arrays - java Set vs Set&gt; - Stack Overflow</a> <a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span>
+</li>
+<li>
+<span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/8777257/equals-vs-arrays-equals-in-java">equals vs Arrays.equals in Java - Stack Overflow</a> <a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span>
+</li>
+<li>
+<span id="fn:4" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.themarketingtechnologist.co/about-debugging-8-things-i-wish-i-knew-earlier-in-my-career/">About debugging: 8 things I wish I knew earlier in my career (themarketingtechnologist.co)</a>（目录页图片来源） <a href="#fnref:4" rev="footnote" class="footnote-backref"> ↩</a></span></span>
+</li>
+</ol>
+</div>
+</section>
+
               
             </div>
             <hr/>

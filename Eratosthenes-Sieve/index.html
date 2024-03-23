@@ -223,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          452 字
+          468 字
         
       </span>
     
@@ -276,11 +276,11 @@
             
             <div class="markdown-body">
               
-              <h2 id="简介和实现"><a class="header-anchor" href="#简介和实现">¶</a>简介和实现</h2>
-<p>从 <strong>2</strong> 开始，将每个<strong>素数</strong>的倍数，标记成合数。一个素数 $q$ 的各个倍数，是一个差 $q$ 的等差数列。注意对于一个新的被迭代到的素数 $n$，其第一个应该标记的倍数不必从 $n$ 开始，而是可以优化成 $n^2$，因为 $2n, 3n, 4n…(n-1)n$ 已经分别在迭代小于 $n$ 的其他素数时被标记了</p>
-<p>下面的代码返回严格小于 $n$ 的所有素数的数目</p>
+              <h2 id="简介和实现">简介和实现</h2>
+<p>从 <strong>2</strong> 开始，将每个<strong>素数</strong>的倍数，标记成合数。一个素数 <span class="math inline">\(q\)</span> 的各个倍数，是一个差 <span class="math inline">\(q\)</span> 的等差数列。注意对于一个新的被迭代到的素数 <span class="math inline">\(n\)</span>，其第一个应该标记的倍数不必从 <span class="math inline">\(n\)</span> 开始，而是可以优化成 <span class="math inline">\(n^2\)</span>，因为 <span class="math inline">\(2n, 3n, 4n...(n-1)n\)</span> 已经分别在迭代小于 <span class="math inline">\(n\)</span> 的其他素数时被标记了</p>
+<p>下面的代码返回严格小于 <span class="math inline">\(n\)</span> 的所有素数的数目</p>
 <figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">countPrimes</span><span class="hljs-params">(n <span class="hljs-type">int</span>)</span></span> <span class="hljs-type">int</span> {<br>    <span class="hljs-comment">// find the number of all primes &lt; n strictly</span><br>	ans := <span class="hljs-number">0</span><br>	np := <span class="hljs-built_in">make</span>([]<span class="hljs-type">bool</span>, n)<br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; n; i++ {<br>		np[i] = <span class="hljs-literal">true</span><br>	}<br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">2</span>; i * i &lt; n; i++ {<br>		<span class="hljs-keyword">if</span> np[i] {<br>			ans++<br>			<span class="hljs-keyword">for</span> j := i * i; j &lt; n; j += i {<br>				np[j] = <span class="hljs-literal">false</span><br>			}<br>		}<br>	}<br>	<span class="hljs-keyword">return</span> ans<br>}<br></code></pre></td></tr></tbody></table></figure>
-<h2 id="时间复杂度证明TODO"><a class="header-anchor" href="#时间复杂度证明TODO">¶</a>时间复杂度证明TODO</h2>
+<h2 id="时间复杂度证明todo">时间复杂度证明TODO</h2>
 
               
             </div>
