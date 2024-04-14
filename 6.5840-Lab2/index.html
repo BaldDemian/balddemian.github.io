@@ -18,28 +18,26 @@
   <meta name="referrer" content="no-referrer" />
   <meta name="baidu-site-verification" content="code-Kbu5eBOiRE" />
   
-    <meta name="description" content="6.5840 Lab1 的实验心得">
+    <meta name="description" content="6.5840 Lab2 的实验心得">
 <meta property="og:type" content="article">
-<meta property="og:title" content="6.5840 Lab1">
-<meta property="og:url" content="https://balddemian.github.io/6.5840-Lab1/index.html">
+<meta property="og:title" content="6.5840 Lab2">
+<meta property="og:url" content="https://balddemian.github.io/6.5840-Lab2/index.html">
 <meta property="og:site_name" content="Bald Demian">
-<meta property="og:description" content="6.5840 Lab1 的实验心得">
+<meta property="og:description" content="6.5840 Lab2 的实验心得">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/mapreduce.png">
-<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab1Res.png">
-<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/202404122133505.png">
-<meta property="article:published_time" content="2024-04-12T13:44:00.000Z">
-<meta property="article:modified_time" content="2024-04-12T13:45:54.678Z">
+<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab2Res.png">
+<meta property="article:published_time" content="2024-04-14T15:16:00.000Z">
+<meta property="article:modified_time" content="2024-04-14T15:17:30.606Z">
 <meta property="article:author" content="Peiyang He">
 <meta property="article:tag" content="6.584">
 <meta property="article:tag" content="分布式">
 <meta property="article:tag" content="Golang">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/mapreduce.png">
+<meta name="twitter:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab2Res.png">
   
   
   
-  <title>6.5840 Lab1 - Bald Demian</title>
+  <title>6.5840 Lab2 - Bald Demian</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -204,7 +202,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="6.5840 Lab1"></span>
+            <span id="subtitle" data-typed-text="6.5840 Lab2"></span>
           
         </div>
 
@@ -215,8 +213,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-04-12 21:44" pubdate>
-          2024年4月12日 晚上
+        <time datetime="2024-04-14 23:16" pubdate>
+          2024年4月14日 晚上
         </time>
       </span>
     
@@ -260,85 +258,51 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">6.5840 Lab1</h1>
+            <h1 style="display: none">6.5840 Lab2</h1>
             
             <div class="markdown-body">
               
               <h2 id="misc">Misc</h2>
 <ul>
-<li><p><code>ls -a</code> 查看隐藏文件</p></li>
-<li><p>将本地主机的 pub 公钥存放在远程主机的 <code>~/.ssh/authorized_keys</code> 中即可免密登录</p></li>
-<li><p>Ubuntu 一行安装 Go 最新版本 <code>apt install golang</code>。想起之前安装某些环境时需要手动 <code>export</code> 路径，但是这次没有。查看 <code>~/.bashrc</code> 或者 <code>~/.profile</code> 文件中都没有 go 相关的路径导出。发现是将 go 的可执行文件直接放在了 <code>/usr/bin</code> 中，这也相当于在 <code>$PATH</code> 中了。可使用 <code>which go</code> 查到</p></li>
-<li><p>设置 goproxy，否则 VSCode 无法正常下载 Go 有关的插件</p>
-<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">vim ~/.bashrc<br><span class="hljs-meta prompt_"># </span><span class="language-bash">添加 <span class="hljs-built_in">export</span> GOPROXY=https://goproxy.io,direct</span><br>source ~./bashrc<br>go env GOPROXY<br></code></pre></td></tr></tbody></table></figure></li>
+<li>这是 6.5840 2024 年课程的 Lab 2，在以前年份的课程中是没有的。因为标记的难度为 easy，于是在正式进入 Raft 的实验之前顺手把这个实验做了</li>
+<li>内存释放的实现有点粗糙了...</li>
 </ul>
 <h2 id="go">Go</h2>
 <ul>
-<li><p>样例程序的脚本解释</p>
-<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">go build -buildmode=plugin ../mrapps/wc.go<br>rm mr-out*<br>go run mrsequential.go wc.so pg*.txt<br></code></pre></td></tr></tbody></table></figure>
+<li>安装某个依赖：<code>go get</code></li>
+<li><code>go test</code>：在许多的编程语言中，可以通过<strong>注解</strong>的形式标记哪些函数是测试时自动执行的（比如 SpringBoot 中的 <code>@SpringBootTest</code>）。Go 中没有注解，于是用一套源文件和函数名的命名规则来标识测试函数</li>
+</ul>
+<h2 id="task">Task</h2>
+<p>修改 kvsrv 下的 client.go, server.go, commom.go</p>
+<h2 id="implementation">Implementation</h2>
 <ul>
-<li><code>go build</code> 是编译命令，其中 <code>-buildmode=plugin</code> 指定以「插件」模式编译。插件是一种特殊的<strong>共享库</strong>，可以在运行时被 Go 程序动态加载。这在实现插件化设计或热插拔功能时非常有用。编译后的插件的后缀名为 <code>.so</code></li>
-<li><code>rm mr-out*</code> 使用正则表达式删除前面运行可能生成的文件</li>
-<li><code>go run</code> 是编译<strong>并</strong>运行命令。后面的插件名和文件名为运行的命令行参数</li>
+<li><p>Append 最初理解为是拉一个链表，但其实就是在原有的字符串后追加</p></li>
+<li><p>RPC 标识符的处理</p>
+<p>最开始没有看到 client.go 中提供的 nrand() 函数，于是思考了一下标识符的实现方式。一个简单的实现是使用进程号 + 时间戳的方式。询问 GPT 后发现存在若干问题：</p>
+<ol type="1">
+<li><strong>时间戳精度</strong>：如果时间戳的精度不够高（例如，只精确到秒），则在高频调用的场景下可能会发生冲突。</li>
+<li><strong>系统时间调整</strong>：如果系统时间被调整，时间戳可能会重复或回退，这可能导致 ID 冲突。</li>
+<li><strong>进程号重用</strong>：在长时间运行的系统中，进程号可能在进程结束后被操作系统重用，这可能导致进程号的重复。</li>
+</ol>
+<p>最终采取了 <s>GPT 推荐的 <strong>UUID</strong> 的方式</s> nrand() 返回标识符</p></li>
+<li><p>Go 的 map，访问一个不存在的键时，返回的是值类型的<strong>空值</strong>。比如本实验中，返回的 string 类型的空值是 ""。不过，某些情景下可能需要区分<strong>键存在，但值确实为 ""</strong> 和<strong>键不存在</strong>两种情况，这可以通过额外的一个布尔型的 map 实现</p></li>
+<li><p>处理不可靠的网络</p>
+<ul>
+<li><p>客户端的请求未到达。这种情况没有影响</p></li>
+<li><p>请求正确到达，但回复未到达，使得客户端继续重发请求。为了处理这种情形，服务端必须先缓存此次请求的返回值，如果后续收到同一请求，直接返回这个值，而不对 data 进行任何处理（否则就违反了一个请求只执行一次请求的规定）。同时服务端必须尽快释放客户端确认收到的回复所占用的内存，这就需要客户端的每次请求捎带最近一次已收到的回复的标识符</p></li>
+<li><p>同一请求多次到达</p>
+<p>这些请求的标识符是唯一的，因此可以识别出冗余的请求，进而返回事先缓存的结果，并且不对数据库进行任何修改</p></li>
 </ul></li>
-<li><p>需要指出的是 <code>main</code> 包内的诸多演示文件定义了同名的函数，这在 Go 中是不允许的。Go 中一个包下的所有源代码在编译时被视为一个整体，因此一个源代码文件中的全局标识符（如函数、全局常量、全局变量）必须和其他的源代码文件中的上述标识符<strong>不同</strong></p></li>
-<li><p>要对一个类的切片类型调用 <code>sort.Sort()</code> 方法，要求这个切片类型实现 <code>sort.Interface</code>，也即实现三个方法（Go 中实现接口<strong>不必显式</strong>声明）</p>
-<ul>
-<li>Len() int</li>
-<li>Less(i, j int) bool</li>
-<li>Swap(i, j int)</li>
+<li><p>如何释放服务端的内存？（TODO：找到更好的实现）</p>
+<p>在最开始的实现中，每个客户端的请求均捎带上一次请求的标识符，这样服务端在收到当前请求后，可以认为客户端已成功收到上一次的回复，进而删除对于上一次回复的缓存。但是，这会导致每个客户端的最后一次请求的回复的缓存是无法删除的！</p>
+<p>在一个用例中，涉及到一次 put 和许多次的 get，并且这些 get 是由不同的客户端一次性产生的（即这些客户端整个过程中只发送了这一次请求），这就使得上述的内存回收策略失效了！原因在于之前的实现中，对于 id 的管理是局限在 <code>client.go</code> 中的。如果转而在 <code>common.go</code> 中管理 id，那么不同客户端的请求可以捎带彼此的 ID。基于这样的实现，某些用例可以通过了，但还是存在两个无法通过的用例。<strong>百思不得其解</strong>，我明明删了那个重型对象了啊<span class="emoji" alias="thinking" style="" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f914.png?v8">🤔</span>。最后使用了一种十分丑陋的方法：每次成功收到回复之后，强制发送一个 ID 为非正常（即无法通过 <code>getUUID()</code> 函数生成，我选择了 <code>"/a"</code>）的 GET 请求，附上上次请求的 ID；在服务端，一旦识别到这个特殊的 ID，就能判断出这个 GET 请求并不是正常的请求，而是用来辅助释放内存的。这样的方式确实有些面向用例编程了</p></li>
 </ul>
-<p>示例如下</p>
-<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> KeyValue <span class="hljs-keyword">struct</span> {<br>    Key <span class="hljs-type">string</span><br>    Value <span class="hljs-type">string</span><br>}<br><br><span class="hljs-keyword">type</span> ByKey []KeyValue<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a ByKey)</span></span> Len() <span class="hljs-type">int</span> {<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(a)<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a ByKey)</span></span> Less(i, j <span class="hljs-type">int</span>) <span class="hljs-type">bool</span> {<br>    <span class="hljs-keyword">return</span> a[i].Key &lt; a[j].Key<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a ByKey)</span></span> Swap(i, j <span class="hljs-type">int</span>) {<br>    a[i], a[j] = a[j], a[i]<br>}<br></code></pre></td></tr></tbody></table></figure></li>
-</ul>
-<h2 id="mapreduce-论文阅读">MapReduce 论文阅读</h2>
-<h3 id="编程模型">编程模型</h3>
+<h2 id="result">Result</h2>
+<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab2Res.png" srcset="/img/loading.gif" lazyload alt="实验结果" style="zoom:80%;"></p>
+<h2 id="reflection">Reflection</h2>
 <ul>
-<li>Map 函数的 input：键值对（实际上只需要用到值）；Map 函数的 Output：键值对（Emit 出，这个键值对也叫<strong>中间</strong>键值对）</li>
-<li>Reduce 函数的 input：具有相同 key 的中间键值对的 value 构成的集合；Reduce 函数的 Output：一个有意义的导出数据</li>
-</ul>
-<p>Lab1 中提供的一个简单的示例</p>
-<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-comment">//</span><br><span class="hljs-comment">// a word-count application "plugin" for MapReduce.</span><br><span class="hljs-comment">//</span><br><span class="hljs-comment">// go build -buildmode=plugin wc.go</span><br><span class="hljs-comment">//</span><br><br><span class="hljs-keyword">import</span> <span class="hljs-string">"6.5840/mr"</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">"unicode"</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">"strings"</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">"strconv"</span><br><br><span class="hljs-comment">// The map function is called once for each file of input. The first</span><br><span class="hljs-comment">// argument is the name of the input file, and the second is the</span><br><span class="hljs-comment">// file's complete contents. You should ignore the input file name,</span><br><span class="hljs-comment">// and look only at the contents argument. The return value is a slice</span><br><span class="hljs-comment">// of key/value pairs.</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Map</span><span class="hljs-params">(filename <span class="hljs-type">string</span>, contents <span class="hljs-type">string</span>)</span></span> []mr.KeyValue {<br>	<span class="hljs-comment">// function to detect word separators.</span><br>	ff := <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(r <span class="hljs-type">rune</span>)</span></span> <span class="hljs-type">bool</span> { <span class="hljs-keyword">return</span> !unicode.IsLetter(r) }<br><br>	<span class="hljs-comment">// split contents into an array of words.</span><br>	words := strings.FieldsFunc(contents, ff)<br><br>	kva := []mr.KeyValue{}<br>	<span class="hljs-keyword">for</span> _, w := <span class="hljs-keyword">range</span> words {<br>		kv := mr.KeyValue{w, <span class="hljs-string">"1"</span>}<br>		kva = <span class="hljs-built_in">append</span>(kva, kv)<br>	}<br>	<span class="hljs-keyword">return</span> kva<br>}<br><br><span class="hljs-comment">// The reduce function is called once for each key generated by the</span><br><span class="hljs-comment">// map tasks, with a list of all the values created for that key by</span><br><span class="hljs-comment">// any map task.</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Reduce</span><span class="hljs-params">(key <span class="hljs-type">string</span>, values []<span class="hljs-type">string</span>)</span></span> <span class="hljs-type">string</span> {<br>	<span class="hljs-comment">// return the number of occurrences of this word.</span><br>	<span class="hljs-keyword">return</span> strconv.Itoa(<span class="hljs-built_in">len</span>(values))<br>}<br></code></pre></td></tr></tbody></table></figure>
-<h3 id="实现">实现</h3>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/mapreduce.png" srcset="/img/loading.gif" lazyload alt="" style="zoom: 50%;"></p>
-<h2 id="任务">任务</h2>
-<ul>
-<li>填充 mr/rpc.go, mr/worker.go, mr/coordinator.go</li>
-<li>一个输入文件运行一次 map，一次 map 输出 10 个 中间文件，一个 reduce 输出一个输出文件</li>
-<li>coordinator 与 worker 之间通过 RPC 进行通信（可以理解为传递一个 JSON）</li>
-</ul>
-<h2 id="思路">思路</h2>
-<ul>
-<li><p>容错机制 Fault Tolerence</p>
-<p>主节点故障则整个任务失败（这是 MapReduce 论文中提到的处理方法。事实上，本实验中不会出现主节点失败的情形）</p>
-<p>从节点故障，有以下几种情况</p>
-<ul>
-<li><p>做 map 时故障</p>
-<p>主要是在主节点分配 map 任务后注册一个 10s 后执行的函数，查看当前这个任务是否真的执行完成了。如果没有执行完成，那么将这个任务从 working 队列撤销，重新加入 waiting 队列。不过这样的实现也会带来一定的问题，比如一个从节点不是真的宕掉而是运行的很慢，即使主节点在 10s 后选择重做这个任务，这个<strong>被认为</strong>是宕掉的节点也能读写中间文件或者是读写结果文件。不过考虑到它生成的结果与其他从节点是一致的，因此没有特别处理这一点</p></li>
-<li><p>做 reduce 时故障</p>
-<p>同上</p></li>
-<li><p>写文件时故障，基于实验手册的 Hints 实现</p>
-<blockquote>
-<p>To ensure that nobody observes partially written files in the presence of crashes, the MapReduce paper mentions the trick of using a temporary file and atomically renaming it once it is completely written. You can use <code>ioutil.TempFile</code> to create a temporary file and <code>os.Rename</code> to atomically rename it.</p>
-</blockquote></li>
-</ul></li>
-<li><p>并发性能分析TODO</p></li>
-</ul>
-<h2 id="结果">结果</h2>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab1Res.png" srcset="/img/loading.gif" lazyload></p>
-<p>备注</p>
-<ul>
-<li>在进行 crash test 的时候<strong>十分慢</strong>，目前还未知道原因，也许是本实验中的并发控制过于粗糙的原因</li>
-</ul>
-<h2 id="后记">后记</h2>
-<ul>
-<li><p>在用测试脚本进行某几个测试的时候出现了找不到文件的错误，而手动运行时是没问题的。排查后可知是执行路径出错了。手动运行（使用 go run）的执行路径是 <code>src/main</code>，而脚本的执行路径（直接执行编译后的二进制文件）是 <code>src/main/mr-tmp</code>。这一点在以往的编程实践中没有注意到（或许是我忘了...）</p>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/202404122133505.png" srcset="/img/loading.gif" lazyload alt="" style="zoom:67%;"></p></li>
-<li><p>关于并发控制的实现较为<strong>粗糙</strong>，也许这也是造成性能瓶颈的一个原因。可以考虑将一些数据结构换为<strong>通道</strong>去实现，因为通道是<strong>天生</strong>并发安全的</p></li>
-<li><p>本次实验收获<strong>特别多</strong>。首先是第一次体会到了并发编程以及使用 Go 进行并发编程的优雅。其次是学习了许多操作系统相关的 API，理解了几个 shell 脚本的函数</p></li>
-<li><p>十分喜欢 Go 语言的多返回值特性，其他语言中只能用传引用/指针或者是定义一个类的方式来实现了</p></li>
-<li><p>除了上述提到的路径的错误之外，本地简单测试以后运行脚本就得到了通过。这让我深深怀疑我的编码质量以及测试脚本的覆盖性。另外本实验中的编码风格也十分不好，后续打算参考一些别人的代码</p></li>
-<li><p>GPT4 果然是效率神器！这里感谢一位友人提供的 Team 版本</p></li>
+<li>对于内存该如何释放是一个值得深思的问题。一般的思路有超时机制、心跳检测（与某个客户端失联后，即删除与它的全部会话缓存）。针对本实验的某些用例，也许压缩存储重型对象也是可行的...</li>
+<li>如何在不可靠的网络上构建可靠的服务，是分布式系统需要解决一个重要问题。应当假设<strong>所有</strong>环节均可能出错，尽可能地处理不同 case，以构建一个鲁棒的系统或算法</li>
 </ul>
 
               
@@ -388,8 +352,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>6.5840 Lab1</div>
-      <div>https://balddemian.github.io/6.5840-Lab1/</div>
+      <div>6.5840 Lab2</div>
+      <div>https://balddemian.github.io/6.5840-Lab2/</div>
     </div>
     <div class="license-meta">
       
@@ -401,7 +365,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年4月12日</div>
+          <div>2024年4月14日</div>
         </div>
       
       
@@ -431,18 +395,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/6.5840-Lab2/" title="6.5840 Lab2">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">6.5840 Lab2</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/Happy-Debugging-2/" title="踩坑实录2">
-                        <span class="hidden-mobile">踩坑实录2</span>
+                      <a href="/6.5840-Lab1/" title="6.5840 Lab1">
+                        <span class="hidden-mobile">6.5840 Lab1</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
