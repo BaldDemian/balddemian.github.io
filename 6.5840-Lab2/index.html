@@ -27,7 +27,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab2Res.png">
 <meta property="article:published_time" content="2024-04-14T15:16:00.000Z">
-<meta property="article:modified_time" content="2024-04-14T15:17:30.606Z">
+<meta property="article:modified_time" content="2024-04-16T09:47:24.811Z">
 <meta property="article:author" content="Peiyang He">
 <meta property="article:tag" content="6.584">
 <meta property="article:tag" content="分布式">
@@ -288,21 +288,23 @@
 <li><p>Go 的 map，访问一个不存在的键时，返回的是值类型的<strong>空值</strong>。比如本实验中，返回的 string 类型的空值是 ""。不过，某些情景下可能需要区分<strong>键存在，但值确实为 ""</strong> 和<strong>键不存在</strong>两种情况，这可以通过额外的一个布尔型的 map 实现</p></li>
 <li><p>处理不可靠的网络</p>
 <ul>
-<li><p>客户端的请求未到达。这种情况没有影响</p></li>
-<li><p>请求正确到达，但回复未到达，使得客户端继续重发请求。为了处理这种情形，服务端必须先缓存此次请求的返回值，如果后续收到同一请求，直接返回这个值，而不对 data 进行任何处理（否则就违反了一个请求只执行一次请求的规定）。同时服务端必须尽快释放客户端确认收到的回复所占用的内存，这就需要客户端的每次请求捎带最近一次已收到的回复的标识符</p></li>
-<li><p>同一请求多次到达</p>
-<p>这些请求的标识符是唯一的，因此可以识别出冗余的请求，进而返回事先缓存的结果，并且不对数据库进行任何修改</p></li>
+<li><p>客户端的请求未到达。这种情况没有影响，因为客户端会一直尝试直到收到回复</p></li>
+<li><p>请求正确到达，但回复未到达，使得客户端继续重发请求。为了处理这种情形，服务端必须先缓存此次请求的返回值，如果后续收到同一请求，直接返回这个值，而不对 data 进行任何处理（否则就违反了一个请求只修改数据一次的规定，即<strong>幂等性</strong>）。同时，服务端应该具有及时<strong>释放缓存</strong>的机制，这又有两种可行的实现方式</p>
+<ul>
+<li>每次客户端的请求捎带前一次已经确认收到回复的会话的 ID。这种方式会在某些用例下不能通过，原因是每个客户端均只进行了一次请求。一种解决方法是将「前一次已经确认收到回复的会话的 ID」放在全局的角度处理，即通过 common.go 实现在不同客户端之间的共享。不过这种方式<strong>可能</strong>会丢失一些 ID</li>
+<li>客户端确认收到回复后，额外发一个特殊的报文给服务器，比如一个 ID 与正常请求 ID 格式不符的 GET 报文，并附上前一次请求的 ID，这样服务器就可以删除对应的缓存。那也许会有额外的思考，比如这个确认报文丢了该怎么办？如果是在一个现实的网络中考虑，可能需要服务器返回对于客户端确认报文的确认，并且引入超时重传机制（因为连续几次丢失报文的概率是很低的，多试几次总能成）。本实验中没有考虑这些额外的处理</li>
 </ul></li>
-<li><p>如何释放服务端的内存？（TODO：找到更好的实现）</p>
-<p>在最开始的实现中，每个客户端的请求均捎带上一次请求的标识符，这样服务端在收到当前请求后，可以认为客户端已成功收到上一次的回复，进而删除对于上一次回复的缓存。但是，这会导致每个客户端的最后一次请求的回复的缓存是无法删除的！</p>
-<p>在一个用例中，涉及到一次 put 和许多次的 get，并且这些 get 是由不同的客户端一次性产生的（即这些客户端整个过程中只发送了这一次请求），这就使得上述的内存回收策略失效了！原因在于之前的实现中，对于 id 的管理是局限在 <code>client.go</code> 中的。如果转而在 <code>common.go</code> 中管理 id，那么不同客户端的请求可以捎带彼此的 ID。基于这样的实现，某些用例可以通过了，但还是存在两个无法通过的用例。<strong>百思不得其解</strong>，我明明删了那个重型对象了啊<span class="emoji" alias="thinking" style="" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f914.png?v8">🤔</span>。最后使用了一种十分丑陋的方法：每次成功收到回复之后，强制发送一个 ID 为非正常（即无法通过 <code>getUUID()</code> 函数生成，我选择了 <code>"/a"</code>）的 GET 请求，附上上次请求的 ID；在服务端，一旦识别到这个特殊的 ID，就能判断出这个 GET 请求并不是正常的请求，而是用来辅助释放内存的。这样的方式确实有些面向用例编程了</p></li>
+<li><p>同一请求多次到达</p>
+<p>这些请求的标识符是唯一的，因此可以识别出冗余的请求，进而返回事先缓存的结果，并且不对数据库进行任何修改，从而满足幂等性</p></li>
+</ul></li>
 </ul>
 <h2 id="result">Result</h2>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab2Res.png" srcset="/img/loading.gif" lazyload alt="实验结果" style="zoom:80%;"></p>
+<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab2Res.png" srcset="/img/loading.gif" lazyload alt="Lab2 实验结果" style="zoom:80%;"></p>
 <h2 id="reflection">Reflection</h2>
 <ul>
 <li>对于内存该如何释放是一个值得深思的问题。一般的思路有超时机制、心跳检测（与某个客户端失联后，即删除与它的全部会话缓存）。针对本实验的某些用例，也许压缩存储重型对象也是可行的...</li>
 <li>如何在不可靠的网络上构建可靠的服务，是分布式系统需要解决一个重要问题。应当假设<strong>所有</strong>环节均可能出错，尽可能地处理不同 case，以构建一个鲁棒的系统或算法</li>
+<li>幂等性在软件系统设计中的重要性</li>
 </ul>
 
               
