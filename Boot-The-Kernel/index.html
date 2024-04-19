@@ -262,14 +262,23 @@
             
             <div class="markdown-body">
               
-              <h2 id="操作系统引导">操作系统引导</h2>
+              <h2 id="操作系统引导"><a class="header-anchor" href="#操作系统引导">¶</a>操作系统引导</h2>
 <blockquote>
 <p>下面的讨论假设系统为 X86 架构和 Linux 系统，启动设备是磁盘；</p>
-<p>需要厘清这几个概念：MBR、PBR、分区、分区表、启动设备、活动分区、启动管理器 - 通电后激活 CPU，IR(Intruction Register) 置为 BIOS 的第一条指令，CPU 开始执行 BIOS 程序 - BIOS 执行 POST 自检，即 Power-On Self Test。如果硬件自检没问题，则会在屏幕上显示硬件信息</p>
+<p>需要厘清这几个概念：MBR、PBR、分区、分区表、启动设备、活动分区、启动管理器</p>
 </blockquote>
 <ul>
-<li><p>一台机器中可能有多个磁盘，BIOS 根据保存在 CMOS（主板上的另一个区域，保存主板的重要参数，如电压、系统时间）的磁盘启动顺序，或与用户交互的顺序，启动第一位的磁盘，作为启动设备（启动设备就是包含了 OS 的设备，可以是磁盘、也可是软盘、U 盘...）</p></li>
-<li><p>CPU 搜寻该磁盘第 0 盘面第 0 磁道第 1 扇区，如果该扇区以 <code>0xAA55</code>（一个特定的<strong>魔数</strong>）结尾，则被视为<strong>主引导扇区</strong>。如果当前磁盘的第一个扇区尾部并不是这个特定的魔数，将继续查看下一个启动设备是否符合要求。如果全部启动设备都不满足，则死机</p>
+<li>
+<p>通电后激活 CPU，IR(Intruction Register) 置为 BIOS 的第一条指令，CPU 开始执行 BIOS 程序</p>
+</li>
+<li>
+<p>BIOS 执行 POST 自检，即 Power-On Self Test。如果硬件自检没问题，则会在屏幕上显示硬件信息</p>
+</li>
+<li>
+<p>一台机器中可能有多个磁盘，BIOS 根据保存在 CMOS（主板上的另一个区域，保存主板的重要参数，如电压、系统时间）的磁盘启动顺序，或与用户交互的顺序，启动第一位的磁盘，作为启动设备（启动设备就是包含了 OS 的设备，可以是磁盘、也可是软盘、U 盘…）</p>
+</li>
+<li>
+<p>CPU 搜寻该磁盘第 0 盘面第 0 磁道第 1 扇区，如果该扇区以 <code>0xAA55</code>（一个特定的<strong>魔数</strong>）结尾，则被视为<strong>主引导扇区</strong>。如果当前磁盘的第一个扇区尾部并不是这个特定的魔数，将继续查看下一个启动设备是否符合要求。如果全部启动设备都不满足，则死机</p>
 <blockquote>
 <p>磁盘分区、磁盘分区表</p>
 <p>下图是一个可能的磁盘布局：</p>
@@ -279,24 +288,35 @@
 <p>磁盘分区就是将磁盘分为一个或多个<strong>柱面</strong>（柱面：不同盘面上的同一位置的扇区构成一个柱面，想象一下圆柱的形状~），每个分区可以使用不同的文件系统、包含不同的操作系统。比如 Windows 下经典的 C 盘和 D 盘就是两个分区。其实分区也可以不包含文件系统，此时这个分区使用原始的磁盘格式，比如 UNIX 的交换区（用于虚拟内存）</p>
 <p>既然一个磁盘中可以包含多个分区，那么就需要记录每个分区的起始扇区号和整个分区的大小（或结束的扇区号）。这些信息被记录在磁盘分区表中。此外，分区表中的一个分区将被标记为<strong>活动分区</strong>，即这个分区中含有即将被加载的 OS</p>
 <p>对于一个含有文件系统的磁盘分区，其可能的布局如上图所示。值得注意的是，即使这个分区中不包含 OS，它的头部也规定必须是引导块。这个引导块也被称作分区引导记录 PBR</p>
-</blockquote></li>
-<li><p>CPU 开始执行 MBR 中的二进制代码，这段代码很短（因为不能超过一个扇区的 512 字节），它的作用主要是从磁盘分区表中找出活动分区，然后 CPU 转去执行活动分区的引导块中的引导程序</p></li>
-<li><p>CPU 开始执行活动分区的引导块中的引导程序，它的作用是找到并激活该分区<strong>根目录</strong>下的用于引导 OS 的程序（<strong>启动管理器</strong>），交由启动管理器加载 OS 内核</p></li>
-<li><p>上面的过程完成的仅仅是 OS <strong>内核</strong>的加载，OS 其他的部分是随着运行时的需要再加载进内存的</p></li>
+</blockquote>
+</li>
+<li>
+<p>CPU 开始执行 MBR 中的二进制代码，这段代码很短（因为不能超过一个扇区的 512 字节），它的作用主要是从磁盘分区表中找出活动分区，然后 CPU 转去执行活动分区的引导块中的引导程序</p>
+</li>
+<li>
+<p>CPU 开始执行活动分区的引导块中的引导程序，它的作用是找到并激活该分区<strong>根目录</strong>下的用于引导 OS 的程序（<strong>启动管理器</strong>），交由启动管理器加载 OS 内核</p>
+</li>
+<li>
+<p>上面的过程完成的仅仅是 OS <strong>内核</strong>的加载，OS 其他的部分是随着运行时的需要再加载进内存的</p>
+</li>
 </ul>
 <p>再补充一个有意思的细节</p>
 <ul>
-<li><p>我们知道读取键盘输入、在屏幕上显示信息，是通过<strong>中断</strong>实现的，在汇编编程中，我们可以使用 <code>INT &lt;中断号&gt;</code> 来使用 OS 内核提供的中断。但是在 OS 引导的过程中，硬件自检后，屏幕上会显示硬件信息；加载启动设备时，可由用户用键盘选择要加载的启动设备；当启动设备中有多个操作系统时，可由用户用键盘指定要启动的操作系统。这些键盘的输入和屏幕上显示信息的过程，都没有 OS 的参与。但是这些过程同样是通过中断实现的。这里的中断是由 BIOS 提供的。也就是说，<strong>存在两套中断</strong>，一套由 BIOS 提供，一套由操作系统内核提供</p>
+<li>
+<p>我们知道读取键盘输入、在屏幕上显示信息，是通过<strong>中断</strong>实现的，在汇编编程中，我们可以使用 <code>INT &lt;中断号&gt;</code> 来使用 OS 内核提供的中断。但是在 OS 引导的过程中，硬件自检后，屏幕上会显示硬件信息；加载启动设备时，可由用户用键盘选择要加载的启动设备；当启动设备中有多个操作系统时，可由用户用键盘指定要启动的操作系统。这些键盘的输入和屏幕上显示信息的过程，都没有 OS 的参与。但是这些过程同样是通过中断实现的。这里的中断是由 BIOS 提供的。也就是说，<strong>存在两套中断</strong>，一套由 BIOS 提供，一套由操作系统内核提供</p>
 <p>BIOS 提供的中断在<strong>实模式</strong>使用，仅有 16 位；内核提供的中断在<strong>保护模式</strong>下使用，并且是 32 位或 64 位的</p>
-<p>（实模式、保护模式、中断门、中断描述符又是另一些广阔的概念了，408 没有涉及，今后再填坑）</p></li>
+<p>（实模式、保护模式、中断门、中断描述符又是另一些广阔的概念了，408 没有涉及，今后再填坑）</p>
+</li>
 </ul>
 <p>Ref</p>
-<ol type="1">
+<ol>
 <li><a target="_blank" rel="noopener" href="https://en.wikibooks.org/wiki/X86_Assembly/Bootloaders">x86 Assembly/Bootloaders - Wikibooks, open books for an open world</a></li>
 <li><a target="_blank" rel="noopener" href="https://web.mit.edu/rhel-doc/4/RH-DOCS/rhel-rg-en-4/s1-boot-init-shutdown-process.html">A Detailed Look at the Boot Process (mit.edu)</a></li>
 <li>王道论坛 2024 年操作系统考研复习指导</li>
-<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/5128630/who-initializes-the-idt-the-kernel-or-the-processor">x86 - Who initializes the IDT, the kernel or the processor? - Stack Overflow</a> ## 后记 这部分内容从去年下半年开始学操作系统就来回修改了好几次，还是学艺不精🤣。其实到现在反思 408 的复习情况，具体的某个知识点还是可以说的上，但是没有形成一个宏观的立足整个系统、硬件和软件融合的知识体系，强化阶段要接着做这件事</li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/5128630/who-initializes-the-idt-the-kernel-or-the-processor">x86 - Who initializes the IDT, the kernel or the processor? - Stack Overflow</a></li>
 </ol>
+<h2 id="后记"><a class="header-anchor" href="#后记">¶</a>后记</h2>
+<p>这部分内容从去年下半年开始学操作系统就来回修改了好几次，还是学艺不精🤣。其实到现在反思 408 的复习情况，具体的某个知识点还是可以说的上，但是没有形成一个宏观的立足整个系统、硬件和软件融合的知识体系，强化阶段要接着做这件事</p>
 
               
             </div>

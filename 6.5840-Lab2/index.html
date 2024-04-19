@@ -27,7 +27,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab2Res.png">
 <meta property="article:published_time" content="2024-04-14T15:16:00.000Z">
-<meta property="article:modified_time" content="2024-04-16T09:47:24.811Z">
+<meta property="article:modified_time" content="2024-04-17T03:45:47.324Z">
 <meta property="article:author" content="Peiyang He">
 <meta property="article:tag" content="6.584">
 <meta property="article:tag" content="分布式">
@@ -262,47 +262,61 @@
             
             <div class="markdown-body">
               
-              <h2 id="misc">Misc</h2>
+              <h2 id="Misc"><a class="header-anchor" href="#Misc">¶</a>Misc</h2>
 <ul>
 <li>这是 6.5840 2024 年课程的 Lab 2，在以前年份的课程中是没有的。因为标记的难度为 easy，于是在正式进入 Raft 的实验之前顺手把这个实验做了</li>
-<li>内存释放的实现有点粗糙了...</li>
+<li>内存释放的实现有点粗糙了…</li>
 </ul>
-<h2 id="go">Go</h2>
+<h2 id="Go"><a class="header-anchor" href="#Go">¶</a>Go</h2>
 <ul>
 <li>安装某个依赖：<code>go get</code></li>
 <li><code>go test</code>：在许多的编程语言中，可以通过<strong>注解</strong>的形式标记哪些函数是测试时自动执行的（比如 SpringBoot 中的 <code>@SpringBootTest</code>）。Go 中没有注解，于是用一套源文件和函数名的命名规则来标识测试函数</li>
 </ul>
-<h2 id="task">Task</h2>
+<h2 id="Task"><a class="header-anchor" href="#Task">¶</a>Task</h2>
 <p>修改 kvsrv 下的 client.go, server.go, commom.go</p>
-<h2 id="implementation">Implementation</h2>
+<h2 id="Implementation"><a class="header-anchor" href="#Implementation">¶</a>Implementation</h2>
 <ul>
-<li><p>Append 最初理解为是拉一个链表，但其实就是在原有的字符串后追加</p></li>
-<li><p>RPC 标识符的处理</p>
+<li>
+<p>Append 最初理解为是拉一个链表，但其实就是在原有的字符串后追加</p>
+</li>
+<li>
+<p>RPC 标识符的处理</p>
 <p>最开始没有看到 client.go 中提供的 nrand() 函数，于是思考了一下标识符的实现方式。一个简单的实现是使用进程号 + 时间戳的方式。询问 GPT 后发现存在若干问题：</p>
-<ol type="1">
+<ol>
 <li><strong>时间戳精度</strong>：如果时间戳的精度不够高（例如，只精确到秒），则在高频调用的场景下可能会发生冲突。</li>
 <li><strong>系统时间调整</strong>：如果系统时间被调整，时间戳可能会重复或回退，这可能导致 ID 冲突。</li>
 <li><strong>进程号重用</strong>：在长时间运行的系统中，进程号可能在进程结束后被操作系统重用，这可能导致进程号的重复。</li>
 </ol>
-<p>最终采取了 <s>GPT 推荐的 <strong>UUID</strong> 的方式</s> nrand() 返回标识符</p></li>
-<li><p>Go 的 map，访问一个不存在的键时，返回的是值类型的<strong>空值</strong>。比如本实验中，返回的 string 类型的空值是 ""。不过，某些情景下可能需要区分<strong>键存在，但值确实为 ""</strong> 和<strong>键不存在</strong>两种情况，这可以通过额外的一个布尔型的 map 实现</p></li>
-<li><p>处理不可靠的网络</p>
+<p>最终采取了 <s>GPT 推荐的 <strong>UUID</strong> 的方式</s> nrand() 返回标识符</p>
+</li>
+<li>
+<p>Go 的 map，访问一个不存在的键时，返回的是值类型的<strong>空值</strong>。比如本实验中，返回的 string 类型的空值是 “”。不过，某些情景下可能需要区分<strong>键存在，但值确实为 “”</strong> 和<strong>键不存在</strong>两种情况，这可以通过额外的一个布尔型的 map 实现。或者可以使用 <code>sync.Map</code>，它的 Load 方法的第二个返回值为 bool，代表映射中是否存在键</p>
+</li>
+<li>
+<p>处理不可靠的网络</p>
 <ul>
-<li><p>客户端的请求未到达。这种情况没有影响，因为客户端会一直尝试直到收到回复</p></li>
-<li><p>请求正确到达，但回复未到达，使得客户端继续重发请求。为了处理这种情形，服务端必须先缓存此次请求的返回值，如果后续收到同一请求，直接返回这个值，而不对 data 进行任何处理（否则就违反了一个请求只修改数据一次的规定，即<strong>幂等性</strong>）。同时，服务端应该具有及时<strong>释放缓存</strong>的机制，这又有两种可行的实现方式</p>
+<li>
+<p>客户端的请求未到达。这种情况没有影响，因为客户端会一直尝试直到收到回复</p>
+</li>
+<li>
+<p>请求正确到达，但回复未到达，使得客户端继续重发请求。为了处理这种情形，服务端必须先缓存此次请求的返回值，如果后续收到同一请求，直接返回这个值，而不对 data 进行任何处理（否则就违反了一个请求只修改数据一次的规定，即<strong>幂等性</strong>）。同时，服务端应该具有及时<strong>释放缓存</strong>的机制，这又有两种可行的实现方式</p>
 <ul>
 <li>每次客户端的请求捎带前一次已经确认收到回复的会话的 ID。这种方式会在某些用例下不能通过，原因是每个客户端均只进行了一次请求。一种解决方法是将「前一次已经确认收到回复的会话的 ID」放在全局的角度处理，即通过 common.go 实现在不同客户端之间的共享。不过这种方式<strong>可能</strong>会丢失一些 ID</li>
 <li>客户端确认收到回复后，额外发一个特殊的报文给服务器，比如一个 ID 与正常请求 ID 格式不符的 GET 报文，并附上前一次请求的 ID，这样服务器就可以删除对应的缓存。那也许会有额外的思考，比如这个确认报文丢了该怎么办？如果是在一个现实的网络中考虑，可能需要服务器返回对于客户端确认报文的确认，并且引入超时重传机制（因为连续几次丢失报文的概率是很低的，多试几次总能成）。本实验中没有考虑这些额外的处理</li>
-</ul></li>
-<li><p>同一请求多次到达</p>
-<p>这些请求的标识符是唯一的，因此可以识别出冗余的请求，进而返回事先缓存的结果，并且不对数据库进行任何修改，从而满足幂等性</p></li>
-</ul></li>
 </ul>
-<h2 id="result">Result</h2>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab2Res.png" srcset="/img/loading.gif" lazyload alt="Lab2 实验结果" style="zoom:80%;"></p>
-<h2 id="reflection">Reflection</h2>
+</li>
+<li>
+<p>同一请求多次到达</p>
+<p>这些请求的标识符是唯一的，因此可以识别出冗余的请求，进而返回事先缓存的结果，并且不对数据库进行任何修改，从而满足幂等性</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="Result"><a class="header-anchor" href="#Result">¶</a>Result</h2>
+<img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab2Res.png" srcset="/img/loading.gif" lazyload alt="Lab2 实验结果" style="zoom:80%;">
+<h2 id="Reflection"><a class="header-anchor" href="#Reflection">¶</a>Reflection</h2>
 <ul>
-<li>对于内存该如何释放是一个值得深思的问题。一般的思路有超时机制、心跳检测（与某个客户端失联后，即删除与它的全部会话缓存）。针对本实验的某些用例，也许压缩存储重型对象也是可行的...</li>
+<li>对于内存该如何释放是一个值得深思的问题。一般的思路有超时机制、心跳检测（与某个客户端失联后，即删除与它的全部会话缓存）。针对本实验的某些用例，也许压缩存储重型对象也是可行的…</li>
 <li>如何在不可靠的网络上构建可靠的服务，是分布式系统需要解决一个重要问题。应当假设<strong>所有</strong>环节均可能出错，尽可能地处理不同 case，以构建一个鲁棒的系统或算法</li>
 <li>幂等性在软件系统设计中的重要性</li>
 </ul>

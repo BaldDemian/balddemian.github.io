@@ -258,37 +258,42 @@
             
             <div class="markdown-body">
               
-              <h2 id="fork">fork</h2>
+              <h2 id="fork"><a class="header-anchor" href="#fork">¶</a>fork</h2>
 <p>在 UNIX/Linux 中，<code>fork()</code> 用于创建当前进程的子进程</p>
 <p><code>vfork()</code> 在新建子进程后，将父进程阻塞</p>
-<h3 id="子进程">子进程</h3>
+<h3 id="子进程"><a class="header-anchor" href="#子进程">¶</a>子进程</h3>
 <p>fork 出来的子进程，与父进程有着完全一致的变量值和程序计数器。</p>
 <p>对于<strong>完全一致的变量值</strong>，需要指出的是，父进程和子进程拥有完全不同的内存空间；</p>
 <p>对于<strong>完全一致的程序计数器</strong>，这意味着，在 fork 调用之前的父进程中的全部语句，子进程将不会执行</p>
 <p>那么问题来了，对于产生子进程的那条 fork 语句，子进程将如何执行呢？</p>
 <p>简单来说，子进程仍然会执行这条 fork 语句，但是并不产生新的进程（不妨使用「反证法」，如果继续产生新的子进程，那么这将是一个无限递归的过程，那么内存岂不是爆满了），只会拥有返回值。</p>
-<h3 id="返回值">返回值</h3>
+<h3 id="返回值"><a class="header-anchor" href="#返回值">¶</a>返回值</h3>
 <p>对于一个父进程，fork 的返回值是创建的子进程的<strong>进程描述符</strong>(process identifier, PID)；</p>
 <p>对于子进程，返回值是 0；</p>
 <p>如果子进程创建失败（由于内存不足等原因），返回值-1。</p>
-<h3 id="实例演示">实例演示</h3>
+<h3 id="实例演示"><a class="header-anchor" href="#实例演示">¶</a>实例演示</h3>
 <p>以一段 C 程序为例：</p>
 <figure class="highlight c"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> {<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"hello world (pid:%d)\n"</span>, (<span class="hljs-type">int</span>) getpid());<br>    <span class="hljs-type">int</span> rc = fork(); <span class="hljs-comment">// 返回值其实是 pid_t 类型</span><br>    <span class="hljs-keyword">if</span> (rc &lt; <span class="hljs-number">0</span>) { <span class="hljs-comment">// fork failed</span><br>        <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">"fork failed\n"</span>);<br>    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (rc == <span class="hljs-number">0</span>) { <span class="hljs-comment">// child process</span><br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"hello, I am child (pid:%d) \n"</span>, (<span class="hljs-type">int</span>) getpid());<br>    } <span class="hljs-keyword">else</span> { <span class="hljs-comment">// parent process</span><br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"hello, I am parent of %d (pid:%d)\n"</span>, rc, (<span class="hljs-type">int</span>) getpid());<br>    }<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>}<br></code></pre></td></tr></tbody></table></figure>
 <p>根据进程调度的不同，可能有以下两种输出结果：（当然 pid 也大概率不一致）</p>
 <figure class="highlight c"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c">hello <span class="hljs-title function_">world</span> <span class="hljs-params">(pid:<span class="hljs-number">285</span>)</span><br>hello, I am parent of 286 <span class="hljs-params">(pid:<span class="hljs-number">285</span>)</span><br>hello, I am <span class="hljs-title function_">child</span> <span class="hljs-params">(pid:<span class="hljs-number">286</span>)</span><br><span class="hljs-comment">// another possible result</span><br>hello <span class="hljs-title function_">world</span> <span class="hljs-params">(pid:<span class="hljs-number">285</span>)</span><br>hello, I am <span class="hljs-title function_">child</span> <span class="hljs-params">(pid:<span class="hljs-number">286</span>)</span><br>hello, I am parent of 286 <span class="hljs-params">(pid:<span class="hljs-number">285</span>)</span><br></code></pre></td></tr></tbody></table></figure>
 <p>观察发现，<code>hello world</code> 只在父进程打印了，而没有在子进程中进行打印</p>
-<h2 id="例题">例题</h2>
-<ol type="1">
-<li><p>在 UNIX 系统下执行以下程序，最多可再产生几个进程？</p>
+<h2 id="例题"><a class="header-anchor" href="#例题">¶</a>例题</h2>
+<ol>
+<li>
+<p>在 UNIX 系统下执行以下程序，最多可再产生几个进程？</p>
 <figure class="highlight c"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c">main() {<br>    fork(); <span class="hljs-comment">// PC is here</span><br>    fork();<br>    fork();<br>}<br></code></pre></td></tr></tbody></table></figure>
-<p>ANS: 7</p></li>
-<li><p>以下程序一种可能的输出（设最开始的进程的 PID 为 1000）</p>
+<p>ANS: 7</p>
+</li>
+<li>
+<p>以下程序一种可能的输出（设最开始的进程的 PID 为 1000）</p>
 <figure class="highlight c"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">"stdio.h"</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">"sys/types.h"</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">"unistd.h"</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> {<br>    <span class="hljs-type">pid_t</span> pid1;<br>    <span class="hljs-type">pid_t</span> pid2;<br>    pid1 = fork();<br>    pid2 = fork();<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"pid1:%d, pid2:%d\n"</span>, pid1, pid2);<br>}<br><br><span class="hljs-comment">// possible result</span><br>pid1:<span class="hljs-number">1001</span>, pid2:<span class="hljs-number">1002</span> (<span class="hljs-number">1000</span> 进程的输出)<br>pid1:<span class="hljs-number">0</span>, pid2:<span class="hljs-number">1003</span>    (<span class="hljs-number">1001</span> 进程的输出)<br>pid1:<span class="hljs-number">0</span>, pid2:<span class="hljs-number">0</span>		 (<span class="hljs-number">1003</span> 进程的输出)<br>pid1:<span class="hljs-number">1001</span>, pid2:<span class="hljs-number">0</span>    (<span class="hljs-number">1002</span> 进程的输出)<br></code></pre></td></tr></tbody></table></figure>
-<p>解析：画出树形图比较方便（Linux 中的进程也是按照树的结构组织的） 此外注意，1003 进程的 pid1 为 0，1002 进程的 pid 为 1001，是从它们各自的父进程复制而来的</p></li>
+<p>解析：画出树形图比较方便（Linux 中的进程也是按照树的结构组织的）<br>
+此外注意，1003 进程的 pid1 为 0，1002 进程的 pid 为 1001，是从它们各自的父进程复制而来的</p>
+</li>
 </ol>
 <p>Ref:</p>
-<ol type="1">
-<li>Linux Programmer's Manual: <code>man fork</code> <code>man vfork</code></li>
+<ol>
+<li>Linux Programmer’s Manual: <code>man fork</code> <code>man vfork</code></li>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/bandaoyu/article/details/89673614">【linux】linux中fork（）详解（实例讲解）|fork的运行机制_bandaoyu的博客-CSDN博客_linux fork</a></li>
 </ol>
 
