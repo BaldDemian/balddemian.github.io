@@ -262,10 +262,10 @@
             
             <div class="markdown-body">
               
-              <img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/InnoDB-Index-Page.png" srcset="/img/loading.gif" lazyload alt="image-20220913122308276" style="zoom:67%;">
+              <p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/InnoDB-Index-Page.png" srcset="/img/loading.gif" lazyload alt="image-20220913122308276" style="zoom:67%;"></p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>名称</th>
 <th>中文</th>
 <th>大小(Byte)</th>
@@ -273,43 +273,43 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>File Header</td>
 <td>文件头</td>
 <td>38</td>
 <td>页的一些通用信息</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Page Header]</td>
 <td>页头</td>
 <td>56</td>
 <td>数据页（索引页）专有的信息</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Infimum + Supremum</td>
 <td>最小记录、最大记录</td>
 <td>26</td>
 <td>两个虚拟的行记录</td>
 </tr>
-<tr>
+<tr class="even">
 <td>User Records</td>
 <td>用户记录</td>
 <td>~</td>
 <td>实际存储的用户记录</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Free Space</td>
 <td>剩余空间</td>
 <td>~</td>
 <td>页中尚未使用的空间</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Page Directory</td>
 <td>页目录</td>
 <td>~</td>
 <td>页中<strong>某些记录</strong>的相对位置</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>File Tailer</td>
 <td>文件尾</td>
 <td>8</td>
@@ -317,58 +317,44 @@
 </tr>
 </tbody>
 </table>
-<h2 id="背景：Compact-格式下的记录头结构"><a class="header-anchor" href="#背景：Compact-格式下的记录头结构">¶</a>背景：Compact 格式下的记录头结构</h2>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/InnoDB-Compact-Row.png" srcset="/img/loading.gif" lazyload alt="InnoDB-Compact-Row"></p>
+<h2 id="背景compact-格式下的记录头结构">背景：Compact 格式下的记录头结构</h2>
+<figure>
+<img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/InnoDB-Compact-Row.png" srcset="/img/loading.gif" lazyload alt="InnoDB-Compact-Row"><figcaption>InnoDB-Compact-Row</figcaption>
+</figure>
 <p>记录头的前 5 个字节信息：</p>
 <ul>
-<li>
-<p>预留位 1、2 没有使用</p>
-</li>
-<li>
-<p><code>delete_mask</code>: 该行记录是否被删除？InnoDB 中的一条用户记录被删除后，它并没有立即从磁盘中删除，而是<strong>仅仅被标记</strong>为删除。所有被删除的记录会形成一个<strong>垃圾链表</strong>，这片空间称为<strong>可重用空间</strong>，要使用时直接覆盖即可（将删除标志位改为 1 和将这条记录移进垃圾链表其实是两个阶段）</p>
-</li>
-<li>
-<p><code>min_rec_mask</code>: B+ 树的每层非叶子节点中的最小目录项记录都会添加该标记</p>
-</li>
-<li>
-<p><code>n_owned</code>: 4 bit, 表示当前记录所在的组拥有的记录数（仅有本组主键最大的那条记录本字段不为 0；且看[下文](##Page Directory)）</p>
-</li>
-<li>
-<p><code>heap_no</code>: 13 bit, 表示当前记录在<strong>记录堆中的位置信息，以本记录的主键大小作为排序依据（升序），但是最小记录与最大记录这两个</strong>虚拟记录占据了 0、1 两个 <code>heap_no</code>。值得注意的是一条记录一旦被插入数据页中，其 <code>heap_no</code> 就是固定的了，即使它被删除，这个 <code>heap_no</code> 也不会被回收</p>
-</li>
-<li>
-<p><code>record_type</code>: 3 bit, 表示当前<strong>记录的类型</strong>， 0 表示普通记录， 1 表示 B+ 树非叶节点记录， 2 表示最小记录(Infimum)， 3 表示最大记录 (Supremum)</p>
-</li>
-<li>
-<p><code>next_record</code>: 16 bit, 表示下一条记录的相对位置（因为各条<strong>记录</strong>之间是以<strong>单向链表</strong>的形式组织的）。具体来说，是从当前记录的<strong>真实数据</strong>（记录头信息的最后一位的下一位开始的信息）到下一条记录（按主键大小排列的下一个，可能不是存储顺序的下一个，中间可能隔着几条被标记为删除的记录）的<strong>真实数据</strong>的地址偏移量。特别地，Infimum 的 <code>next_record</code> 指向为主键值最小的用户记录；Supremum 的 <code>next_record</code> 为 0</p>
+<li><p>预留位 1、2 没有使用</p></li>
+<li><p><code>delete_mask</code>: 该行记录是否被删除？InnoDB 中的一条用户记录被删除后，它并没有立即从磁盘中删除，而是<strong>仅仅被标记</strong>为删除。所有被删除的记录会形成一个<strong>垃圾链表</strong>，这片空间称为<strong>可重用空间</strong>，要使用时直接覆盖即可（将删除标志位改为 1 和将这条记录移进垃圾链表其实是两个阶段）</p></li>
+<li><p><code>min_rec_mask</code>: B+ 树的每层非叶子节点中的最小目录项记录都会添加该标记</p></li>
+<li><p><code>n_owned</code>: 4 bit, 表示当前记录所在的组拥有的记录数（仅有本组主键最大的那条记录本字段不为 0；且看<a href="##Page%20Directory">下文</a>）</p></li>
+<li><p><code>heap_no</code>: 13 bit, 表示当前记录在<strong>记录堆中的位置信息，以本记录的主键大小作为排序依据（升序），但是最小记录与最大记录这两个</strong>虚拟记录占据了 0、1 两个 <code>heap_no</code>。值得注意的是一条记录一旦被插入数据页中，其 <code>heap_no</code> 就是固定的了，即使它被删除，这个 <code>heap_no</code> 也不会被回收</p></li>
+<li><p><code>record_type</code>: 3 bit, 表示当前<strong>记录的类型</strong>， 0 表示普通记录， 1 表示 B+ 树非叶节点记录， 2 表示最小记录(Infimum)， 3 表示最大记录 (Supremum)</p></li>
+<li><p><code>next_record</code>: 16 bit, 表示下一条记录的相对位置（因为各条<strong>记录</strong>之间是以<strong>单向链表</strong>的形式组织的）。具体来说，是从当前记录的<strong>真实数据</strong>（记录头信息的最后一位的下一位开始的信息）到下一条记录（按主键大小排列的下一个，可能不是存储顺序的下一个，中间可能隔着几条被标记为删除的记录）的<strong>真实数据</strong>的地址偏移量。特别地，Infimum 的 <code>next_record</code> 指向为主键值最小的用户记录；Supremum 的 <code>next_record</code> 为 0</p>
 <blockquote>
 <p>你会不会觉得 next_record 这个指针有点儿怪，为啥要指向记录头信息和真实数据之间的位置呢？为啥不干脆指向整条记录的开头位置，也就是记录的额外信息开头的位置呢？</p>
 <p>因为这个位置刚刚好，向<strong>左</strong>读取就是记录头信息，向<strong>右</strong>读取就是真实数据。我们前边还说过变长字段长度列表、NULL值列表中的信息都是<strong>逆序</strong>存放，这样可以使记录中位置靠前的字段和它们对应的字段长度信息在内存中的距离更近，可能会提高高速缓存的命中率</p>
 <p>—— 「MySQL 是怎样运行的」</p>
-</blockquote>
-</li>
+</blockquote></li>
 </ul>
-<h2 id="User-Space-Free-Space"><a class="header-anchor" href="#User-Space-Free-Space">¶</a>User Space &amp; Free Space</h2>
+<h2 id="user-space-free-space">User Space &amp; Free Space</h2>
 <p>User Space 增长的空间是从 Free Space 中分配来的</p>
-<h2 id="Infimum-Supremum"><a class="header-anchor" href="#Infimum-Supremum">¶</a>Infimum &amp; Supremum</h2>
-<p>Infimum: 5 字节的记录头和 8 字节大小的固定数据，这段数据为 69 6E 66 69 6D 75 6D 00，“infimum” 的 ASCII 编码</p>
-<p>Supremum: 5 字节的记录头和 8 字节的固定数据，73 75 70 72 65 6D 75 6D, “supremum” 的 ASCII 编码</p>
+<h2 id="infimum-supremum">Infimum &amp; Supremum</h2>
+<p>Infimum: 5 字节的记录头和 8 字节大小的固定数据，这段数据为 69 6E 66 69 6D 75 6D 00，"infimum" 的 ASCII 编码</p>
+<p>Supremum: 5 字节的记录头和 8 字节的固定数据，73 75 70 72 65 6D 75 6D, "supremum" 的 ASCII 编码</p>
 <ul>
-<li>
-<p>提问：为什么要有这两个一头一尾多余的记录？</p>
-<p>一个想法：联想学数据结构时链表的 dummy 节点，会简化增加和删除节点的操作</p>
-</li>
+<li><p>提问：为什么要有这两个一头一尾多余的记录？</p>
+<p>一个想法：联想学数据结构时链表的 dummy 节点，会简化增加和删除节点的操作</p></li>
 </ul>
-<h2 id="Page-Directory"><a class="header-anchor" href="#Page-Directory">¶</a>Page Directory</h2>
+<h2 id="page-directory">Page Directory</h2>
 <p>（联想 OS 中虚拟内存的 Page Directory）</p>
 <p>我们将记录以链表的形式组织起来，链表的查询是很慢的，为了加快查询，InnoDB 采用<strong>目录</strong>的机制加速查询，具体来说：</p>
-<ol>
+<ol type="1">
 <li>将一个页中所有<strong>正常</strong>的记录（包括最大和最小记录，<strong>不包括标记为已删除的记录</strong>）划分为几个<strong>组</strong>。</li>
 <li>每个组的最后一条记录（也就是<strong>组内主键最大</strong>的那条记录）的头信息中的 <code>n_owned</code> 属性表示该组拥有多少条记录（<strong>组内其他记录的 n_owned 为 0</strong>）</li>
 <li>将每个组的<strong>最后一条记录</strong>的<strong>地址偏移量</strong>（该记录的<strong>真实</strong>数据相对本页第 0 个字节的距离）单独提取出来按顺序存储到靠近页的<strong>尾部</strong>的地方，这个地方就是所谓的 <code>Page Directory</code> ，也就是页目录。页面目录中的这些地址偏移量被称为<strong>槽</strong> slot</li>
 </ol>
 <p>并且还有如下规定：</p>
-<ol>
+<ol type="1">
 <li>infimum 必须单独编为 1 组，且该组内仅有 Infimum，则 Infimum 的 n_owned 为 1</li>
 <li>supremum 所在的分组拥有的记录数为 1-8</li>
 <li>其余分组的记录数为 4~8</li>
@@ -381,37 +367,27 @@
 </ul>
 <p>利用 Page Directory 查找某条记录用到了二分法的思想。即先通过二分找到待查记录应该在的那个组（槽），再从这个槽的第一条记录开始做单链表的顺序查找。</p>
 <p>（其实访问的是这个槽的上一个槽，因为槽中存储的是本组中主键最大的那条记录的地址，但是我们要从本组中主键最小的那条记录开始遍历链表。那怎么找到本组中主键最小的记录的地址呢？上一个槽的主键最大的那条记录所链接的下一条记录就是本组主键最小的那个记录了呀~因为记录中间以主键的大小顺序排列）</p>
-<h2 id="Page-Header"><a class="header-anchor" href="#Page-Header">¶</a>Page Header</h2>
+<h2 id="page-header">Page Header</h2>
 <p>InnoDB 中有很多的页，但是<strong>只有</strong>索引页（数据页）具有 PageHeader，它记录了本数据页中有几条记录、有几个槽等等：</p>
-<img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/202210012107233.png" srcset="/img/loading.gif" lazyload alt="image-20220913152706381" style="zoom: 67%;">
-<h2 id="File-Header"><a class="header-anchor" href="#File-Header">¶</a>File Header</h2>
+<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/202210012107233.png" srcset="/img/loading.gif" lazyload alt="image-20220913152706381" style="zoom: 67%;"></p>
+<h2 id="file-header">File Header</h2>
 <p>所有的页都有文件头和文件尾。文件头存储了各种页中都通用的信息，如页编号、本页的下一个页、本页的上一个页</p>
 <ul>
-<li>
-<p><code>FIL_PAGE_SPACE_OR_CHKSUM</code> 页面的校验和</p>
-</li>
-<li>
-<p><code>FIL_PAGE_OFFSET</code> 页面的偏移量，即页号</p>
-</li>
-<li>
-<p><code>FIL_PAGE_PREV</code> 指向本页的上一个页</p>
-</li>
-<li>
-<p><code>FIL_PAGE_NEXT</code> 指向本页的下一个页。<strong>并不是所有的页都有上一个页和下一个页的指针</strong>！数据页是有的，比如有一个记录实在是太长，一个数据页存储不下，此时将剩余数据存储在下一个页，此时我们就需要用一张链表维护上下页的信息</p>
-</li>
-<li>
-<p><code>FIL_PAGE_TYPE</code> 页的类型，数据页的该字段值为 <code>0X45BF</code></p>
-</li>
+<li><code>FIL_PAGE_SPACE_OR_CHKSUM</code> 页面的校验和</li>
+<li><code>FIL_PAGE_OFFSET</code> 页面的偏移量，即页号</li>
+<li><code>FIL_PAGE_PREV</code> 指向本页的上一个页</li>
+<li><p><code>FIL_PAGE_NEXT</code> 指向本页的下一个页。<strong>并不是所有的页都有上一个页和下一个页的指针</strong>！数据页是有的，比如有一个记录实在是太长，一个数据页存储不下，此时将剩余数据存储在下一个页，此时我们就需要用一张链表维护上下页的信息</p></li>
+<li><p><code>FIL_PAGE_TYPE</code> 页的类型，数据页的该字段值为 <code>0X45BF</code></p></li>
 </ul>
-<h2 id="File-Tailer"><a class="header-anchor" href="#File-Tailer">¶</a>File Tailer</h2>
+<h2 id="file-tailer">File Tailer</h2>
 <p>所有的页都有文件头和文件尾。</p>
 <p>MySQL 中的数据是存储在<strong>硬盘</strong>上的，但是处理数据时是将页加载到内存中进行处理的，此时就涉及到磁盘内容与内存内容的同步（主要是写回时的一致性）问题。为了检查<strong>从内存到磁盘</strong>的同步是否成功，设计了文件尾，其中有 8 个字节，分为两个部分：</p>
 <ul>
 <li>前 4 个字节：本页面的<strong>校验和</strong>，与 File Header 中的校验和是一样的。每当一个页被修改了，同步之前需要重新计算本页的校验和，因为 File Header 在页的前面，所以同步时应该最先写回磁盘，当同步完全完成，File Tailer 中的校验和也被更新。当任意时刻，File Header 和 File Tailer 中的校验和不同时，则表示同步尚未完成或者同步失败</li>
 <li>后 4 个字节：代表页面被最后修改时对应的日志序列位置（LSN）</li>
 </ul>
-<h2 id="总结"><a class="header-anchor" href="#总结">¶</a>总结</h2>
-<ol>
+<h2 id="总结">总结</h2>
+<ol type="1">
 <li>注意区分 InnoDB 数据页中使用到的链表结构：数据页中的记录是以单链表组织的，数据页之间是以双向链表组织的</li>
 <li>数据页内部的槽以本组关键值最大的记录来代表本组（要考虑 Infimum 和 Supremum，即使这两条记录没有主键）；数据页的<strong>目录项</strong>（下一篇文章会讲到什么是数据页的目录项~）中以本页中主键值最小的记录代表本页（不考虑 Infimum 和 Supremum）</li>
 </ol>

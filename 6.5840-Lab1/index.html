@@ -376,131 +376,93 @@ mjx-container[display="true"] + br {
             
             <div class="markdown-body">
               
-              <h2 id="Misc"><a class="header-anchor" href="#Misc">¶</a>Misc</h2>
+              <h2 id="misc">Misc</h2>
 <ul>
-<li>
-<p><code>ls -a</code> 查看隐藏文件</p>
-</li>
-<li>
-<p>将本地主机的 pub 公钥存放在远程主机的 <code>~/.ssh/authorized_keys</code> 中即可免密登录</p>
-</li>
-<li>
-<p>Ubuntu 一行安装 Go 最新版本 <code>apt install golang</code>。想起之前安装某些环境时需要手动 <code>export</code> 路径，但是这次没有。查看 <code>~/.bashrc</code> 或者 <code>~/.profile</code> 文件中都没有 go 相关的路径导出。发现是将 go 的可执行文件直接放在了 <code>/usr/bin</code> 中，这也相当于在 <code>$PATH</code> 中了。可使用 <code>which go</code> 查到</p>
-</li>
-<li>
-<p>设置 goproxy，否则 VSCode 无法正常下载 Go 有关的插件</p>
-<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">vim ~/.bashrc<br><span class="hljs-meta prompt_"># </span><span class="language-bash">添加 <span class="hljs-built_in">export</span> GOPROXY=https://goproxy.io,direct</span><br>source ~./bashrc<br>go env GOPROXY<br></code></pre></td></tr></tbody></table></figure>
-</li>
+<li><p><code>ls -a</code> 查看隐藏文件</p></li>
+<li><p>将本地主机的 pub 公钥存放在远程主机的 <code>~/.ssh/authorized_keys</code> 中即可免密登录</p></li>
+<li><p>Ubuntu 一行安装 Go 最新版本 <code>apt install golang</code>。想起之前安装某些环境时需要手动 <code>export</code> 路径，但是这次没有。查看 <code>~/.bashrc</code> 或者 <code>~/.profile</code> 文件中都没有 go 相关的路径导出。发现是将 go 的可执行文件直接放在了 <code>/usr/bin</code> 中，这也相当于在 <code>$PATH</code> 中了。可使用 <code>which go</code> 查到</p></li>
+<li><p>设置 goproxy，否则 VSCode 无法正常下载 Go 有关的插件</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">vim ~/.bashrc<br><span class="hljs-meta prompt_"># </span><span class="language-bash">添加 <span class="hljs-built_in">export</span> GOPROXY=https://goproxy.io,direct</span><br>source ~./bashrc<br>go env GOPROXY<br></code></pre></td></tr></tbody></table></figure></li>
 </ul>
-<h2 id="Go"><a class="header-anchor" href="#Go">¶</a>Go</h2>
+<h2 id="go">Go</h2>
 <ul>
-<li>
-<p>样例程序的脚本解释</p>
+<li><p>样例程序的脚本解释</p>
 <figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">go build -buildmode=plugin ../mrapps/wc.go<br>rm mr-out*<br>go run mrsequential.go wc.so pg*.txt<br></code></pre></td></tr></tbody></table></figure>
 <ul>
 <li><code>go build</code> 是编译命令，其中 <code>-buildmode=plugin</code> 指定以「插件」模式编译。插件是一种特殊的<strong>共享库</strong>，可以在运行时被 Go 程序动态加载。这在实现插件化设计或热插拔功能时非常有用。编译后的插件的后缀名为 <code>.so</code></li>
 <li><code>rm mr-out*</code> 使用正则表达式删除前面运行可能生成的文件</li>
 <li><code>go run</code> 是编译<strong>并</strong>运行命令。后面的插件名和文件名为运行的命令行参数</li>
-</ul>
-</li>
-<li>
-<p>需要指出的是 <code>main</code> 包内的诸多演示文件定义了同名的函数，这在 Go 中是不允许的。Go 中一个包下的所有源代码在编译时被视为一个整体，因此一个源代码文件中的全局标识符（如函数、全局常量、全局变量）必须和其他的源代码文件中的上述标识符<strong>不同</strong></p>
-</li>
-<li>
-<p>要对一个类的切片类型调用 <code>sort.Sort()</code> 方法，要求这个切片类型实现 <code>sort.Interface</code>，也即实现三个方法（Go 中实现接口<strong>不必显式</strong>声明）</p>
+</ul></li>
+<li><p>需要指出的是 <code>main</code> 包内的诸多演示文件定义了同名的函数，这在 Go 中是不允许的。Go 中一个包下的所有源代码在编译时被视为一个整体，因此一个源代码文件中的全局标识符（如函数、全局常量、全局变量）必须和其他的源代码文件中的上述标识符<strong>不同</strong></p></li>
+<li><p>要对一个类的切片类型调用 <code>sort.Sort()</code> 方法，要求这个切片类型实现 <code>sort.Interface</code>，也即实现三个方法（Go 中实现接口<strong>不必显式</strong>声明）</p>
 <ul>
 <li>Len() int</li>
 <li>Less(i, j int) bool</li>
 <li>Swap(i, j int)</li>
 </ul>
 <p>示例如下</p>
-<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> KeyValue <span class="hljs-keyword">struct</span> {<br>    Key <span class="hljs-type">string</span><br>    Value <span class="hljs-type">string</span><br>}<br><br><span class="hljs-keyword">type</span> ByKey []KeyValue<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a ByKey)</span></span> Len() <span class="hljs-type">int</span> {<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(a)<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a ByKey)</span></span> Less(i, j <span class="hljs-type">int</span>) <span class="hljs-type">bool</span> {<br>    <span class="hljs-keyword">return</span> a[i].Key &lt; a[j].Key<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a ByKey)</span></span> Swap(i, j <span class="hljs-type">int</span>) {<br>    a[i], a[j] = a[j], a[i]<br>}<br></code></pre></td></tr></tbody></table></figure>
-</li>
-<li>
-<p><code>sync.Map</code></p>
-<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">var</span> m sync.Map<br>m.Store(<span class="hljs-string">"key"</span>, <span class="hljs-string">"value"</span>)<br>val, ok := m.Load(<span class="hljs-string">"key"</span>) <span class="hljs-comment">// 第二个返回值返回键是否存在</span><br><span class="hljs-comment">// 注意 val 是一个 any 类型的值，需要类型断言</span><br>m.<span class="hljs-built_in">delete</span>(<span class="hljs-string">"key"</span>)<br></code></pre></td></tr></tbody></table></figure>
-</li>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> KeyValue <span class="hljs-keyword">struct</span> {<br>    Key <span class="hljs-type">string</span><br>    Value <span class="hljs-type">string</span><br>}<br><br><span class="hljs-keyword">type</span> ByKey []KeyValue<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a ByKey)</span></span> Len() <span class="hljs-type">int</span> {<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(a)<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a ByKey)</span></span> Less(i, j <span class="hljs-type">int</span>) <span class="hljs-type">bool</span> {<br>    <span class="hljs-keyword">return</span> a[i].Key &lt; a[j].Key<br>}<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a ByKey)</span></span> Swap(i, j <span class="hljs-type">int</span>) {<br>    a[i], a[j] = a[j], a[i]<br>}<br></code></pre></td></tr></tbody></table></figure></li>
+<li><p><code>sync.Map</code></p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">var</span> m sync.Map<br>m.Store(<span class="hljs-string">"key"</span>, <span class="hljs-string">"value"</span>)<br>val, ok := m.Load(<span class="hljs-string">"key"</span>) <span class="hljs-comment">// 第二个返回值返回键是否存在</span><br><span class="hljs-comment">// 注意 val 是一个 any 类型的值，需要类型断言</span><br>m.<span class="hljs-built_in">delete</span>(<span class="hljs-string">"key"</span>)<br></code></pre></td></tr></tbody></table></figure></li>
 </ul>
-<h2 id="MapReduce-论文阅读"><a class="header-anchor" href="#MapReduce-论文阅读">¶</a>MapReduce 论文阅读</h2>
-<h3 id="编程模型"><a class="header-anchor" href="#编程模型">¶</a>编程模型</h3>
+<h2 id="mapreduce-论文阅读">MapReduce 论文阅读</h2>
+<h3 id="编程模型">编程模型</h3>
 <ul>
 <li>Map 函数的 input：键值对（实际上只需要用到值）；Map 函数的 Output：键值对（Emit 出，这个键值对也叫<strong>中间</strong>键值对）</li>
 <li>Reduce 函数的 input：具有相同 key 的中间键值对的 value 构成的集合；Reduce 函数的 Output：一个有意义的导出数据</li>
 </ul>
 <p>Lab1 中提供的一个简单的示例</p>
 <figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-comment">//</span><br><span class="hljs-comment">// a word-count application "plugin" for MapReduce.</span><br><span class="hljs-comment">//</span><br><span class="hljs-comment">// go build -buildmode=plugin wc.go</span><br><span class="hljs-comment">//</span><br><br><span class="hljs-keyword">import</span> <span class="hljs-string">"6.5840/mr"</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">"unicode"</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">"strings"</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">"strconv"</span><br><br><span class="hljs-comment">// The map function is called once for each file of input. The first</span><br><span class="hljs-comment">// argument is the name of the input file, and the second is the</span><br><span class="hljs-comment">// file's complete contents. You should ignore the input file name,</span><br><span class="hljs-comment">// and look only at the contents argument. The return value is a slice</span><br><span class="hljs-comment">// of key/value pairs.</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Map</span><span class="hljs-params">(filename <span class="hljs-type">string</span>, contents <span class="hljs-type">string</span>)</span></span> []mr.KeyValue {<br>	<span class="hljs-comment">// function to detect word separators.</span><br>	ff := <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(r <span class="hljs-type">rune</span>)</span></span> <span class="hljs-type">bool</span> { <span class="hljs-keyword">return</span> !unicode.IsLetter(r) }<br><br>	<span class="hljs-comment">// split contents into an array of words.</span><br>	words := strings.FieldsFunc(contents, ff)<br><br>	kva := []mr.KeyValue{}<br>	<span class="hljs-keyword">for</span> _, w := <span class="hljs-keyword">range</span> words {<br>		kv := mr.KeyValue{w, <span class="hljs-string">"1"</span>}<br>		kva = <span class="hljs-built_in">append</span>(kva, kv)<br>	}<br>	<span class="hljs-keyword">return</span> kva<br>}<br><br><span class="hljs-comment">// The reduce function is called once for each key generated by the</span><br><span class="hljs-comment">// map tasks, with a list of all the values created for that key by</span><br><span class="hljs-comment">// any map task.</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Reduce</span><span class="hljs-params">(key <span class="hljs-type">string</span>, values []<span class="hljs-type">string</span>)</span></span> <span class="hljs-type">string</span> {<br>	<span class="hljs-comment">// return the number of occurrences of this word.</span><br>	<span class="hljs-keyword">return</span> strconv.Itoa(<span class="hljs-built_in">len</span>(values))<br>}<br></code></pre></td></tr></tbody></table></figure>
-<h3 id="实现"><a class="header-anchor" href="#实现">¶</a>实现</h3>
-<img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/mapreduce.png" srcset="/img/loading.gif" lazyload alt="MapReduce概览" style="zoom: 50%;">
-<h2 id="任务"><a class="header-anchor" href="#任务">¶</a>任务</h2>
+<h3 id="实现">实现</h3>
+<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/mapreduce.png" srcset="/img/loading.gif" lazyload alt="MapReduce概览" style="zoom: 50%;"></p>
+<h2 id="任务">任务</h2>
 <ul>
 <li>填充 mr/rpc.go, mr/worker.go, mr/coordinator.go</li>
 <li>一个输入文件运行一次 map，一次 map 输出 10 个 中间文件，一个 reduce 输出一个输出文件</li>
 <li>coordinator 与 worker 之间通过 RPC 进行通信（可以理解为传递一个 JSON）</li>
 </ul>
-<h2 id="思路"><a class="header-anchor" href="#思路">¶</a>思路</h2>
+<h2 id="思路">思路</h2>
 <ul>
-<li>
-<p>容错机制 Fault Tolerence</p>
+<li><p>容错机制 Fault Tolerence</p>
 <p>主节点故障则整个任务失败（这是 MapReduce 论文中提到的处理方法。事实上，本实验中不会出现主节点失败的情形）</p>
 <p>从节点故障，有以下几种情况</p>
 <ul>
-<li>
-<p>做 map 时故障</p>
+<li><p>做 map 时故障</p>
 <p>主要是在主节点分配 map 任务后注册一个 10s 后执行的函数，查看当前这个任务是否真的执行完成了。如果没有执行完成，那么将这个任务从 working 队列撤销，重新加入 waiting 队列。不过这样的实现也会带来一定的问题，比如一个从节点不是真的宕掉而是运行的很慢，即使主节点在 10s 后选择重做这个任务，这个<strong>被认为</strong>是宕掉的节点也能读写中间文件或者是读写结果文件。不过考虑到它生成的结果与其他从节点是一致的，因此没有特别处理这一点。</p>
 <p>考虑到故障的存在，所以需要一个额外的 working 队列。理由如下：在我的实现中，通过 cntMap 变量是否为 0 来判断所有 map 任务是否做完；而每个 worker 做完一个 map 任务后，通过 CallMapTaskDone 告知 coordinator。在一个有缺陷的实现中，coordinator 每处理一次 MapTaskDone，就将 cntMap 减一。但是，考虑故障的存在，可能存在对于同一个 map 任务的来自不同 worker 的成功通告，如果不加考虑地直接将 cntMap 减一，cntMap 其实会提前为 0 或者变为负数，这是不正确的实现。那么，设置一个 working 队列，只有当通告成功的 map task 还在 working 队列时，才将 cntMap 减一</p>
 <blockquote>
-<p>以上的收到重复确认的场景，在软件架构中称为「幂等性」，这本身是离散数学关系运算中的一个名词，指的是 <mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.186ex;" xmlns="http://www.w3.org/2000/svg" width="10.305ex" height="1.731ex" role="img" focusable="false" viewBox="0 -683 4555 765"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D445" d="M230 637Q203 637 198 638T193 649Q193 676 204 682Q206 683 378 683Q550 682 564 680Q620 672 658 652T712 606T733 563T739 529Q739 484 710 445T643 385T576 351T538 338L545 333Q612 295 612 223Q612 212 607 162T602 80V71Q602 53 603 43T614 25T640 16Q668 16 686 38T712 85Q717 99 720 102T735 105Q755 105 755 93Q755 75 731 36Q693 -21 641 -21H632Q571 -21 531 4T487 82Q487 109 502 166T517 239Q517 290 474 313Q459 320 449 321T378 323H309L277 193Q244 61 244 59Q244 55 245 54T252 50T269 48T302 46H333Q339 38 339 37T336 19Q332 6 326 0H311Q275 2 180 2Q146 2 117 2T71 2T50 1Q33 1 33 10Q33 12 36 24Q41 43 46 45Q50 46 61 46H67Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628Q287 635 230 637ZM630 554Q630 586 609 608T523 636Q521 636 500 636T462 637H440Q393 637 386 627Q385 624 352 494T319 361Q319 360 388 360Q466 361 492 367Q556 377 592 426Q608 449 619 486T630 554Z"></path></g><g data-mml-node="mo" transform="translate(981.2,0)"><path data-c="2218" d="M55 251Q55 328 112 386T249 444T386 388T444 249Q444 171 388 113T250 55Q170 55 113 112T55 251ZM245 403Q188 403 142 361T96 250Q96 183 141 140T250 96Q284 96 313 109T354 135T375 160Q403 197 403 250Q403 313 360 358T245 403Z"></path></g><g data-mml-node="mi" transform="translate(1703.4,0)"><path data-c="1D445" d="M230 637Q203 637 198 638T193 649Q193 676 204 682Q206 683 378 683Q550 682 564 680Q620 672 658 652T712 606T733 563T739 529Q739 484 710 445T643 385T576 351T538 338L545 333Q612 295 612 223Q612 212 607 162T602 80V71Q602 53 603 43T614 25T640 16Q668 16 686 38T712 85Q717 99 720 102T735 105Q755 105 755 93Q755 75 731 36Q693 -21 641 -21H632Q571 -21 531 4T487 82Q487 109 502 166T517 239Q517 290 474 313Q459 320 449 321T378 323H309L277 193Q244 61 244 59Q244 55 245 54T252 50T269 48T302 46H333Q339 38 339 37T336 19Q332 6 326 0H311Q275 2 180 2Q146 2 117 2T71 2T50 1Q33 1 33 10Q33 12 36 24Q41 43 46 45Q50 46 61 46H67Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628Q287 635 230 637ZM630 554Q630 586 609 608T523 636Q521 636 500 636T462 637H440Q393 637 386 627Q385 624 352 494T319 361Q319 360 388 360Q466 361 492 367Q556 377 592 426Q608 449 619 486T630 554Z"></path></g><g data-mml-node="mo" transform="translate(2740.2,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mi" transform="translate(3796,0)"><path data-c="1D445" d="M230 637Q203 637 198 638T193 649Q193 676 204 682Q206 683 378 683Q550 682 564 680Q620 672 658 652T712 606T733 563T739 529Q739 484 710 445T643 385T576 351T538 338L545 333Q612 295 612 223Q612 212 607 162T602 80V71Q602 53 603 43T614 25T640 16Q668 16 686 38T712 85Q717 99 720 102T735 105Q755 105 755 93Q755 75 731 36Q693 -21 641 -21H632Q571 -21 531 4T487 82Q487 109 502 166T517 239Q517 290 474 313Q459 320 449 321T378 323H309L277 193Q244 61 244 59Q244 55 245 54T252 50T269 48T302 46H333Q339 38 339 37T336 19Q332 6 326 0H311Q275 2 180 2Q146 2 117 2T71 2T50 1Q33 1 33 10Q33 12 36 24Q41 43 46 45Q50 46 61 46H67Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628Q287 635 230 637ZM630 554Q630 586 609 608T523 636Q521 636 500 636T462 637H440Q393 637 386 627Q385 624 352 494T319 361Q319 360 388 360Q466 361 492 367Q556 377 592 426Q608 449 619 486T630 554Z"></path></g></g></g></svg></mjx-container>；幂等性（Idempotence）是软件设计中的一个重要概念，特别是在<strong>分布式系统</strong>、网络通信和 <strong>API</strong> 设计中。一个操作是幂等的，意味着无论这个操作进行多少次，都会产生相同的结果，至少在最终状态上是这样。也就是说，执行一次和多次效果是相同的</p>
-</blockquote>
-</li>
-<li>
-<p>做 reduce 时故障</p>
-<p>同上</p>
-</li>
-<li>
-<p>写文件时故障，基于实验手册的 Hints 实现</p>
+<p>以上的收到重复确认的场景，在软件架构中称为「幂等性」，这本身是离散数学关系运算中的一个名词，指的是 <span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.186ex;" xmlns="http://www.w3.org/2000/svg" width="10.305ex" height="1.731ex" role="img" focusable="false" viewBox="0 -683 4555 765"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D445" d="M230 637Q203 637 198 638T193 649Q193 676 204 682Q206 683 378 683Q550 682 564 680Q620 672 658 652T712 606T733 563T739 529Q739 484 710 445T643 385T576 351T538 338L545 333Q612 295 612 223Q612 212 607 162T602 80V71Q602 53 603 43T614 25T640 16Q668 16 686 38T712 85Q717 99 720 102T735 105Q755 105 755 93Q755 75 731 36Q693 -21 641 -21H632Q571 -21 531 4T487 82Q487 109 502 166T517 239Q517 290 474 313Q459 320 449 321T378 323H309L277 193Q244 61 244 59Q244 55 245 54T252 50T269 48T302 46H333Q339 38 339 37T336 19Q332 6 326 0H311Q275 2 180 2Q146 2 117 2T71 2T50 1Q33 1 33 10Q33 12 36 24Q41 43 46 45Q50 46 61 46H67Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628Q287 635 230 637ZM630 554Q630 586 609 608T523 636Q521 636 500 636T462 637H440Q393 637 386 627Q385 624 352 494T319 361Q319 360 388 360Q466 361 492 367Q556 377 592 426Q608 449 619 486T630 554Z"></path></g><g data-mml-node="mo" transform="translate(981.2,0)"><path data-c="2218" d="M55 251Q55 328 112 386T249 444T386 388T444 249Q444 171 388 113T250 55Q170 55 113 112T55 251ZM245 403Q188 403 142 361T96 250Q96 183 141 140T250 96Q284 96 313 109T354 135T375 160Q403 197 403 250Q403 313 360 358T245 403Z"></path></g><g data-mml-node="mi" transform="translate(1703.4,0)"><path data-c="1D445" d="M230 637Q203 637 198 638T193 649Q193 676 204 682Q206 683 378 683Q550 682 564 680Q620 672 658 652T712 606T733 563T739 529Q739 484 710 445T643 385T576 351T538 338L545 333Q612 295 612 223Q612 212 607 162T602 80V71Q602 53 603 43T614 25T640 16Q668 16 686 38T712 85Q717 99 720 102T735 105Q755 105 755 93Q755 75 731 36Q693 -21 641 -21H632Q571 -21 531 4T487 82Q487 109 502 166T517 239Q517 290 474 313Q459 320 449 321T378 323H309L277 193Q244 61 244 59Q244 55 245 54T252 50T269 48T302 46H333Q339 38 339 37T336 19Q332 6 326 0H311Q275 2 180 2Q146 2 117 2T71 2T50 1Q33 1 33 10Q33 12 36 24Q41 43 46 45Q50 46 61 46H67Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628Q287 635 230 637ZM630 554Q630 586 609 608T523 636Q521 636 500 636T462 637H440Q393 637 386 627Q385 624 352 494T319 361Q319 360 388 360Q466 361 492 367Q556 377 592 426Q608 449 619 486T630 554Z"></path></g><g data-mml-node="mo" transform="translate(2740.2,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mi" transform="translate(3796,0)"><path data-c="1D445" d="M230 637Q203 637 198 638T193 649Q193 676 204 682Q206 683 378 683Q550 682 564 680Q620 672 658 652T712 606T733 563T739 529Q739 484 710 445T643 385T576 351T538 338L545 333Q612 295 612 223Q612 212 607 162T602 80V71Q602 53 603 43T614 25T640 16Q668 16 686 38T712 85Q717 99 720 102T735 105Q755 105 755 93Q755 75 731 36Q693 -21 641 -21H632Q571 -21 531 4T487 82Q487 109 502 166T517 239Q517 290 474 313Q459 320 449 321T378 323H309L277 193Q244 61 244 59Q244 55 245 54T252 50T269 48T302 46H333Q339 38 339 37T336 19Q332 6 326 0H311Q275 2 180 2Q146 2 117 2T71 2T50 1Q33 1 33 10Q33 12 36 24Q41 43 46 45Q50 46 61 46H67Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628Q287 635 230 637ZM630 554Q630 586 609 608T523 636Q521 636 500 636T462 637H440Q393 637 386 627Q385 624 352 494T319 361Q319 360 388 360Q466 361 492 367Q556 377 592 426Q608 449 619 486T630 554Z"></path></g></g></g></svg></mjx-container></span>；幂等性（Idempotence）是软件设计中的一个重要概念，特别是在<strong>分布式系统</strong>、网络通信和 <strong>API</strong> 设计中。一个操作是幂等的，意味着无论这个操作进行多少次，都会产生相同的结果，至少在最终状态上是这样。也就是说，执行一次和多次效果是相同的</p>
+</blockquote></li>
+<li><p>做 reduce 时故障</p>
+<p>同上</p></li>
+<li><p>写文件时故障，基于实验手册的 Hints 实现</p>
 <blockquote>
 <p>To ensure that nobody observes partially written files in the presence of crashes, the MapReduce paper mentions the trick of using a temporary file and atomically renaming it once it is completely written. You can use <code>ioutil.TempFile</code> to create a temporary file and <code>os.Rename</code> to atomically rename it.</p>
-</blockquote>
-</li>
-</ul>
-</li>
-<li>
-<p>并发性能</p>
+</blockquote></li>
+</ul></li>
+<li><p>并发性能</p>
 <p>改进的实现中，对于 map 任务的等待队列换为了通道去实现，因为这个队列的大小其实是未知的。并且在这个地方踩了一个坑。因为通道的初始时实际上是必须指定最大容量的！如果缺省容量，那么容量就为 1，这也称作不带缓冲的通道。这样的话将导致后续对通道的写全部阻塞，整个程序进入死循环。代码中将通道的容量取一个较大的数 100</p>
-<p>其他的队列，由于实际上可以预先知道其长度，因此没有使用通道实现，而是使用了 map 和相应的 sync.Mutex</p>
-</li>
-<li>
-<p>退出机制</p>
-<p>当所有任务做完，coordinator 与 worker 应该及时退出（虽然不考虑这个环节，评测脚本也能顺利通过）。在 worker 端，可以利用 call() 函数的返回值来判断 coordinator 能否正常连通，如果不能连通，可以认为整个任务已经结束了，worker 可以退出。另外，在 worker 所有任务做完以后也应该退出。在 coordinator 端，判断 cntReduce 是否为 0 来判断所有的任务是否做完。值得注意的是，为了使得所有 worker 先于 coordinator 退出，coordinator 在退出之前应该先等一会。如果 coordinator 先退出了，可能会出现 RPC 通信失败的报错</p>
-</li>
+<p>其他的队列，由于实际上可以预先知道其长度，因此没有使用通道实现，而是使用了 map 和相应的 sync.Mutex</p></li>
+<li><p>退出机制</p>
+<p>当所有任务做完，coordinator 与 worker 应该及时退出（虽然不考虑这个环节，评测脚本也能顺利通过）。在 worker 端，可以利用 call() 函数的返回值来判断 coordinator 能否正常连通，如果不能连通，可以认为整个任务已经结束了，worker 可以退出。另外，在 worker 所有任务做完以后也应该退出。在 coordinator 端，判断 cntReduce 是否为 0 来判断所有的任务是否做完。值得注意的是，为了使得所有 worker 先于 coordinator 退出，coordinator 在退出之前应该先等一会。如果 coordinator 先退出了，可能会出现 RPC 通信失败的报错</p></li>
 </ul>
-<h2 id="结果"><a class="header-anchor" href="#结果">¶</a>结果</h2>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab1Res.png" srcset="/img/loading.gif" lazyload alt="Lab1测试结果"></p>
+<h2 id="结果">结果</h2>
+<figure>
+<img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab1Res.png" srcset="/img/loading.gif" lazyload alt="Lab1测试结果"><figcaption>Lab1测试结果</figcaption>
+</figure>
 <p>备注</p>
 <ul>
 <li>在进行 crash test 的时候<strong>十分慢</strong>，目前还未知道原因，也许是本实验中的并发控制过于粗糙的原因</li>
 </ul>
-<h2 id="后记"><a class="header-anchor" href="#后记">¶</a>后记</h2>
+<h2 id="后记">后记</h2>
 <ul>
-<li>
-<p>在用测试脚本进行某几个测试的时候出现了找不到文件的错误，而手动运行时是没问题的。排查后可知是执行路径出错了。手动运行（使用 go run）的执行路径是 <code>src/main</code>，而脚本的执行路径（直接执行编译后的二进制文件）是 <code>src/main/mr-tmp</code>。这一点在以往的编程实践中没有注意到（或许是我忘了…）</p>
-<img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/202404122133505.png" srcset="/img/loading.gif" lazyload alt="" style="zoom:67%;">
-</li>
-<li>
-<p>关于并发控制的实现较为<strong>粗糙</strong>，也许这也是造成性能瓶颈的一个原因。可以考虑将一些数据结构换为<strong>通道</strong>去实现，因为通道是<strong>天生</strong>并发安全的</p>
-</li>
-<li>
-<p>本次实验收获<strong>特别多</strong>。首先是第一次体会到了并发编程以及使用 Go 进行并发编程的优雅。其次是学习了许多操作系统相关的 API，理解了几个 shell 脚本的函数</p>
-</li>
-<li>
-<p>十分喜欢 Go 语言的多返回值特性，其他语言中只能用传引用/指针或者是定义一个类的方式来实现了</p>
-</li>
-<li>
-<p>除了上述提到的路径的错误之外，本地简单测试以后运行脚本就得到了通过。这让我深深怀疑我的编码质量以及测试脚本的覆盖性。另外本实验中的编码风格也十分不好，后续打算参考一些别人的代码</p>
-</li>
-<li>
-<p>GPT4 果然是效率神器！这里感谢一位友人提供的 Team 版本</p>
-</li>
+<li><p>在用测试脚本进行某几个测试的时候出现了找不到文件的错误，而手动运行时是没问题的。排查后可知是执行路径出错了。手动运行（使用 go run）的执行路径是 <code>src/main</code>，而脚本的执行路径（直接执行编译后的二进制文件）是 <code>src/main/mr-tmp</code>。这一点在以往的编程实践中没有注意到（或许是我忘了...）</p>
+<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/202404122133505.png" srcset="/img/loading.gif" lazyload alt="" style="zoom:67%;"></p></li>
+<li><p>关于并发控制的实现较为<strong>粗糙</strong>，也许这也是造成性能瓶颈的一个原因。可以考虑将一些数据结构换为<strong>通道</strong>去实现，因为通道是<strong>天生</strong>并发安全的</p></li>
+<li><p>本次实验收获<strong>特别多</strong>。首先是第一次体会到了并发编程以及使用 Go 进行并发编程的优雅。其次是学习了许多操作系统相关的 API，理解了几个 shell 脚本的函数</p></li>
+<li><p>十分喜欢 Go 语言的多返回值特性，其他语言中只能用传引用/指针或者是定义一个类的方式来实现了</p></li>
+<li><p>除了上述提到的路径的错误之外，本地简单测试以后运行脚本就得到了通过。这让我深深怀疑我的编码质量以及测试脚本的覆盖性。另外本实验中的编码风格也十分不好，后续打算参考一些别人的代码</p></li>
+<li><p>GPT4 果然是效率神器！这里感谢一位友人提供的 Team 版本</p></li>
 </ul>
 
               
