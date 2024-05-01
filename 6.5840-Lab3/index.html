@@ -18,26 +18,28 @@
   <meta name="referrer" content="no-referrer" />
   <meta name="baidu-site-verification" content="code-Kbu5eBOiRE" />
   
-    <meta name="description" content="粗略记录阅读 Raft 论文时的要点">
+    <meta name="description" content="6.5840 Lab3 的实验心得（施工中）">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Raft 论文阅读笔记">
-<meta property="og:url" content="https://balddemian.github.io/Raft-Notes/index.html">
+<meta property="og:title" content="6.5840 Lab3">
+<meta property="og:url" content="https://balddemian.github.io/6.5840-Lab3/index.html">
 <meta property="og:site_name" content="Bald Demian">
-<meta property="og:description" content="粗略记录阅读 Raft 论文时的要点">
+<meta property="og:description" content="6.5840 Lab3 的实验心得（施工中）">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/Raft-Roles.png">
-<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/Raft-term.png">
-<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/image-20240419160550687.png">
-<meta property="article:published_time" content="2024-04-19T08:00:00.000Z">
-<meta property="article:modified_time" content="2024-04-19T08:42:48.898Z">
+<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.8540Lab3PartA.png">
+<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab3PartB.png">
+<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab3PartC.png">
+<meta property="article:published_time" content="2024-05-01T12:29:00.000Z">
+<meta property="article:modified_time" content="2024-05-01T12:29:53.700Z">
 <meta property="article:author" content="Peiyang He">
+<meta property="article:tag" content="6.584">
 <meta property="article:tag" content="分布式">
+<meta property="article:tag" content="Golang">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/Raft-Roles.png">
+<meta name="twitter:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.8540Lab3PartA.png">
   
   
   
-  <title>Raft 论文阅读笔记 - Bald Demian</title>
+  <title>6.5840 Lab3 - Bald Demian</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -202,7 +204,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Raft 论文阅读笔记"></span>
+            <span id="subtitle" data-typed-text="6.5840 Lab3"></span>
           
         </div>
 
@@ -213,8 +215,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-04-19 16:00" pubdate>
-          2024年4月19日 下午
+        <time datetime="2024-05-01 20:29" pubdate>
+          2024年5月1日 晚上
         </time>
       </span>
     
@@ -258,96 +260,96 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Raft 论文阅读笔记</h1>
+            <h1 style="display: none">6.5840 Lab3</h1>
             
             <div class="markdown-body">
               
-              <h2 id="分布式系统中的一些背景概念">分布式系统中的一些背景概念</h2>
-<blockquote>
-<p>绝大多数概念来自于阅读 DDIA 时的笔记</p>
-</blockquote>
-<h3 id="拜占庭条件与非拜占庭条件">拜占庭条件与非拜占庭条件</h3>
+              <h2 id="misc">Misc</h2>
 <ul>
-<li>拜占庭条件（拜占庭错误）：节点可能是恶意的、不诚实的。一个实现了拜占庭容错的系统，应该能够通过大部分诚实节点的共识，处理部分节点的恶意行为</li>
-<li>非拜占庭条件（非拜占庭错误）：不根源于节点恶意行为的错误（或认为所有节点都是诚实的），比如节点崩溃失效、响应超时、数据出错。非拜占庭错误，可以通过冗余等技术进行解决</li>
+<li>即使是自己写项目代码，也请使用 git 进行管理。如果某次修改后，原先能通过的测试却通过不了了，没有版本记录真的很难 debug!</li>
+<li>亟待掌握多线程 debug 的方法！</li>
+<li>函数调用之间的同步和异步关系，如果是异步调用，可以使用 go 开启<strong>协程</strong></li>
 </ul>
-<p>事实上，在绝大多数分布式数据系统中，都没有进行拜占庭容错，因为其实现异常复杂</p>
-<h3 id="脑裂">脑裂</h3>
-<p>在仅允许一个主节点的系统中，多个节点均认为自己是主节点</p>
-<h3 id="并发超越单机">并发：超越单机</h3>
-<p>在单机中，并发指的是多个进程在一个时间段来看是同时运行，是通过时间片分用来实现的。</p>
-<p>因此在单机中，通常如果两个操作「同时」发生，则称之为并发。不过，在分布式系统中，操作是否在空间上重叠并不重要，并且由于分布式系统中复杂的<strong>时钟同步问题</strong>，有时往往难以确定它们是否同时发生。</p>
-<p>在分布式系统中，如果两个操作之间没有因果依赖，即不需要意识到对方，就可以称这两个操作是并发的。</p>
-<p>作为参考，一个典型的具有因果依赖的操作序列是，对于数据库中原本不存在的某个行，必须先 insert 才能修改</p>
-<h3 id="分片shard">分片（shard）</h3>
-<p>数据库膨胀到<strong>单机无法容纳</strong>时，就需要将数据库进行分片（注意分片和冗余是不一样的！）。常见的分片策略有基于哈希值的和基于 range 的。目前典型的设计思路是将数据库进行 shard 后再进行 replicate</p>
-<h3 id="同步写入与异步写入">同步写入与异步写入</h3>
+<h2 id="go">Go</h2>
 <ul>
-<li>同步写入指，当全部的从节点均已成功写入，主节点才告知客户端写成功。此时客户端访问任意一个节点，可以得到最新的数据</li>
-<li>异步写入指，不待全部的从节点均已成功写入，主节点便告知客户端写成功。此时客户端访问任意一个节点，可能不会得到最新的数据</li>
+<li><p>如何编写一个定期触发的函数（这个函数也叫 <strong>ticker</strong>）？</p>
+<p>作为 Go 语言的新手，推荐 <code>for 循环加 time.sleep</code> 的范式。<code>time.ticker</code> 等需要一定的语言基础才能驾驭</p></li>
+<li><p>之前学习 Go 时，学到了：在 main 函数中开启的协程，将在 main 函数结束后直接被撤销。但是除了 main 函数以外，A 函数开启的协程 B，它们之间的生命周期是无关的</p></li>
+<li><p>如果在运行测试命令时，比如 <code>go test -run PartA</code>，加了一个 flag <code>-race</code>，那么，只要运行时检测到了数据竞争，测试均会通过，即使代码本身在不加 <code>-race</code> 时能通过同样的测试。一个好的实践是总是使用 <code>-race</code>，并处理每一个警告的数据竞争</p></li>
+<li><p>sync.Cond 的使用</p>
+<p><code>sync.Cond</code> 是 Go 标准库中提供的一个条件变量工具，用于同步一组<strong>协程</strong>的执行。条件变量本质上是一个等待/通知机制：一个或多个协程<strong>等待</strong>某个条件满足，而另一个协程在条件满足时<strong>发送</strong>通知。</p>
+<ul>
+<li><p>创建 sync.Cond</p>
+<p>条件变量需要与一个互斥锁（<code>sync.Mutex</code>）或读写锁（<code>sync.RWMutex</code>）绑定使用。创建 <code>sync.Cond</code> 的代码示例如下：</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">var</span> mu sync.Mutex<br>cond := sync.NewCond(&amp;mu)<br></code></pre></td></tr></tbody></table></figure></li>
+<li><p>Wait 方法</p>
+<p><code>Wait</code> 方法用于等待条件变量的通知。在调用 <code>Wait</code> 之前，<strong>必须先获取锁</strong>（即在调用 <code>Wait</code> 前，锁必须是锁定状态）。调用 <code>Wait</code> 方法会<strong>自动释放锁</strong>，并且阻塞当前协程，直到其他协程调用 <code>Signal</code> 或 <code>Broadcast</code> 方法通知该条件变量。一旦当前协程接收到通知，<code>Wait</code> 会自动重新尝试获取锁，如果成功获取锁后，<code>Wait</code> 返回。</p></li>
+<li><p>Signal 和 Broadcast 方法</p>
+<ul>
+<li><code>Signal</code> 方法用于唤醒等待该条件变量的一个协程。如果有多个协程在等待，只唤醒一个（选择哪一个是<strong>不确定</strong>的）。</li>
+<li><code>Broadcast</code> 方法用于唤醒等待该条件变量的<strong>所有</strong>协程。</li>
 </ul>
-<p>严格的同步写入带来的代价是不可接受的，比如一个节点宕机了，那么整个集群将阻塞。实践中往往采取糅合的方式，即大多数节点均已写入成功，即可通知客户端写入成功。Raft 便采取这样的方式</p>
-<h2 id="复制状态机">复制状态机</h2>
-<p><strong>Replicated State Machine</strong> 是一种分布式系统中的设计方法，它通过在多个节点上复制<strong>同一状态机</strong>来确保系统的高可用性和一致性。这种方法基于一个核心理念：如果每个节点上的状态机都从<strong>相同</strong>的初始状态开始，并且以<strong>相同</strong>的顺序执行<strong>相同</strong>的命令，那么它们的最终状态也将是<strong>相同</strong>的。这样，即使一部分节点失败或发生故障，整个系统仍然可以提供正确和一致的服务。</p>
-<p>复制状态机通常由一个<strong>复制日志</strong>来实现，这个日志中记录了复制状态机应该按序执行的指令的集合。而<strong>确保复制日志的一致性，便是共识算法的职责</strong></p>
-<h2 id="raft-概述">Raft 概述</h2>
-<ul>
-<li><p>将客户端的请求序列化为<strong>日志</strong>，Raft 保证节点中的 log 是一致的</p></li>
-<li><p>Raft 系统中的三个角色：</p>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/Raft-Roles.png" srcset="/img/loading.gif" lazyload alt="Raft roles" style="zoom:50%;"></p>
-<ul>
-<li>client</li>
-<li>server(peer, instance)：组成 Raft 集群的单个<strong>进程</strong></li>
-<li>state machine：每个 Raft server 中都有一个状态机。在 6.5840 课程的范畴中，状态机可以理解为一个小型的 KV 数据库</li>
+<p>在调用 <code>Signal</code> 或 <code>Broadcast</code> 之前，也<strong>必须先获取相同的锁</strong>。这样做是为了保证在修改条件并通知其他协程之间的操作是原子的，从而避免竞态条件。</p></li>
+</ul></li>
 </ul>
-<p>图中的四个步骤解释如下</p>
-<ol type="1">
-<li>客户端的<strong>写</strong>请求发往且只能发往 leader 节点</li>
-<li>leader 向本地和其他 follower 的日志追加这条操作条目</li>
-<li>只有当多数节点都保存这条 log entry 后，这个 log entry 才被视为<strong>提交</strong>(committed)，之后在所有节点的状态机上应用这条 entry</li>
-<li>客户端的<strong>读</strong>请求可以发往任意一个节点，上述的步骤保证了各个节点间数据的一致性</li>
-</ol></li>
-<li><p>Raft 的功能模块分为三个子部分以完成不同的功能：</p>
+<h2 id="task">Task</h2>
+<p>本次实验中，需要修改 raft/raft.go</p>
+<h2 id="implementation">Implementation</h2>
+<p>代码的整个框架从 server 的三种状态（candidate, follower, leader）出发，并仔细定义状态之间的迁移条件与相关函数</p>
+<p>函数的命名风格上，后缀有 Safe 的说明在该函数开始执行时加锁，执行结束时解锁；后缀有 Unsafe 的说明在该函数内部不涉及对锁的操作</p>
+<h3 id="parta">PartA</h3>
 <ul>
-<li><p>leader election，系统中只能有一个领导者节点</p></li>
-<li><p>log replication，客户端发起的写请求（日志条目）只能去往领导者节点，由领导者节点负责向其他从节点发送日志条目</p></li>
-<li><p>safety</p></li>
-</ul></li>
-<li><p>每个节点同一时刻只能处于三种状态之一：</p>
+<li><p>任务：实现基本的领导者选举和领导者发送心跳的功能</p></li>
+<li><p>协程的使用</p>
+<p>在最开始的实现中，向其他主机发起 RPC，在 for 循环中使用了函数调用，类似于：</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">for</span> xxx {<br>    foo(xxx)<br>}<br></code></pre></td></tr></tbody></table></figure>
+<p>这样的方法是错误的！首先，根据 Raft 论文的要求，与各个主机之间的 RPC 应该是同时进行。而上述的函数调用显然是顺序进行的；其次，这样的同步通信，如果遇到某个节点阻塞，那么整个系统都会阻塞这显然是不可接受的。正确的方法是使用 Go 中的协程</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">for</span> xxx {<br>    <span class="hljs-keyword">go</span> foo(xxx)<br>}<br></code></pre></td></tr></tbody></table></figure></li>
+<li><p>ticker 函数</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(rf *Raft)</span></span> electionTicker() {<br>	<span class="hljs-keyword">for</span> rf.killed() == <span class="hljs-literal">false</span> {<br>		<span class="hljs-comment">// Your code here (PartA)</span><br>		<span class="hljs-comment">// Check if a leader election should be started.</span><br>		rf.mu.Lock()<br>		<span class="hljs-keyword">if</span> rf.role != Leader &amp;&amp; time.Now().Sub(rf.electionTimeoutStart) &gt;= rf.electionTimeoutDuration {<br>			<span class="hljs-keyword">go</span> rf.startElection()<br>		}<br>		rf.mu.Unlock()<br>		<span class="hljs-comment">// pause for a random amount of time between 50 and 350</span><br>		<span class="hljs-comment">// milliseconds.</span><br>		ms := <span class="hljs-number">50</span> + (rand.Int63() % <span class="hljs-number">300</span>)<br>		time.Sleep(time.Duration(ms) * time.Millisecond)<br>	}<br>}<br></code></pre></td></tr></tbody></table></figure>
+<p>这个地方犯了一个错误，即将对于 rf.role!=Leader 的判断移到了第 2 行。这是错误的，因为不论 rf 是不是领导者，只要它没有被 kill，这个 ticker 函数是无论如何都要执行的。作为对比，下面这个 ticker 只有在 rf 是领导者时才能执行，所以可以在循环中使用 return 语句退出</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(rf *Raft)</span></span> appendEntriesTicker() {<br>	<span class="hljs-keyword">for</span> !rf.killed() {<br>		rf.mu.Lock()<br>		<span class="hljs-keyword">if</span> rf.role != Leader {<br>			rf.mu.Unlock()<br>			<span class="hljs-keyword">return</span><br>		}<br>		rf.mu.Unlock()<br>		<span class="hljs-keyword">go</span> rf.startReplication()<br>		time.Sleep(appendEntriesInterval)<br>	}<br>}<br></code></pre></td></tr></tbody></table></figure>
+<p>此外，上述两个 ticker 中均使用 go 关键字开启了协程，这是因为简单的函数调用会阻塞 ticker，这是不可接受的</p></li>
+<li><p>处理数据竞争</p>
+<p>在某一版本的代码中，通过不带 <code>-race</code> 的测试，不过在使用 <code>-race</code> 后检测到了数据竞争。发现是在投票函数的实现中，多个并发的协程对一个整数型 votes 变量同时自增，造成数据竞争。最后将 votes 换为了一个<strong>容量</strong>很大的管道实现，因为管道是并发安全的</p></li>
+</ul>
+<h3 id="partb">PartB</h3>
 <ul>
-<li>leader，只能有一个，负责处理客户端的请求</li>
-<li>follower，不能发起请求，只能响应 leader 和 candidate</li>
-<li>candidate，用于选举</li>
-</ul></li>
-<li><p>term（任期）</p>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/Raft-term.png" srcset="/img/loading.gif" lazyload alt="Raft term" style="zoom:50%;"></p>
-<p>在 Raft 中，时间被划分为 term，每个 term 的长度随机，并且由一个<strong>单调增</strong>的整数进行标识。每个 term 的最开始一定是领导者选举。如果领导者选举成功，这个 term 的剩余时间将执行正常操作；如果没有候选者获得<strong>多数票</strong>等导致没有领导者被成功地选出，这个 term 的剩余时间将作废。term 中单调增的标号被用来检测过时的状态。每个服务器内部维护一个 current term，当它与其他节点交流时，如果发现其他节点有更大的 term，它就意识到自己是过时的，于是将 current term 更新为这个较大的 term，此时，如果这个节点还自认为自己是领导者，此时要放弃领导者地位变为追随者；此外，如果一个服务器接收到的请求，附带的 term 小于自己的 current term，它可以认为这个请求来自于一个过时的服务器，从而拒绝这个请求</p></li>
-<li><p>节点间的通信</p>
-<p>Raft 的节点通信使用<strong>需确认</strong>的 RPC。同时，为了简化设计，仅具有两种基本的 RPC</p>
+<li><p>在本节对于投票规则的完善中，论文中的图 2 提到当前主机的 log 必须 <code>at least as up-to-date as</code> candidate 的 log。至于如何具体定义这个 <code>up-to-date</code>，其实在论文的后面部分才有定义。最开始时的定义其实是<strong>错误</strong>的：</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">if</span> args.LastLogTerm &gt;= lastEntry.Term &amp;&amp; args.LastLogIndex &gt;= lastEntry.Index)<br></code></pre></td></tr></tbody></table></figure>
+<p>在仔细阅读论文后可知，这里的比较其实是分为两步的：</p>
 <ul>
-<li>RequestVote RPC：在选举阶段由 candidate 发起</li>
-<li>AppendEntries RPC：由领导者发起，用于向 follower 同步日志；此外也用于实现<strong>心跳</strong></li>
-</ul></li>
-<li><p>节点状态的迁移</p>
-<p>当一个服务器上线时，它首先是一个 follower，并且只要它在一个名为 <code>election timeout</code> 的时间内能收到来自一个 leader 或是 candidate 的心跳，它就一直维持自己 follower 的身份（也可以理解为，leader 必须定期向 follower 发送心跳，进而「压制」它们的选举意愿）。如果在 election timeout 的时间内没有收到上述心跳，它就成为一个 candidate 开始竞选（更像是一种自荐的形式）。具体来讲，它先自增自己的 current term，并为自己投 1 票，并向集群内其余主机发送 RequestVote（集群内的主机采取<strong>先到先得</strong>的投票策略。但同时附加了一些约束，比如 RequestVote 必须附上候选者的 log 信息。接收者会查看这个 log 的 index 和 term，只有当这个 index 和 term <strong>均</strong>大于等于自己的时，才能给这个候选者投票）。每收到一个相同 term 的投票，票数加 1。服务器维持自己 candidate 的身份，直至以下三种情况发生一种：</p>
-<ol type="1">
-<li>该主机赢得选举，此时从 candidate 变为 leader</li>
-<li>有其他主机赢得选举，此时该主机从 candidate 变为 follower</li>
-<li>本 term 中没有主机赢得选举</li>
-</ol>
-<p>上述过程中每个主机的 timeout 间隔都是<strong>随机</strong>产生的，避免连续的选举失败的情况出现</p></li>
-<li><p>只有当确认一个 log entry 在各个节点均一致后（即 committed）后，主机上的复制状态机才去执行这个 log entry 中的操作</p></li>
-<li><p>日志复制（日志同步）</p>
-<p>日志复制时，不会将本机的日志全部完整地发往 follower，而是采取一种「乐观 + 回退」的方式。具体来讲：leader 的每次心跳传送的是 <code>&lt;term, index&gt;</code> 的二元组（因为这个二元组可以<strong>唯一标识</strong>任意一个 log entry），如果 follower 发现这个二元组与自己的一致，那么可告知 leader 同步已完成；否则告知 leader 下次心跳时需附加日志；于是下次心跳时 leader 附加一条（或多条）较新的日志，如果 follower 还是发现不同步，则继续回退发送日志，直至同步</p>
-<p>日志同步中存在一个<strong>较难理解</strong>的规定：当前 leader 不能<strong>提交</strong>在之前的 leader 领导时同步到多数节点的记录。换个说法，一个 leader 能提交的记录，一定是那些在当前任期从客户端收到的、且在当前任期内成功同步到大多数节点的记录。结合论文中的图八来分析：</p>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/image-20240419160550687.png" srcset="/img/loading.gif" lazyload alt="Raft figure 8" style="zoom:50%;"></p>
-<ol type="a">
-<li><p>时刻 term 为 2，S1 当选 leader，并且从客户端收到 entry，index 为2。但是在将这个 entry 成功复制到大多数（&gt;= 3 个，包含自己）节点之前，S1 宕机了</p></li>
-<li><p>时刻 term 为 3，S5 当选 leader（因为它收到了来自S3、S4、S5 的投票，S1 和 S2 是不可能给它投票的），并且从客户端收到 entry，index 为 2，不过它立马就宕机了，没能将这个 entry 同步到其他任何一个节点</p></li>
-<li><p>时刻 term 为 4，S1 当选 leader，并且从客户端收到了新的 entry，index 为 3。根据上文提到的「乐观 + 回退」式同步机制，它成功地将 index 为 2、term 为 2 的 entry 同步到了大多数节点。但是，<strong>此时并不能提交这个 entry！！！</strong> 假设此时允许 S1 提交这个 entry，假设它在继续将 index 为 3、term 为 4 的 entry 同步到大多数节点之前，它又宕机了，此时我们来到时刻 (d)。此时 S5 当选，它将 index 为 2、term 为 3 的 entry 同步到其他节点，根据前文提到的规定，如果 index 相同，term 大的 entry 会冲掉 term 小的 entry。可是冲掉一个已经提交的 entry，显然是不可接受的，因为状态机已经根据这个 entry 执行修改了！</p></li>
-</ol>
-<p>如 (e) 中所示，如果我们在 (c) 中不允许 S1 提交已获得多数共识的 index 为 2、term 为 2 的那个 entry，假设 S1 又成功将 index 为 3、term 为 4 的 entry 复制到大多数节点，那么这个 entry 是<strong>可以提交的！！！</strong></p>
-<p>如果进一步思考，假若 (c) 中 S1 在将 index 为 3、term 为 4 的 entry 同步到大多数节点之前，它宕机了，并且此时它是没有提交 index 为 2、term 为 2 的那个 entry 的，那么接下来的任期，即使 S5 当选，导致如 (d) 中那样，index 为 2、term 为 2 的那个 entry 被 index 为 2、term 为 3 的 entry 冲掉，应该是没有太大问题的，因为前者没有被提交、没有被状态机执行</p></li>
+<li>Term 更高的则更新</li>
+<li>Term 相同，Index 更高的则更新</li>
+</ul>
+<p>因此正确的条件语句如下：</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go">(args.LastLogTerm == lastEntry.Term &amp;&amp; args.LastLogIndex &gt;= lastEntry.Index) ||(args.LastLogTerm &gt; lastEntry.Term)<br></code></pre></td></tr></tbody></table></figure></li>
+</ul>
+<h3 id="partc">PartC</h3>
+<ul>
+<li><p>Debug 时十分痛苦，最终修改了<strong>三处</strong> PartB 中的错误实现</p></li>
+<li><p>如果 PartA 和 PartB 的实现十分的 robust，本节的任务就是十分简单的持久化。不然的话，可能会像我一样，对之前的实现进行大改...尤其是 Figure 8(unreliable) 这个用例会十分难处理</p></li>
+<li><p>代码中应尽可能少地进行锁的操作，比如最好将一个函数完全置于锁之中执行（有点类似管程的思想），若无必要，不要在中途释放锁！（一个例外则是，在进行 RPC 调用之前应该释放锁，因为这个 RPC 操作可能是很久才返回的）。此外，一些辅助函数内部也能不对锁进行操作就不对锁进行操作，而是由<strong>调用者</strong>进行加锁和解锁</p></li>
+<li><p>如何更新 leader 的 commitIndex？</p>
+<p>也许一种朴素的方式是枚举每一个下标 <code>i</code>，再枚举每一个主机 <code>peer</code>，若 <code>match[peer] &gt;= i</code>，那么 <code>cnt++</code>。最终若 <code>cnt &gt; len(peers)/2</code>，那么这个下标可以 commit。不过，运用简单的算法知识可知，如果我们对 match 数组进行升序排序，它的中位数（如果是偶数长度，那么选择靠左的那个中位数）一定满足大于等于至少一半的数组元素。实现如下：</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(rf *Raft)</span></span> getMajorityIndexUnsafe() <span class="hljs-type">int</span> {<br>    tmp := <span class="hljs-built_in">make</span>([]<span class="hljs-type">int</span>, <span class="hljs-built_in">len</span>(rf.matchIndex))<br>    <span class="hljs-built_in">copy</span>(tmp, rf.matchIndex) <span class="hljs-comment">// avoid influencing the original slice when sorting</span><br>    sort.Ints(tmp)<br>    majorityIdx := (<span class="hljs-built_in">len</span>(tmp) - <span class="hljs-number">1</span>) / <span class="hljs-number">2</span><br>    <span class="hljs-keyword">return</span> tmp[majorityIdx] <span class="hljs-comment">// in asending order</span><br>}<br></code></pre></td></tr></tbody></table></figure>
+<p>如果使用这个算法，需要在遍历到自己时更新自己的 matchIndex，即：</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">len</span>(rf.peers); i++ {<br>    <span class="hljs-keyword">if</span> i == rf.me {<br>       rf.mu.Lock()<br>       rf.matchIndex[i] = <span class="hljs-built_in">len</span>(rf.Entries) - <span class="hljs-number">1</span> <span class="hljs-comment">// important</span><br>       rf.nextIndex[i] = <span class="hljs-built_in">len</span>(rf.Entries)      <span class="hljs-comment">// important</span><br>       rf.mu.Unlock()<br>       <span class="hljs-keyword">continue</span><br>    }<br>    <span class="hljs-keyword">go</span> askToReplicate(i)<br>}<br></code></pre></td></tr></tbody></table></figure></li>
+<li><p>实现了实验手册中提到的优化技巧，即每次日志同步失败时，不是 nextIndex--，而是根据 follower 返回的 XTerm 和 XIndex 信息去更新 nextIndex</p></li>
+</ul>
+<h2 id="result">Result</h2>
+<h3 id="parta-1">PartA</h3>
+<figure>
+<img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.8540Lab3PartA.png" srcset="/img/loading.gif" lazyload alt="PartA with -race"><figcaption>PartA with -race</figcaption>
+</figure>
+<h3 id="partb-1">PartB</h3>
+<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab3PartB.png" srcset="/img/loading.gif" lazyload alt="PartB" style="zoom: 67%;"></p>
+<h3 id="partc-1">PartC</h3>
+<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/6.5840Lab3PartC.png" srcset="/img/loading.gif" lazyload alt="PartC" style="zoom:50%;"></p>
+<h2 id="reflection">Reflection</h2>
+<ul>
+<li>debug 的确很痛苦，但是的确也是没有仔细对照论文要求而导致的...</li>
+<li>请对数组（Go 中也许切片更常用）的访问进行越界检查！</li>
 </ul>
 
               
@@ -381,7 +383,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
+        <a href="/tags/6-584/">#6.584</a>
+      
         <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+        <a href="/tags/Golang/">#Golang</a>
       
     </div>
   
@@ -393,8 +399,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Raft 论文阅读笔记</div>
-      <div>https://balddemian.github.io/Raft-Notes/</div>
+      <div>6.5840 Lab3</div>
+      <div>https://balddemian.github.io/6.5840-Lab3/</div>
     </div>
     <div class="license-meta">
       
@@ -406,7 +412,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年4月19日</div>
+          <div>2024年5月1日</div>
         </div>
       
       
@@ -436,18 +442,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/Happy-Debugging/" title="踩坑实录3">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">踩坑实录3</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/6.5840-Lab2/" title="6.5840 Lab2">
-                        <span class="hidden-mobile">6.5840 Lab2</span>
+                      <a href="/Happy-Debugging/" title="踩坑实录3">
+                        <span class="hidden-mobile">踩坑实录3</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
