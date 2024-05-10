@@ -258,23 +258,40 @@
             
             <div class="markdown-body">
               
-              <h2 id="basics">Basics</h2>
+              <h2 id="Basics"><a class="header-anchor" href="#Basics">¶</a>Basics</h2>
 <ul>
-<li><p><code>let</code> 声明的是不可变变量，<code>let mut</code> 声明的是可变变量。同时 Rust 中还有常量，必须用 <code>const</code> 声明且指定类型。从编译原理的知识中我们知道，常量必须在编译期被估值，但是不可变变量不用</p></li>
-<li><p>与 Java，Go 等不同，使用 <code>let</code> 声明的变量不会被赋予零值，必须手动对其进行初始化才能使用（亦即未被使用的变量可以不用初始化）</p></li>
-<li><p><code>let a: i32 = 3;</code>，这其中的类型声明不是必须的</p></li>
-<li><p><code>println!()</code> 其实不是一个函数，而是一个宏（名字后面是 <code>!</code>）</p></li>
-<li><p>在格式化输出语句中，<code>{}</code> 可以当做任何类型的占位符，它输出的是变量的 <code>std::fmt::Display</code> 这个 trait；<code>{:?}</code> 输出的是变量的 <code>std::fmt::Debug</code> 这个 trait</p>
+<li>
+<p><code>let</code> 声明的是不可变变量，<code>let mut</code> 声明的是可变变量。同时 Rust 中还有常量，必须用 <code>const</code> 声明且指定类型。从编译原理的知识中我们知道，常量必须在编译期被估值，但是不可变变量不用</p>
+</li>
+<li>
+<p>与 Java，Go 等不同，使用 <code>let</code> 声明的变量不会被赋予零值，必须手动对其进行初始化才能使用（亦即未被使用的变量可以不用初始化）</p>
+</li>
+<li>
+<p><code>let a: i32 = 3;</code>，这其中的类型声明不是必须的</p>
+</li>
+<li>
+<p><code>println!()</code> 其实不是一个函数，而是一个宏（名字后面是 <code>!</code>）</p>
+</li>
+<li>
+<p>在格式化输出语句中，<code>{}</code> 可以当做任何类型的占位符，它输出的是变量的 <code>std::fmt::Display</code> 这个 trait；<code>{:?}</code> 输出的是变量的 <code>std::fmt::Debug</code> 这个 trait</p>
 <blockquote>
 <p>可以简单地认为 Rust 中的 trait 就是其他语言中的 <strong>Interface</strong></p>
-</blockquote></li>
-<li><p>加了 <code>;</code> 就是语句，不加就是表达式。结合编译原理的知识可知，表达式可以看做有返回值。这在 Rust 的函数中尤为重要，函数体内最后一条表达式的结果将会被当成函数的返回值，因此无需显式的 <code>return</code></p></li>
-<li><p>Rust 中存在<strong>元组</strong>类型，元组中的元素可以不是一个类型的。可以通过将函数的返回值设置成一个元组，来实现 Go 中类似的函数多返回值特性</p></li>
+</blockquote>
+</li>
+<li>
+<p>加了 <code>;</code> 就是语句，不加就是表达式。结合编译原理的知识可知，表达式可以看做有返回值。这在 Rust 的函数中尤为重要，函数体内最后一条表达式的结果将会被当成函数的返回值，因此无需显式的 <code>return</code></p>
+</li>
+<li>
+<p>Rust 中存在<strong>元组</strong>类型，元组中的元素可以不是一个类型的。可以通过将函数的返回值设置成一个元组，来实现 Go 中类似的函数多返回值特性</p>
+</li>
 </ul>
-<h2 id="所有权与借用">所有权与借用</h2>
+<h2 id="所有权与借用"><a class="header-anchor" href="#所有权与借用">¶</a>所有权与借用</h2>
 <ul>
-<li><p>基本类型可以不考虑所有权与借用，因为变量之间的赋值其实执行了拷贝在<strong>栈</strong>上赋值</p></li>
-<li><p>可以认为只有<strong>堆</strong>上的值（也许称为<strong>对象</strong>更能与已有的认知联系在一起）才要考虑所有权与借用的关系。当我们把一个值赋给一个变量时，此时这个变量就称为这个值的拥有者，一个值的拥有者是唯一的，这种拥有关系可以进行转移，转移过后，原有的变量不再有效；在离开一个作用域时，Rust 会自动调用 drop 函数，它将清理所有的<strong>有效</strong>的所有者所引用的堆内存。下面是一段示例代码，它可能与常见的面向对象语言（如 Java ）的行为不一致</p>
+<li>
+<p>基本类型可以不考虑所有权与借用，因为变量之间的赋值其实执行了拷贝在<strong>栈</strong>上赋值</p>
+</li>
+<li>
+<p>可以认为只有<strong>堆</strong>上的值（也许称为<strong>对象</strong>更能与已有的认知联系在一起）才要考虑所有权与借用的关系。当我们把一个值赋给一个变量时，此时这个变量就称为这个值的拥有者，一个值的拥有者是唯一的，这种拥有关系可以进行转移，转移过后，原有的变量不再有效；在离开一个作用域时，Rust 会自动调用 drop 函数，它将清理所有的<strong>有效</strong>的所有者所引用的堆内存。下面是一段示例代码，它可能与常见的面向对象语言（如 Java ）的行为不一致</p>
 <figure class="highlight rust"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">fn</span> <span class="hljs-title function_">main</span>() {<br>    <span class="hljs-keyword">let</span> <span class="hljs-variable">x</span>: <span class="hljs-type">String</span> = <span class="hljs-type">String</span>::<span class="hljs-title function_ invoke__">from</span>(<span class="hljs-string">"Hello"</span>);<br>    <span class="hljs-keyword">let</span> <span class="hljs-variable">y</span> = x;<br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>, x)<br>}<br></code></pre></td></tr></tbody></table></figure>
 <p>这段代码将<strong>不能通过编译</strong>，原因是第 3 行代码使得值的所有权被转移到 y，x 不再有效；</p>
 <p>编译器告诉我们，move occurs because <code>x</code> has type <code>String</code>, which does not implement the <code>Copy</code> trait。意思是说，如果 x 变量绑定的值具有 Copy 这个 trait，那么拷贝是发生在栈上的，执行第 3 行代码后，x 与 y 均有效。哪些类型的值是 Copy 的呢？<strong>任何基本类型的组合可以 <code>Copy</code> ，不需要分配内存或某种形式资源的类型是可以 <code>Copy</code> 的</strong></p>
@@ -284,9 +301,13 @@
 <p>除了上述的变量间的赋值语句，函数调用也会转移值的所有权：</p>
 <figure class="highlight rust"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">fn</span> <span class="hljs-title function_">main</span>() {<br>    <span class="hljs-keyword">let</span> <span class="hljs-variable">x</span>: <span class="hljs-type">String</span> = <span class="hljs-type">String</span>::<span class="hljs-title function_ invoke__">from</span>(<span class="hljs-string">"Hello"</span>);<br>    <span class="hljs-title function_ invoke__">take_ownership</span>(x);<br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>, x)<br>}<br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">take_ownership</span>(s: <span class="hljs-type">String</span>) {<br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>, s)<br>}<br></code></pre></td></tr></tbody></table></figure>
 <p>执行第 3 行代码调用函数后，x 所绑定的值的所有权被转移到函数的形参 s 中，第 7 行代码执行结束后，由于 s 离开其作用域，将导致其绑定的值被回收。值得注意的是，尽管第 7 行代码可以顺利执行到，但是运行这段代码并不能看到这个输出。因为上述关于所有权与借用的讨论，编译器在<strong>编译期进行检查</strong>。上述代码未能通过编译，因此不会执行</p>
-<p>此外，函数的返回值也可以转移其所有权到函数的调用者中，可以将它形象地理解成被外部接收的返回值幸运地<strong>逃脱</strong>了函数调用结束后的回收</p></li>
-<li><p>如果将一个变量的<strong>引用</strong>赋给另一个变量，此时值的所有权发生了<strong>借用</strong>。借用只允许获得值的使用权，但不能获得值的所有权。因为并不拥有这个值，当引用离开作用域后，其指向的值也不会被丢弃</p></li>
-<li><p>通过引用修改原始的值？</p>
+<p>此外，函数的返回值也可以转移其所有权到函数的调用者中，可以将它形象地理解成被外部接收的返回值幸运地<strong>逃脱</strong>了函数调用结束后的回收</p>
+</li>
+<li>
+<p>如果将一个变量的<strong>引用</strong>赋给另一个变量，此时值的所有权发生了<strong>借用</strong>。借用只允许获得值的使用权，但不能获得值的所有权。因为并不拥有这个值，当引用离开作用域后，其指向的值也不会被丢弃</p>
+</li>
+<li>
+<p>通过引用修改原始的值？</p>
 <figure class="highlight rust"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">fn</span> <span class="hljs-title function_">main</span>() {<br>    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut </span><span class="hljs-variable">s</span> = <span class="hljs-type">String</span>::<span class="hljs-title function_ invoke__">from</span>(<span class="hljs-string">"Hello"</span>);<br>    <span class="hljs-keyword">let</span> <span class="hljs-variable">s1</span>: &amp;<span class="hljs-keyword">mut</span> <span class="hljs-type">String</span> = &amp;<span class="hljs-keyword">mut</span> s;<br>    <span class="hljs-title function_ invoke__">foo</span>(s1);<br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>, s)<br>}<br><br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">foo</span>(s: &amp;<span class="hljs-keyword">mut</span> <span class="hljs-type">String</span>) {<br>    s.<span class="hljs-title function_ invoke__">push_str</span>(<span class="hljs-string">" World"</span>);<br>}<br></code></pre></td></tr></tbody></table></figure>
 <p>正如可变值的声明一样，可变引用必须显示使用 <code>mut</code> 关键字进行声明</p>
 <p>只能通过<strong>可变引用</strong>修改借用的值，并且这个值必须也是<strong>可变</strong>的！并且对于一个可变值的<strong>可变引用</strong>，<strong>同一个作用域下至多存在一个</strong>！</p>
@@ -297,31 +318,44 @@
 <li>引用的作用域，结束在它最后一次被使用的地方。例如上面代码的引用 <code>s1</code>，它的作用域结束在第 4 行，而不是某个花括号</li>
 </ul>
 <p>这个优化也被称为 NLL(Non-Lexical Lifetimes)，这个名词可以结合编译原理的知识理解~</p>
-<p>Rust 的编译器检查可以保证<strong>不可能</strong>出现 C/C++ 中的悬垂指针（尝试访问一块已经被释放的区域）</p></li>
-<li><p>一些函数调用也会转移值的所有权，原因是这个函数虽然是通过 <code>.</code> 操作符调用，但是隐含了一个 <code>self</code> 参数，这个参数就是这个对象的引用（联想 Python 类的方法定义中的 <code>self</code>？），而且这个引用往往是<strong>可变</strong>引用，可能会十分<strong>隐晦</strong>地违反上述引用的冲突规则，例如：</p>
+<p>Rust 的编译器检查可以保证<strong>不可能</strong>出现 C/C++ 中的悬垂指针（尝试访问一块已经被释放的区域）</p>
+</li>
+<li>
+<p>一些函数调用也会转移值的所有权，原因是这个函数虽然是通过 <code>.</code> 操作符调用，但是隐含了一个 <code>self</code> 参数，这个参数就是这个对象的引用（联想 Python 类的方法定义中的 <code>self</code>？），而且这个引用往往是<strong>可变</strong>引用，可能会十分<strong>隐晦</strong>地违反上述引用的冲突规则，例如：</p>
 <figure class="highlight rust"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">fn</span> <span class="hljs-title function_">main</span>() {<br>    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut </span><span class="hljs-variable">s</span> = <span class="hljs-type">String</span>::<span class="hljs-title function_ invoke__">from</span>(<span class="hljs-string">"Hello"</span>);<br>    <span class="hljs-keyword">let</span> <span class="hljs-variable">first</span> = <span class="hljs-title function_ invoke__">first_char</span>(&amp;s); <span class="hljs-comment">// immutable borrow here</span><br>    s.<span class="hljs-title function_ invoke__">clear</span>(); <span class="hljs-comment">// mutable borrow here</span><br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>, first) <span class="hljs-comment">// immutable borrow here</span><br>}<br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">first_char</span>(s: &amp;<span class="hljs-type">String</span>) <span class="hljs-punctuation">-&gt;</span> &amp;<span class="hljs-type">str</span> {<br>    &amp;s[..<span class="hljs-number">1</span>]<br>}<br></code></pre></td></tr></tbody></table></figure>
-<p>在第 4 行，由于 first 仍旧活跃（因为第 5 行将被使用），并且，这个切片的底层与 s 的底层是一致的，因此可以看做是一个活跃的对于 s 的不可变引用。但是在调用 clear 方法时，实际上是对这个方法提供了一个 s 的可变引用。这就违反了上述的引用冲突的规则。尽管 <code>first</code>（即 <code>&amp;str</code> 切片）只是指向 <code>s</code> 的部分数据，它仍然是基于 <code>s</code> 的不可变引用。在 <code>s</code> 的部分（通过 <code>first</code>）仍然被不可变引用时，不能对 <code>s</code> 进行任何可变操作，如 <code>clear()</code></p></li>
-<li><p>Rust 采取的内存回收机制更像是 C++ 中的 <strong>RAII</strong> 思想</p>
+<p>在第 4 行，由于 first 仍旧活跃（因为第 5 行将被使用），并且，这个切片的底层与 s 的底层是一致的，因此可以看做是一个活跃的对于 s 的不可变引用。但是在调用 clear 方法时，实际上是对这个方法提供了一个 s 的可变引用。这就违反了上述的引用冲突的规则。尽管 <code>first</code>（即 <code>&amp;str</code> 切片）只是指向 <code>s</code> 的部分数据，它仍然是基于 <code>s</code> 的不可变引用。在 <code>s</code> 的部分（通过 <code>first</code>）仍然被不可变引用时，不能对 <code>s</code> 进行任何可变操作，如 <code>clear()</code></p>
+</li>
+<li>
+<p>Rust 采取的内存回收机制更像是 C++ 中的 <strong>RAII</strong> 思想</p>
 <blockquote>
 <p>回忆：C++ 中的 RAII 思想：</p>
 <p>RAII = Resource Acquisition Is Initialization</p>
 <p>我们知道，C++ 中，一个作用域结束后，会自动清理在这个作用域中声明的全部局部变量。对于在这个函数中声明的局部对象（是的，C++ 中对象可以创建在栈上，此即局部对象），它会自动调用该对象的析构函数，释放其占有的资源。于是使用局部对象来实现 RAII 是简单的。但是，将对象全部创建成局部对象也许不太合适。如果我们想对创建在堆上的对象也使用 RAII 的思想进行管理呢？在 C++ 11 以后，提供了<strong>智能指针</strong>的概念。智能指针本身是创建在栈上的，它所指的对象创建在堆上。但是，当智能指针离开其作用域后，不仅会释放自己，也会自动调用它所指的堆上对象的析构函数，从而实现 RAII</p>
-</blockquote></li>
+</blockquote>
+</li>
 </ul>
-<h2 id="类型系统">类型系统</h2>
-<h3 id="切片">切片</h3>
+<h2 id="类型系统"><a class="header-anchor" href="#类型系统">¶</a>类型系统</h2>
+<h3 id="切片"><a class="header-anchor" href="#切片">¶</a>切片</h3>
 <ul>
-<li><p>Rust 中的切片语法与 Go 中的相似，只不过使用 <code>..</code> 连接（Go 中是 <code>:</code>）</p></li>
-<li>对字符串使用切片语法时需要注意，切片索引的是字节，如果存在某些非英文字符，此时需要考虑每个 Unicode 字符占据多少个字节</li>
-<li>字符串切片的类型是 <code>&amp;str</code>（可以看做是对底层 String 的引用）；i32 数组的切片类型是 <code>&amp;[i32]</code>。可以看出这些引用都是不可变引用</li>
-<li><p>应该将切片看作是底层数组（或 String）的引用</p></li>
+<li>
+<p>Rust 中的切片语法与 Go 中的相似，只不过使用 <code>..</code> 连接（Go 中是 <code>:</code>）</p>
+</li>
+<li>
+<p>对字符串使用切片语法时需要注意，切片索引的是字节，如果存在某些非英文字符，此时需要考虑每个 Unicode 字符占据多少个字节</p>
+</li>
+<li>
+<p>字符串切片的类型是 <code>&amp;str</code>（可以看做是对底层 String 的引用）；i32 数组的切片类型是 <code>&amp;[i32]</code>。可以看出这些引用都是不可变引用</p>
+</li>
+<li>
+<p>应该将切片看作是底层数组（或 String）的引用</p>
+</li>
 </ul>
-<h3 id="字符串">字符串</h3>
+<h3 id="字符串"><a class="header-anchor" href="#字符串">¶</a>字符串</h3>
 <ul>
 <li>字符串字面量的类型是字符串切片（<code>&amp;str</code>），它是在栈上分配内存的，因为字面量的大小肯定在编译时是可知的</li>
 <li>可以将 <code>String</code> 理解为一个<strong>容器</strong>类，它是在堆上分配内存的！</li>
 </ul>
-<h3 id="数组">数组</h3>
+<h3 id="数组"><a class="header-anchor" href="#数组">¶</a>数组</h3>
 <ul>
 <li>与 Go 中类似，Rust 中数组的长度也是其类型的一部分</li>
 </ul>
@@ -412,12 +446,18 @@
                   <article class="post-prev col-6">
                     
                     
+                      <a href="/6.5840-Lab3/" title="6.5840 Lab3">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">6.5840 Lab3</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/6.5840-Lab3/" title="6.5840 Lab3">
-                        <span class="hidden-mobile">6.5840 Lab3</span>
+                      <a href="/Happy-Debugging/" title="踩坑实录3">
+                        <span class="hidden-mobile">踩坑实录3</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
