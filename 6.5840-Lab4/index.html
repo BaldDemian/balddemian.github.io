@@ -18,26 +18,24 @@
   <meta name="referrer" content="no-referrer" />
   <meta name="baidu-site-verification" content="code-Kbu5eBOiRE" />
   
-    <meta name="description" content="粗略记录阅读 Raft 论文时的要点">
+    <meta name="description" content="6.5840 Lab4 的实验心得（施工中）">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Raft 论文阅读笔记">
-<meta property="og:url" content="https://balddemian.github.io/Raft-Notes/index.html">
+<meta property="og:title" content="6.5840 Lab4">
+<meta property="og:url" content="https://balddemian.github.io/6.5840-Lab4/index.html">
 <meta property="og:site_name" content="Bald Demian">
-<meta property="og:description" content="粗略记录阅读 Raft 论文时的要点">
+<meta property="og:description" content="6.5840 Lab4 的实验心得（施工中）">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/Raft-Roles.png">
-<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/Raft-term.png">
-<meta property="og:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/image-20240419160550687.png">
-<meta property="article:published_time" content="2024-04-19T08:00:00.000Z">
-<meta property="article:modified_time" content="2024-05-08T03:36:38.928Z">
+<meta property="article:published_time" content="2024-06-12T04:00:00.000Z">
+<meta property="article:modified_time" content="2024-06-12T08:42:57.230Z">
 <meta property="article:author" content="Peiyang He">
+<meta property="article:tag" content="6.584">
 <meta property="article:tag" content="分布式">
+<meta property="article:tag" content="Golang">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/Raft-Roles.png">
   
   
   
-  <title>Raft 论文阅读笔记 - Bald Demian</title>
+  <title>6.5840 Lab4 - Bald Demian</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -202,7 +200,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Raft 论文阅读笔记"></span>
+            <span id="subtitle" data-typed-text="6.5840 Lab4"></span>
           
         </div>
 
@@ -213,8 +211,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-04-19 16:00" pubdate>
-          2024年4月19日 下午
+        <time datetime="2024-06-12 12:00" pubdate>
+          2024年6月12日 中午
         </time>
       </span>
     
@@ -258,101 +256,33 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Raft 论文阅读笔记</h1>
+            <h1 style="display: none">6.5840 Lab4</h1>
             
             <div class="markdown-body">
               
-              <h2 id="分布式系统中的一些背景概念">分布式系统中的一些背景概念</h2>
-<blockquote>
-<p>绝大多数概念来自于阅读 DDIA 时的笔记</p>
-</blockquote>
-<h3 id="拜占庭条件与非拜占庭条件">拜占庭条件与非拜占庭条件</h3>
+              <h2 id="misc">Misc</h2>
+<h2 id="go">Go</h2>
+<h2 id="task">Task</h2>
+<p>本次实验中，需要在 Lab2 中实现的single server multiple clients 的 KV storage，和 Lab3 实现的 Raft 协议的基础上，构建一个mutiple servers multiple clients 的 KV storage，并且要能支持节点崩溃重启、快照等功能。数据库分区的功能将在 Lab5 进行实现。</p>
+<p>本次实验需要修改 <code>/src/kvraft</code> 下的 <code>client.go</code>, <code>server.go</code>, <code>common.go</code>。</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="parta">PartA</h3>
 <ul>
-<li>拜占庭条件（拜占庭错误）：节点可能是恶意的、不诚实的。一个实现了拜占庭容错的系统，应该能够通过大部分诚实节点的共识，处理部分节点的恶意行为</li>
-<li>非拜占庭条件（非拜占庭错误）：不根源于节点恶意行为的错误（或认为所有节点都是诚实的），比如节点崩溃失效、响应超时、数据出错。非拜占庭错误，可以通过冗余等技术进行解决</li>
-</ul>
-<p>事实上，在绝大多数分布式数据系统中，都没有进行拜占庭容错，因为其实现异常复杂</p>
-<h3 id="脑裂">脑裂</h3>
-<p>在仅允许一个主节点的系统中，多个节点均认为自己是主节点</p>
-<h3 id="并发超越单机">并发：超越单机</h3>
-<p>在单机中，并发指的是多个进程在一个时间段来看是同时运行，是通过时间片分用来实现的。</p>
-<p>因此在单机中，通常如果两个操作「同时」发生，则称之为并发。不过，在分布式系统中，操作是否在空间上重叠并不重要，并且由于分布式系统中复杂的<strong>时钟同步问题</strong>，有时往往难以确定它们是否同时发生。</p>
-<p>在分布式系统中，如果两个操作之间没有因果依赖，即不需要意识到对方，就可以称这两个操作是并发的。</p>
-<p>作为参考，一个典型的具有因果依赖的操作序列是，对于数据库中原本不存在的某个行，必须先 insert 才能修改</p>
-<h3 id="分片shard">分片（shard）</h3>
-<p>数据库膨胀到<strong>单机无法容纳</strong>时，就需要将数据库进行分片（注意分片和冗余是不一样的！）。常见的分片策略有基于哈希值的和基于 range 的。目前典型的设计思路是将数据库进行 shard 后再进行 replicate</p>
-<h3 id="同步写入与异步写入">同步写入与异步写入</h3>
+<li><p>服务器节点收到请求后，不是直接执行对应的操作，而是先把这个请求送往 Raft 层，即 <code>kv.rf.Start(op)</code>。待 Raft 层对这个 op 取得一致后（已发往大多数节点），当前服务器才能真正执行这个请求的操作。为此，需要开启一个协程 <code>applyTicker</code>，不断轮询通道 <code>kv.applyCh</code>，检查是否还有<strong>尚未</strong>应用的、<strong>已</strong>取得共识的命令。</p></li>
+<li>一个重要的优化思路：client 应该维护上一次成功发送请求的 leader 的索引，下一次请求时优先发往这个节点，以减少不必要的轮询。</li>
+<li>使用 <code>sync.Map</code> 避免手动的锁操作。</li>
+<li>如何处理冗余的请求？（下面将 Get 请求称为读请求，将 Put/Append 请求称为写请求）
 <ul>
-<li>同步写入指，当全部的从节点均已成功写入，主节点才告知客户端写成功。此时客户端访问任意一个节点，可以得到最新的数据</li>
-<li>异步写入指，不待全部的从节点均已成功写入，主节点便告知客户端写成功。此时客户端访问任意一个节点，可能不会得到最新的数据</li>
-</ul>
-<p>严格的同步写入带来的代价是不可接受的，比如一个节点宕机了，那么整个集群将阻塞。实践中往往采取糅合的方式，即大多数节点均已写入成功，即可通知客户端写入成功。Raft 便采取这样的方式</p>
-<h2 id="复制状态机">复制状态机</h2>
-<p><strong>Replicated State Machine</strong> 是一种分布式系统中的设计方法，它通过在多个节点上复制<strong>同一状态机</strong>来确保系统的高可用性和一致性。这种方法基于一个核心理念：如果每个节点上的状态机都从<strong>相同</strong>的初始状态开始，并且以<strong>相同</strong>的顺序执行<strong>相同</strong>的命令，那么它们的最终状态也将是<strong>相同</strong>的。这样，即使一部分节点失败或发生故障，整个系统仍然可以提供正确和一致的服务。</p>
-<p>复制状态机通常由一个<strong>复制日志</strong>来实现，这个日志中记录了复制状态机应该按序执行的指令的集合。而<strong>确保复制日志的一致性，便是共识算法的职责</strong></p>
-<h2 id="raft-概述">Raft 概述</h2>
-<ul>
-<li><p>将客户端的请求序列化为<strong>日志</strong>，Raft 保证节点中的 log 是一致的</p></li>
-<li><p>Raft 系统中的三个角色：</p>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/Raft-Roles.png" srcset="/img/loading.gif" lazyload alt="Raft roles" style="zoom:50%;"></p>
-<ul>
-<li>client</li>
-<li>server(peer, instance)：组成 Raft 集群的单个<strong>进程</strong></li>
-<li>state machine：每个 Raft server 中都有一个状态机。在 6.5840 课程的范畴中，状态机可以理解为一个小型的 KV 数据库</li>
-</ul>
-<p>图中的四个步骤解释如下</p>
-<ol type="1">
-<li>客户端的<strong>写</strong>请求发往且只能发往 leader 节点</li>
-<li>leader 向本地和其他 follower 的日志追加这条操作条目</li>
-<li>只有当多数节点都保存这条 log entry 后，这个 log entry 才被视为<strong>提交</strong>(committed)，之后在所有节点的状态机上应用这条 entry</li>
-<li>客户端的<strong>读</strong>请求可以发往任意一个节点，上述的步骤保证了各个节点间数据的一致性</li>
-</ol></li>
-<li><p>Raft 的功能模块分为三个子部分以完成不同的功能：</p>
-<ul>
-<li><p>leader election，系统中只能有一个领导者节点</p></li>
-<li><p>log replication，客户端发起的写请求（日志条目）只能去往领导者节点，由领导者节点负责向其他从节点发送日志条目</p></li>
-<li><p>safety</p></li>
+<li>策略 1：每个请求必须附加上一个 UUID 进行标识。节点缓存的 key 是 UUID，value 是这个请求的返回值。如果收到了一个相同 UUID 的请求，将直接返回缓存中的返回值。那么如何清理缓存？目前采用的策略是，客户端确认收到请求的响应后，发送一个特殊的 Get 请求示意服务器删除对应的缓存。不过这种策略不是最佳的，会显著增加网络负载。</li>
+<li>策略 2：每个请求再附上一个 <code>&lt;客户端 ID，请求序号 Seq&gt;</code> 的二元组。节点缓存的 key 是这个二元组，value 是这个请求的返回值。对于每个发送过请求的客户端，服务器各为其维护一个 <code>lastSeq</code> 属性，代表最近一次处理的来自该客户端的请求的序号。当收到来自同一个客户端的、Seq == lastSeq 的 Get 请求时，返回缓存中的返回值；当收到来自同一个客户端的、Seq == lastSeq 的 Put/Append 请求时，将不对数据库进行任何处理，只是返回一个 Ok 即可。那么如何清理缓存？当服务器节点收到来自同一个客户端的、Seq &gt; lastSeq 的请求时，服务器可以确信前面所有请求，这个客户端均已成功收到了响应，此时可以删除所有 seq &lt;= lastSeq 的缓存，并更新 lastSeq = Seq。这种单调增计数器的思想广泛见于多种分布式系统的设计中。为了支持上述算法，必须在 <code>MakeClerk</code> 中初始化客户端的 ID，可以复用 UUID 函数得到一个全局唯一的 ID。</li>
 </ul></li>
-<li><p>每个节点同一时刻只能处于三种状态之一：</p>
-<ul>
-<li>leader，只能有一个，负责处理客户端的请求</li>
-<li>follower，不能发起请求，只能响应 leader 和 candidate</li>
-<li>candidate，用于选举</li>
-</ul></li>
-<li><p>term（任期）</p>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/Raft-term.png" srcset="/img/loading.gif" lazyload alt="Raft term" style="zoom:50%;"></p>
-<p>在 Raft 中，时间被划分为 term，每个 term 的长度随机，并且由一个<strong>单调增</strong>的整数进行标识。每个 term 的最开始一定是领导者选举。如果领导者选举成功，这个 term 的剩余时间将执行正常操作；如果没有候选者获得<strong>多数票</strong>等导致没有领导者被成功地选出，这个 term 的剩余时间将作废。term 中单调增的标号被用来检测过时的状态。每个服务器内部维护一个 current term，当它与其他节点交流时，如果发现其他节点有更大的 term，它就意识到自己是过时的，于是将 current term 更新为这个较大的 term，此时，如果这个节点还自认为自己是领导者，此时要放弃领导者地位变为追随者；此外，如果一个服务器接收到的请求，附带的 term 小于自己的 current term，它可以认为这个请求来自于一个过时的服务器，从而拒绝这个请求</p></li>
-<li><p>节点间的通信</p>
-<p>Raft 的节点通信使用<strong>需确认</strong>的 RPC。同时，为了简化设计，仅具有两种基本的 RPC</p>
-<ul>
-<li>RequestVote RPC：在选举阶段由 candidate 发起</li>
-<li>AppendEntries RPC：由领导者发起，用于向 follower 同步日志；此外也用于实现<strong>心跳</strong></li>
-</ul></li>
-<li><p>节点状态的迁移</p>
-<p>当一个服务器上线时，它首先是一个 follower，并且只要它在一个名为 <code>election timeout</code> 的时间内能收到来自一个 leader 或是 candidate 的心跳，它就一直维持自己 follower 的身份（也可以理解为，leader 必须定期向 follower 发送心跳，进而「压制」它们的选举意愿）。如果在 election timeout 的时间内没有收到上述心跳，它就成为一个 candidate 开始竞选（更像是一种自荐的形式）。具体来讲，它先自增自己的 current term，并为自己投 1 票，并向集群内其余主机发送 RequestVote（集群内的主机采取<strong>先到先得</strong>的投票策略。但同时附加了一些约束，比如 RequestVote 必须附上候选者的 log 信息。接收者会查看这个 log 的 index 和 term，只有当这个 index 和 term <strong>均</strong>大于等于自己的时，才能给这个候选者投票）。每收到一个相同 term 的投票，票数加 1。服务器维持自己 candidate 的身份，直至以下三种情况发生一种：</p>
-<ol type="1">
-<li>该主机赢得选举，此时从 candidate 变为 leader</li>
-<li>有其他主机赢得选举，此时该主机从 candidate 变为 follower</li>
-<li>本 term 中没有主机赢得选举</li>
-</ol>
-<p>上述过程中每个主机的 timeout 间隔都是<strong>随机</strong>产生的，避免连续的选举失败的情况出现</p></li>
-<li><p>只有当确认一个 log entry 在各个节点均一致后（即 committed）后，主机上的复制状态机才去执行这个 log entry 中的操作</p></li>
-<li><p>日志复制（日志同步）</p>
-<p>日志复制时，不会将本机的日志全部完整地发往 follower，而是采取一种「乐观 + 回退」的方式。具体来讲：leader 的每次心跳传送的是 <code>&lt;term, index&gt;</code> 的二元组（因为这个二元组可以<strong>唯一标识</strong>任意一个 log entry），如果 follower 发现这个二元组与自己的一致，那么可告知 leader 同步已完成；否则告知 leader 下次心跳时需附加日志；于是下次心跳时 leader 附加一条（或多条）较新的日志，如果 follower 还是发现不同步，则继续回退发送日志，直至同步</p>
-<p>日志同步中存在一个<strong>较难理解</strong>的规定：当前 leader 不能<strong>主动提交</strong>在之前的 leader 领导时同步到多数节点的记录。换个说法，一个 leader 能主动提交的记录，一定是那些在<strong>当前任期</strong>从客户端收到的、且在当前任期内成功同步到大多数节点的记录。</p>
-<blockquote>
-<p>这里的「主动」提交也许是一个不太准确的说法。在图 c 到图 e 的迁移中，term 为 4 的日志可以看做是主动提交的，因为它是 leader s1 在本 term 内收到的；term 为 2 的日志可以看做是连带着提交的</p>
-</blockquote>
-<p>结合论文中的图八来分析：</p>
-<p><img src="https://blog-1314070381.cos.ap-nanjing.myqcloud.com/img/image-20240419160550687.png" srcset="/img/loading.gif" lazyload alt="Raft figure 8" style="zoom:50%;"></p>
-<ol type="a">
-<li><p>时刻 term 为 2，S1 当选 leader，并且从客户端收到 entry，index 为2。但是在将这个 entry 成功复制到大多数（&gt;= 3 个，包含自己）节点之前，S1 宕机了</p></li>
-<li><p>时刻 term 为 3，S5 当选 leader（因为它收到了来自S3、S4、S5 的投票，S1 和 S2 是不可能给它投票的），并且从客户端收到 entry，index 为 2，不过它立马就宕机了，没能将这个 entry 同步到其他任何一个节点</p></li>
-<li><p>时刻 term 为 4，S1 当选 leader，并且从客户端收到了新的 entry，index 为 3。根据上文提到的「乐观 + 回退」式同步机制，它成功地将 index 为 2、term 为 2 的 entry 同步到了大多数节点。但是，<strong>此时并不能提交这个 entry！！！</strong> 假设此时允许 S1 提交这个 entry，假设它在继续将 index 为 3、term 为 4 的 entry 同步到大多数节点之前，它又宕机了，此时我们来到时刻 (d)。此时 S5 当选，它将 index 为 2、term 为 3 的 entry 同步到其他节点，根据前文提到的规定，如果 index 相同，term 大的 entry 会冲掉 term 小的 entry。可是冲掉一个已经提交的 entry，显然是不可接受的，因为状态机已经根据这个 entry 执行修改了！</p></li>
-</ol>
-<p>如 (e) 中所示，如果我们在 (c) 中不允许 S1 提交已获得多数共识的 index 为 2、term 为 2 的那个 entry，假设 S1 又成功将 index 为 3、term 为 4 的 entry 复制到大多数节点，那么这个 entry 是<strong>可以提交的！！！</strong></p>
-<p>如果进一步思考，假若 (c) 中 S1 在将 index 为 3、term 为 4 的 entry 同步到大多数节点之前，它宕机了，并且此时它是没有提交 index 为 2、term 为 2 的那个 entry 的，那么接下来的任期，即使 S5 当选，导致如 (d) 中那样，index 为 2、term 为 2 的那个 entry 被 index 为 2、term 为 3 的 entry 冲掉，应该是没有太大问题的，因为前者没有被提交、没有被状态机执行</p></li>
 </ul>
+<h3 id="partb">PartB</h3>
+<h2 id="result">Result</h2>
+<h3 id="parta-1">PartA</h3>
+<figure class="highlight subunit"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs subunit">D\C\6\s\kvraft [master] [?⇡]<br>17:08 HernandoPC ExApricity » go test -run 4A<br><span class="hljs-keyword">Test: </span>one client (4A) ...<br>labgob warning: Decoding into a non-default variable/field Err may not work<br>  ... Passed --  15.2  5 11330  476<br><span class="hljs-keyword">Test: </span>ops complete fast enough (4A) ...<br>  ... Passed --  33.0  3 12379    0<br><span class="hljs-keyword">Test: </span>many clients (4A) ...<br>  ... Passed --  15.9  5 17956  483<br><span class="hljs-keyword">Test: </span>unreliable net, many clients (4A) ...<br>  ... Passed --  16.3  5  5106  424<br><span class="hljs-keyword">Test: </span>concurrent append to same key, unreliable (4A) ...<br>  ... Passed --   2.8  3   416   52<br><span class="hljs-keyword">Test: </span>progress in majority (4A) ...<br>  ... Passed --   0.5  5   111    2<br><span class="hljs-keyword">Test: </span>no progress in minority (4A) ...<br>  ... Passed --   1.1  5   290    3<br><span class="hljs-keyword">Test: </span>completion after heal (4A) ...<br>  ... Passed --   1.0  5   154    3<br><span class="hljs-keyword">Test: </span>partitions, one client (4A) ...<br>  ... Passed --  22.7  5 24807  408<br><span class="hljs-keyword">Test: </span>partitions, many clients (4A) ...<br>  ... Passed --  23.0  5 58421  453<br><span class="hljs-keyword">Test: </span>restarts, one client (4A) ...<br>  ... Passed --  19.3  5 27362  470<br><span class="hljs-keyword">Test: </span>restarts, many clients (4A) ...<br>  ... Passed --  20.6  5 26981  378<br><span class="hljs-keyword">Test: </span>unreliable net, restarts, many clients (4A) ...<br>  ... Passed --  22.7  5  3676  206<br><span class="hljs-keyword">Test: </span>restarts, partitions, many clients (4A) ...<br>  ... Passed --  28.2  5 20945  272<br><span class="hljs-keyword">Test: </span>unreliable net, restarts, partitions, many clients (4A) ...<br>  ... Passed --  30.2  5  3875  143<br><span class="hljs-keyword">Test: </span>unreliable net, restarts, partitions, random keys, many clients (4A) ...<br>  ... Passed --  39.2  7  9502  165<br>PASS<br>ok      6.5840/kvraft   292.739s<br></code></pre></td></tr></tbody></table></figure>
+<h3 id="partb-1">PartB</h3>
+<h2 id="reflection">Reflection</h2>
 
               
             </div>
@@ -385,7 +315,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
+        <a href="/tags/6-584/">#6.584</a>
+      
         <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+        <a href="/tags/Golang/">#Golang</a>
       
     </div>
   
@@ -397,8 +331,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Raft 论文阅读笔记</div>
-      <div>https://balddemian.github.io/Raft-Notes/</div>
+      <div>6.5840 Lab4</div>
+      <div>https://balddemian.github.io/6.5840-Lab4/</div>
     </div>
     <div class="license-meta">
       
@@ -410,7 +344,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年4月19日</div>
+          <div>2024年6月12日</div>
         </div>
       
       
@@ -440,18 +374,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/Happy-Debugging/" title="踩坑实录3">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">踩坑实录3</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/6.5840-Lab2/" title="6.5840 Lab2">
-                        <span class="hidden-mobile">6.5840 Lab2</span>
+                      <a href="/Dis-Sys-Notes/" title="分布式系统与算法">
+                        <span class="hidden-mobile">分布式系统与算法</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -550,7 +478,7 @@
     <div class="footer-inner">
   
     <div class="footer-content">
-       <span>Powered By</span> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br/> <span>Copyright </span><i class="iconfont icon-copyright"></i><span> 2022-2024 Peiyang He. All Rights Reserved.</span> 
+       <span>Do One Thing and Do It Well. -- <i>The UNIX philosophy</i></span> <br/> <span>Powered By</span> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
   
