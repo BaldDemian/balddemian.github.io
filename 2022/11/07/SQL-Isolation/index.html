@@ -1,0 +1,781 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#282c34">
+  <meta name="author" content="Peiyang He">
+  <meta name="keywords" content="">
+  <meta name="referrer" content="no-referrer" />
+  <meta name="baidu-site-verification" content="code-Kbu5eBOiRE" />
+  
+    <meta name="description" content="本文简要介绍 SQL 标准和 MySQL 中的隔离级别">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL 标准与 MySQL 的隔离级别">
+<meta property="og:url" content="https://balddemian.github.io/2022/11/07/SQL-Isolation/index.html">
+<meta property="og:site_name" content="HPY&#39;s Blog">
+<meta property="og:description" content="本文简要介绍 SQL 标准和 MySQL 中的隔离级别">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-11-07T08:56:05.000Z">
+<meta property="article:modified_time" content="2024-03-24T12:17:41.524Z">
+<meta property="article:author" content="Peiyang He">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>SQL 标准与 MySQL 的隔离级别 - HPY&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"balddemian.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>HPY&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="SQL 标准与 MySQL 的隔离级别"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-11-07 16:56" pubdate>
+          2022年11月7日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">SQL 标准与 MySQL 的隔离级别</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="复习"><a class="markdownIt-Anchor" href="#复习"></a> 复习</h2>
+<p>（重要的事情说三遍~）</p>
+<h3 id="事务的-acid-特性sup-idfnref1-classfootnote-refa-hreffn1-relfootnotespan-classhinttop-hintrounded-aria-label王珊萨师煜数据库系统概论第五版-高等教育出版社"><a class="markdownIt-Anchor" href="#事务的-acid-特性sup-idfnref1-classfootnote-refa-hreffn1-relfootnotespan-classhinttop-hintrounded-aria-label王珊萨师煜数据库系统概论第五版-高等教育出版社"></a> 事务的 ACID 特性<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote">&lt;span class=“hint–top hint–rounded” aria-label=&quot;王珊，萨师煜：数据库系统概论（第五版）。高等教育出版社</h3>
+<p>&quot;&gt;[1]</span></a></sup></p>
+<ul>
+<li>
+<p>Atomicity</p>
+<p>原子性：事务是数据库的逻辑工作单位，事务中包含的诸操作要么都做，要么都不做</p>
+</li>
+<li>
+<p>Consistency</p>
+<p>一致性：事务执行的结果是使数据库从一个一致性状态变为另一个一致性状态。因此当数据库只包含成功事务提交的结果时，就说数据库处于一致状态。可见事务的一致性与原子性密不可分。</p>
+</li>
+<li>
+<p>Isolation</p>
+<p>隔离性：一个事务的执行不能被其他事务干扰。</p>
+</li>
+<li>
+<p>Durability</p>
+<p>持久性：一个事务一旦提交，那么它对数据库中数据的改变就应该是永久性的。</p>
+</li>
+</ul>
+<h2 id="为什么需要隔离"><a class="markdownIt-Anchor" href="#为什么需要隔离"></a> 为什么需要隔离？</h2>
+<p>我们知道，「事务」的存在，其实是为事务中的诸操作提供了「一致性」的保证：事务中的所有操作，要么都做，要么都不做。于是，当事务之间是串行执行时，在一个事务开始执行时，它面对的是上一个事务执行结束时的某个一致性状态，自身执行结束后，又转移到了另一个一致的状态。</p>
+<p>但是，出于效率原因，数据库管理系统不可能对所有待执行的事务采取串行调度策略，必然是让多个事务并发执行的，即一个事务没有完全执行完，就调度了另一个事务。当并发执行的事务存在对同一数据的<strong>访问</strong>时（读-写，写-读，写-写。注意到读-读并不会带来一致性问题），事情就变得麻烦起来了。</p>
+<p>我们观察下面几种调度情况与它们带来的一致性问题<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="Hal Berenson, Phil Bernstein, Jim Gray, Jim Melton, Elizabeth O’Neil, and Patrick O’Neil. 1995. A critique of ANSI SQL isolation levels. SIGMOD Rec. 24, 2 (May 1995), 1–10. https://doi.org/10.1145/568271.223785
+">[2]</span></a></sup>：</p>
+<h3 id="脏写"><a class="markdownIt-Anchor" href="#脏写"></a> 脏写</h3>
+<p>一个事务 T2 <strong>修改</strong>了另一个事务 T1 尚未提交或回滚的<strong>修改</strong>过的数据。如果 T1 或者 T2 随后做了回滚，那么将不知道哪一版的数据是正确的。</p>
+<p>脏写比以下提到的三种情况都要严重，它会破坏数据库的一致性、原子性和持久性：</p>
+<ul>
+<li>
+<p>场景一</p>
+<p>设我们有一个一致性约束，即 x 和 y 的值始终相等，考虑 T1 和 T2 事务如下的执行序列：</p>
+<p><code>W1(x=1) W2(x=2) W2(y=2) COMMIT2 W1(y=1) COMMIT1</code></p>
+<p>如上面的事务调度序列，T2 事务写了 T1 尚未提交的已经写了的数据，虽然这两个事务各自的操作都保证了 x 等于 y 的一致性约束，但由于脏写的存在，这种一致性约束被破坏了。</p>
+</li>
+<li>
+<p>场景二</p>
+<p>设 x 和 y 初始值为 0，考虑 T1 和 T2 事务如下的执行序列：</p>
+<p><code>W1(x=2) W2(x=3) W1(y=3) COMMIT2 ROLLBACK1</code></p>
+<p>如上面的事务调度序列，T2 事务写了 T1 尚未提交的已经写了的数据，出现了脏写现象。现在考虑最后对于 T1 的回滚。如果将 T1 回滚，那么此时 x 将被修改为最开始的 0，y 被修改为最开始的 0。可是 T2 事务已经修改了 x 并成功提交，如果此时修改 x，就破坏了 T2 的持久性。可是如果不将 x 改为 0，仅将 y 改为 0，就破坏了 T1 的原子性。于是脏写使得我们面临了两难境地。</p>
+</li>
+</ul>
+<p>正是由于脏写很严重，下文提到的不同隔离级别，虽然对脏读、幻读、不可重复读的容忍情况各不相同，但是均不允许脏写的发生。</p>
+<h3 id="脏读"><a class="markdownIt-Anchor" href="#脏读"></a> 脏读</h3>
+<p>Dirty Read.</p>
+<p>广义解释：一个事务<strong>读</strong>到了另一个未提交事务<strong>修改</strong>过的数据。脏读也会引起不一致问题，设我们有一致性约束：x 和 y 始终相等。考虑 T1 和 T2 如下的执行序列，设最初的 x 和 y 都是 0。</p>
+<p><code>W1(x=1) R2(x=1) R2(y=0) COMMIT2 W1(y=1)</code></p>
+<p>可以看到 T2 读到了 T1 已经修改过的未提交的数据，使得读出的 x 和 y 处于不相等的状态。但是最终的数据库是处于一直状态的（x 和 y 相等）</p>
+<p>严格解释：一个事务 T2 读到了另一个事务 T1 尚未提交或回滚的修改过的数据。如果 T1 回滚了，那么 T2 就读到一个<strong>从未存在</strong>过的数据。</p>
+<p>可见广义解释是包含了严格解释的。</p>
+<h3 id="幻读"><a class="markdownIt-Anchor" href="#幻读"></a> 幻读</h3>
+<p>Phantom.</p>
+<p>一个事务 T1 按某种条件 C 读到了一些记录。一个事务 T2 又向数据库中 INSERT 了满足条件 C 的记录<strong>并提交</strong>。T1 继续按条件 C 读取记录，发现这次读到一些上次读不存在的记录。这些之前不存在的记录也被称为「幻影记录」。</p>
+<h3 id="不可重复读模糊读"><a class="markdownIt-Anchor" href="#不可重复读模糊读"></a> 不可重复读（模糊读）</h3>
+<p>Non-repeatable Read or Fuzzy Read.</p>
+<p>如果一个事务 T2 修改了另一个未提交事务 T1 <strong>读取</strong>的数据，那么就发生了不可重复读。</p>
+<p>严格解释：T1 先读取了 x 的值，然后 T2 修改了 x 的值并提交，导致 T1 再次读取 x 时读出的值不一样</p>
+<hr />
+<p>通过观察上面几种一致性问题，我们发现，它们均是由于不正确的调度顺序导致的。或者换言之，就是在一个事务尚未结束对一个数据的访问时（这里的「结束」可以是提交，也可以是回滚），另一个事务也「插队」进来，对这些数据进行访问。</p>
+<p>所谓「隔离」，就是通过某种规则将事务的诸操作进行「排队」执行，以消除脏读、幻读、不可重复读。</p>
+<h2 id="ansi-sql-标准的隔离级别"><a class="markdownIt-Anchor" href="#ansi-sql-标准的隔离级别"></a> ANSI SQL 标准的隔离级别</h2>
+<p>之前说到，如果所有事务都是串行执行的，那么将不会出现上面提到的任何一致性问题。但问题就是，串行执行会严重降低系统的性能。如若我们只考虑并发性能，即「见缝插针」地执行不同事务，又会带来严重的一致性问题。于是，为了在保证并发性能与保证一致性之间做出平衡，ANSI SQL 标准提出了 4 种隔离级别。总而言之，就是「舍弃一部分隔离性，承担一致性问题的风险，来换取并发性能」。</p>
+<table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>READ UNCOMMITTED</td>
+<td>可能</td>
+<td>可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>READ COMMITED</td>
+<td>不可能</td>
+<td>可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>REPEATABLE READ</td>
+<td>不可能</td>
+<td>不可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>SERIALIZABLE</td>
+<td>不可能</td>
+<td>不可能</td>
+<td>不可能</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mysql-实现的隔离级别"><a class="markdownIt-Anchor" href="#mysql-实现的隔离级别"></a> MySQL 实现的隔离级别</h2>
+<ul>
+<li>REPEATABLE READ（默认）</li>
+<li>READ COMMITED</li>
+<li>READ UNCOMMITTED</li>
+<li>SERIALIZABLE</li>
+</ul>
+<p>注意 MySQL 的 REPEATABLE READ 级别已经可以在很大程度上防止幻读的发生</p>
+<h2 id="隔离的实现"><a class="markdownIt-Anchor" href="#隔离的实现"></a> 隔离的实现</h2>
+<p>todo</p>
+<h2 id="ref"><a class="markdownIt-Anchor" href="#ref"></a> Ref</h2>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span>王珊，萨师煜：数据库系统概论（第五版）。高等教育出版社
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span>Hal Berenson, Phil Bernstein, Jim Gray, Jim Melton, Elizabeth O’Neil, and Patrick O’Neil. 1995. A critique of ANSI SQL isolation levels. SIGMOD Rec. 24, 2 (May 1995), 1–10. <a target="_blank" rel="noopener" href="https://doi.org/10.1145/568271.223785">https://doi.org/10.1145/568271.223785</a>
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/study/" class="category-chain-item">study</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/MySQL/">#MySQL</a>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">#数据库</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>SQL 标准与 MySQL 的隔离级别</div>
+      <div>https://balddemian.github.io/2022/11/07/SQL-Isolation/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Peiyang He</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年11月7日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/11/28/Interview-SAP-VT/" title="SAP-VT 笔面试记录">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SAP-VT 笔面试记录</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/11/02/Priority-Inversion/" title="优先级反转">
+                        <span class="hidden-mobile">优先级反转</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <span>Do One Thing and Do It Well. -- <i>The UNIX philosophy</i></span> <br/> <span>Powered By</span> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
