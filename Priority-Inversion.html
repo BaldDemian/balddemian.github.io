@@ -1,0 +1,721 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#282c34">
+  <meta name="author" content="Peiyang He">
+  <meta name="keywords" content="">
+  <meta name="referrer" content="no-referrer" />
+  <meta name="baidu-site-verification" content="code-Kbu5eBOiRE" />
+  
+    <meta name="description" content="本文介绍「优先级反转」，一个可抢占式优先级调度策略下的问题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="优先级反转">
+<meta property="og:url" content="https://exapricity.tech/Priority-Inversion.html">
+<meta property="og:site_name" content="HPY&#39;s Blog">
+<meta property="og:description" content="本文介绍「优先级反转」，一个可抢占式优先级调度策略下的问题">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-11-02T10:35:28.000Z">
+<meta property="article:modified_time" content="2024-08-25T06:56:16.493Z">
+<meta property="article:author" content="Peiyang He">
+<meta property="article:tag" content="OS">
+<meta property="article:tag" content="C">
+<meta property="article:tag" content="translation">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>优先级反转 - HPY&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"exapricity.tech","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>HPY&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="优先级反转"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-11-02 18:35" pubdate>
+          2022年11月2日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">优先级反转</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="现象描述"><a class="markdownIt-Anchor" href="#现象描述"></a> 现象描述</h2>
+<p>设有三个进程 P1, P2, P3，其优先级分别是 H, M, L，有 H &gt; M &gt; L，其中 P1 和 P3 会访问同一个临界资源，P2 访问的资源与 P1, P3 无关。系统采取抢占式优先级调度算法。</p>
+<p>假设 P3 首先执行，并进入临界区。在 P3 未退出临界区时，P1 进程到达，由于 P1 优先级高于正在执行的 P3，于是 P1 占据处理机。此时 P2 进程到达，由于其优先级低于 P1，所以处于就绪队列中，P1 继续执行。P1 试图进入临界区，发现该临界区正在被 P3 访问，于是阻塞。此时就绪队列中优先级最高的 P2 继续执行。P2 执行完毕后 P3 继续执行，待 P3 退出临界区后，P1 抢占处理机，并进入临界区，继续执行直到结束。</p>
+<p>在这个案例中，P2 的优先级明明低于 P1，却优先于 P1 执行完了，这种现象就是「优先级反转」。</p>
+<p>我们不难发现，出现优先级反转的原因，是先进入临界区的进程优先级不够高，故而被更高优先级的且不需要访问这段临界区的进程抢占，而导致迟迟不能退出临界区，影响了高优先级且需要访问这段临界区的进程的及时执行。</p>
+<p>所以要解决优先级反转的问题，可以从<strong>提高进入临界区的进程的优先级</strong>上入手。</p>
+<h2 id="解决方案"><a class="markdownIt-Anchor" href="#解决方案"></a> 解决方案</h2>
+<h3 id="disabling-all-interrupts-protocol"><a class="markdownIt-Anchor" href="#disabling-all-interrupts-protocol"></a> Disabling All Interrupts Protocol</h3>
+<p>关中断策略。</p>
+<p>在进程访问临界区时，关闭中断，使其不可被抢占地一直执行完毕直到退出临界区。这就要求临界区的代码必须短小，否则会影响整个系统的并发性和实时性。关中断策略常常用在嵌入式操作系统中，在通用操作系统中不常用。</p>
+<h3 id="priority-inheritance-protocol"><a class="markdownIt-Anchor" href="#priority-inheritance-protocol"></a> Priority Inheritance Protocol</h3>
+<p>优先级继承策略。</p>
+<p>有一优先级为 L 的进程 P1 已经进入临界区。此时一优先级为 H 的进程 P2 也试图进入临界区，且 P1 &lt; P2，那么将 P1 的优先级提升至 H，直到 P1 退出临界区时，再将其优先级恢复到 L。</p>
+<h3 id="priority-ceiling-protocol"><a class="markdownIt-Anchor" href="#priority-ceiling-protocol"></a> Priority Ceiling Protocol</h3>
+<p>优先级天花板策略。</p>
+<p>设有一系列试图访问同一临界资源的进程，P 为这些进程的最大优先级。当其中的某一进程对临界资源上锁后（即将访问临界区），将它的优先级提升为 P。</p>
+<h3 id="random-boosting"><a class="markdownIt-Anchor" href="#random-boosting"></a> Random Boosting</h3>
+<p>正在访问临界区的进程被随机地提升优先级，直到退出临界区。被用于 Windows 系统中。</p>
+<h2 id="真实案例"><a class="markdownIt-Anchor" href="#真实案例"></a> 真实案例</h2>
+<p>优先级反转而导致的 Bug 曾经出现在 NASA 的火星探路者任务中（也许这个故事不像 Linux 的闰秒 Bug 那样出名）。</p>
+<p>以下内容是对这篇文章<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="https://www.microsoft.com/en-us/research/people/mbj/just-for-fun/
+">[1]</span></a></sup>中的 “What Really Happedn On Mars?” 的拙译。</p>
+<hr />
+<p><strong>火星上究竟发生了什么？</strong></p>
+<p>在 1997 年 7 月 4 日，火星探路者登陆火星表面。在开始的一段时间中，它正常工作，并发回了照片，这些照片在互联网大热。但是几天之后，就在火星探路者开始收集气象数据时，它经历了一连串不停的重启，并丢失了许多数据。媒体将这些故障称为 「Software glitches」。</p>
+<p>火星探路者使用了 Wind River 公司开发的 VxWorks 嵌入式实时操作系统，它采取了抢占式的优先级调度策略。火星探路者上的各种任务以线程的形式执行，并根据这些任务的紧急程度被赋予不同的优先级。</p>
+<p>火星探路者中有一条「信息总线」，你可以将它想象成一块在航天器内部不同组件之间传输信息的共享内存。存在一个周期短的「总线管理线程」，它具有高优先级，作用是将数据送入或送出信息总线。各个线程访问信息总线是同步的，需要上互斥锁。收集气象数据的线程周期较长，优先级低，并且要访问信息总线来传送它收集的数据。当这个线程传送数据时，它会将信息总线上互斥锁，写入数据，然后释放锁。如果一个中断使得总线管理线程被调度上处理机，它会尝试获得信息总线的互斥锁，但是发现这个锁已经被占用，于是总线管理线程被阻塞在这个互斥锁上，直到收集气象数据的线程释放锁。航天器中还运行着一个中优先级的通讯线程。</p>
+<p>大部分时间中这三道线程运行得相安无事，但很少的时刻，这种情况成为可能：出现某个中断，使得中优先级的通讯线程被调度上处理机；于此同时，高优先级的总线管理线程，由于等待低优先级的气象信息收集线程使用总线而被阻塞。（符合上文中的现象描述）此时这个耗时较长的具有中优先级的通讯线程，会阻止低优先级的气象信息收集线程的运行，从而阻止高优先级的总线管理线程的运行。一段时间之后，一段「看门狗计时程序」会注意到，总线管理线程已经有一段时间没有执行了，它假设系统中出现了某种巨大的错误，于是将整个系统重启。</p>
+<blockquote>
+<p>看门狗计时器常用于对稳定性要求较高的嵌入式系统中，通过计时重启，避免程序进入死循环这样的异常情况出现。比如某程序正常运行完所需的时间是 t1，看门狗计时器的定时周期是 t2，且 t1 &gt; t2。当程序完整运行完后，即清空看门狗计时器的计数（这个过程叫做「喂狗」），只要程序正常运行，计时器就不会溢出，也就不会发生重启，当某些异常情况干扰了程序的运行，对应的看门狗计时器就会在 t2 时刻溢出（狗饿了🐶），引发系统重启。</p>
+</blockquote>
+<p><strong>这个缺陷是如何 debug 的？</strong></p>
+<p>VxWorks 系统可以在特定模式下工作，这个模式会记录下各种运行时有趣的现象，如上下文切换、同步对象的使用、中断等。在观察到这个缺陷后，JPL 的工程师花费数小时在一台火星探路者的副本上用他们想到的各种方式运行系统，以期复现这个故障。在除了一位工程师以外所有人都离开后，他终于在副本机器上复现了火星探路者上的重启。对于运行信息的分析表明，系统遭遇了优先级反转。</p>
+<p><strong>这个问题是如何被修正的？</strong></p>
+<p>VxWorks 系统用一个 bool 变量表示是否在互斥对象上使用优先级继承，但是它默认为 false。使用优先级继承后，低优先级的气象信息线程会继承高优先级的总线管理线程的优先级，使得它在访问临界区是不可被中优先级的通讯线程抢占，从而避免了优先级反转。</p>
+<p>VxWorks 系统中提供了一个 C 语言解释器，用来在调试过程中插入表达式和函数。在火星探路者发射时，JPL 的工程师「奇迹」般地决定将这个功能打开。根据编码规范，控制是否使用优先级继承的 bool 变量是编码在全局变量区中的，这些全局变量的地址是存放在发射软件中的符号表里的，并且可以通过 C 解释器修改。一段短短的 C 程序被上传到探路者中，然后被解释运行，从而打开了优先级继承。此后没有再出现系统重启的故障。</p>
+<p><strong>分析和教训</strong></p>
+<p>首先，用黑箱的方法诊断这个问题是不可能的。只有详细的在真实系统上的执行轨迹才能将这个错误的执行序列捕捉到。</p>
+<p>其次，将「调试设施」留在系统中假以时日会拯救你！如果不能实际修改系统，这个问题也将无从修复。</p>
+<p>最后，工程师们最初的这个想法是完全错误的：「数据总线线程执行得非常频繁并且对执行时间敏感，我们不应该让它用多余的时间去实现优先级继承」。正是在这样对执行时间敏感的重要场合，程序的正确性才尤为重要，即使是要付出一些性能上的代价。</p>
+<p><strong>人之常情，DDL 的压力</strong></p>
+<p>David 告诉我们， JPL 的工程师后来承认，在他们几个月的发射前测试中，这样的系统重启现象发生过一两次。这些重启既没法复现也难以解释，所以工程师们，出于对于否认的直觉，认为这些重启可能不是那么重要，用那句经典的「这可能是由于一个硬件故障导致」搪塞过去了。</p>
+<p>还有一部分原因是当时工程师们关注的重点。他们及其专注于确保登陆程序的正确性。如果连控制登陆的程序都出错了，整个任务就都失败了。所以工程师们忽略掉这些在不那么重要的地面任务软件中的偶发错误，也是完全可以理解的，尤其是考虑到，在那个阶段中，航天器的重启也是一个可行的恢复策略。</p>
+<p><strong>优秀的理论和算法的重要性</strong></p>
+<p>David 也说到，一些真正的幕后英雄来自卡内基梅隆大学，他们在几年前发表文章，首先提出了优先级反转的问题并给出了解决措施。他为没能记住这篇文章作者的详细信息而抱歉。凑巧的是，这篇文章的三个作者正坐在这间房间内（David Wilner，Wind River 的 CTO 在 IEEE 的一场嵌入式领域的会议上分享了上面提到的这些内容），在讲话结束后，他们受邀来到讲台接受众人的致意。他们是 Lui Sha, John Lehoczky, 和 Raj Rajkumar<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="https://ieeexplore.ieee.org/abstract/document/57058&quot;L. Sha, R. Rajkumar and J. P. Lehoczky, &quot;Priority inheritance protocols: an approach to real-time synchronization,&quot; in IEEE Transactions on Computers, vol. 39, no. 9, pp. 1175-1185, Sept. 1990, doi: 10.1109/12.57058.&quot;
+">[2]</span></a></sup>。你上次见到一屋子人为三个计算机理论学家拓宽人类知识的边界的贡献而鼓掌是什么时候了？这真是美妙的一刻。</p>
+<h2 id="ref"><a class="markdownIt-Anchor" href="#ref"></a> Ref</h2>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.microsoft.com/en-us/research/people/mbj/just-for-fun/">https://www.microsoft.com/en-us/research/people/mbj/just-for-fun/</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/abstract/document/57058">https://ieeexplore.ieee.org/abstract/document/57058</a>&quot;L. Sha, R. Rajkumar and J. P. Lehoczky, &quot;Priority inheritance protocols: an approach to real-time synchronization,&quot; in IEEE Transactions on Computers, vol. 39, no. 9, pp. 1175-1185, Sept. 1990, doi: 10.1109/12.57058.&quot;
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www3.nd.edu/~cpoellab/teaching/cse40463/slides6.pdf">https://www3.nd.edu/~cpoellab/teaching/cse40463/slides6.pdf</a> 一份不错的讲义
+<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/study/" class="category-chain-item">study</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/OS/">#OS</a>
+      
+        <a href="/tags/C/">#C</a>
+      
+        <a href="/tags/translation/">#translation</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>优先级反转</div>
+      <div>https://exapricity.tech/Priority-Inversion.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Peiyang He</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年11月2日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/SQL-Isolation.html" title="SQL 标准与 MySQL 的隔离级别">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SQL 标准与 MySQL 的隔离级别</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/Happy-Debugging-1.html" title="踩坑实录1">
+                        <span class="hidden-mobile">踩坑实录1</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <span>Do One Thing and Do It Well. -- <i>The UNIX philosophy</i></span> <br/> <span>Powered By</span> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
